@@ -422,7 +422,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 // ═══════════════════════════════════════════════════
 // CONFIG – sostituisci con l'URL del tuo script deployato
 // ═══════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const API_URL = "https://script.google.com/macros/s/INSERISCI_IL_TUO_URL_QUI/exec";
 
 let _token = localStorage.getItem("its_token") || null;
 let _user  = null;
@@ -804,141 +804,293 @@ async function cambiaOrario(ann, btn) {
 // ═══════════════════════════════════════════════════
 let _votiData = null;
 let _selectedStudenteVoti = null;
+let _materieList = []; // lista materie globale
+
+// Carica studenti se non già caricati
+async function _assicuraStudenti() {
+  if (!_studenti.length) {
+    const sr = await api("getStudenti",{});
+    _studenti = sr.studenti||[];
+  }
+}
+
+// Carica materie se non già caricate
+async function _assicuraMaterie() {
+  if (!_materieList.length) {
+    if (_user.ruolo==="DOCENTE") {
+      const dr = await api("getDashboard",{});
+      _materieList = dr.materie||[];
+    } else {
+      const dr = await api("getDocenti",{});
+      _materieList = [...new Set((dr.docenti||[]).map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
+    }
+  }
+}
 
 async function renderVoti() {
   const pane = $("pane-voti");
   const r = _user.ruolo;
-  let header = `<div class="page-header"><h2>📊 Voti</h2></div>`;
 
-  // Pulsante aggiungi (coordinatore e docente)
-  let actions = "";
-  if (r==="COORDINATORE") actions = `<button class="btn btn-primary btn-sm" onclick="apriInserisciVoto()" style="margin-bottom:1rem">➕ Inserisci voto</button>`;
-  if (r==="DOCENTE") actions = `<button class="btn btn-primary btn-sm" onclick="apriInserisciVoto()" style="margin-bottom:1rem">➕ Inserisci voto</button>`;
-
-  // Selettore studente (non per lo studente stesso)
-  let selectorHtml = "";
-  if (r!=="STUDENTE") {
-    selectorHtml = `<div class="form-group" style="margin-bottom:1rem">
-      <label>Studente</label>
-      <select id="sel-studente-voti" onchange="cambiaStudenteVoti(this.value)">
-        <option value="">-- Seleziona studente --</option>
-      </select>
-    </div>`;
+  if (r === "STUDENTE") {
+    // Studente: vede solo i propri voti per materia
+    pane.innerHTML = `<div class="page-header"><h2>📊 I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+    await caricaVotiStudente();
+    return;
   }
 
-  pane.innerHTML = header + actions + selectorHtml + `<div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-
-  // Carica studenti per il selettore
-  if (r!=="STUDENTE") {
-    if (!_studenti.length) {
-      const sr = await api("getStudenti",{});
-      _studenti = sr.studenti||[];
-    }
+  if (r === "TUTOR") {
+    // Tutor: seleziona studente e vede i voti (sola lettura)
+    pane.innerHTML = `<div class="page-header"><h2>📊 Voti studenti</h2></div>
+      <div class="form-group" style="margin-bottom:1rem">
+        <label>Studente</label>
+        <select id="sel-studente-voti" onchange="cambiaStudenteVoti(this.value)">
+          <option value="">-- Seleziona studente --</option>
+        </select>
+      </div>
+      <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>`;
+    await _assicuraStudenti();
     const sel = $("sel-studente-voti");
-    _studenti.forEach(s => {
-      const o = document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)";
-      sel.appendChild(o);
-    });
+    _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
+    return;
   }
 
-  if (r==="STUDENTE") await caricaVoti(null);
-  else $("voti-content").innerHTML = `<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente per visualizzare i voti.</div>`;
+  // COORDINATORE o DOCENTE: vista registro
+  pane.innerHTML = `<div class="page-header"><h2>📊 Registro voti</h2></div>
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+      <button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">📝 Inserisci voti</button>
+      <button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">🔍 Consulta</button>
+    </div>
+    <div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
+    <div id="voti-consulta-pane" class="hide">
+      <div class="form-group">
+        <label>Studente</label>
+        <select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)">
+          <option value="">-- Seleziona studente --</option>
+        </select>
+      </div>
+      <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>
+    </div>`;
+
+  await _assicuraStudenti();
+  await _assicuraMaterie();
+  await renderRegistro();
 }
 
-async function cambiaStudenteVoti(email) {
-  _selectedStudenteVoti = email||null;
-  if (!email) { $("voti-content").innerHTML = `<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
-  await caricaVoti(email);
+function switchVotiTab(tab, btn) {
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  if (tab==="registro") {
+    sh("voti-registro-pane"); hd("voti-consulta-pane");
+  } else {
+    hd("voti-registro-pane"); sh("voti-consulta-pane");
+    // Popola select consulta
+    const sel = $("sel-studente-consulta");
+    if (sel && sel.options.length <= 1) {
+      _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
+    }
+  }
 }
 
-async function caricaVoti(emailStudente) {
+async function renderRegistro() {
+  const pane = $("voti-registro-pane");
+  if (!_materieList.length) {
+    pane.innerHTML = `<div class="alert alert-danger">Nessuna materia trovata. Verifica il foglio docenti.</div>`;
+    return;
+  }
+
+  const materiaOpts = _materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
+  const annoOpts = `<option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option>`;
+
+  pane.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="grid-2" style="gap:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Materia</label>
+          <select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Anno</label>
+          <select id="reg-anno">${annoOpts}</select>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button>
+    </div>
+    <div id="registro-table"></div>`;
+}
+
+async function apriRegistro() {
+  const materia = $("reg-materia").value;
+  const anno = $("reg-anno").value;
+  if (!materia) { alert("Seleziona una materia."); return; }
+
+  let studenti = _studenti;
+  if (anno) studenti = studenti.filter(s=>String(s.annualita)===anno);
+  if (!studenti.length) { $("registro-table").innerHTML = `<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuno studente trovato.</div>`; return; }
+
+  // Carica voti esistenti per questa materia
+  $("registro-table").innerHTML = `<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
+  const res = await api("getVoti",{emailStudente:null});
+  const tuttiVoti = res.success ? (res.voti||[]) : [];
+  const votiMateria = {};
+  tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{
+    const em = String(v.EMAIL_STUDENTE||"").toLowerCase();
+    if (!votiMateria[em]) votiMateria[em]=[];
+    votiMateria[em].push(v);
+  });
+
+  let html = `
+    <div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div>
+    <div class="card" style="padding:.5rem">`;
+
+  studenti.forEach(s => {
+    const email = s.email.toLowerCase();
+    const votiSt = votiMateria[email]||[];
+    const media = votiSt.length ? Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10 : null;
+    const pillsHtml = votiSt.map(v=>`
+      <span class="voto-pill" style="min-width:48px;padding:.3rem .5rem">
+        <span class="v-num ${votoClass(parseFloat(v.VOTO))}">${v.VOTO}</span>
+        <span class="v-date">${_fmtDataIT(v.DATA)}</span>
+        ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.ID}')">🗑</span>`:''}
+      </span>`).join("");
+
+    html += `
+      <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .5rem;border-bottom:1px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.nome)}</div>
+          <div style="font-size:.7rem;color:var(--muted)">${s.annualita}° anno</div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center">${pillsHtml}</div>
+        ${media!==null?`<div style="font-family:var(--font-head);font-weight:800;font-size:.95rem;color:${mediaColor(media)};min-width:38px;text-align:center">${media}</div>`:'<div style="min-width:38px"></div>'}
+        <input type="number" min="0" max="30" step="0.5" placeholder="—"
+          id="inp-${btoa(email).replace(/=/g,'')}"
+          data-email="${esc(email)}"
+          style="width:62px;padding:.4rem .5rem;font-size:.9rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text)">
+      </div>`;
+  });
+
+  html += `</div>
+    <div style="margin-top:1rem;display:flex;gap:.5rem;align-items:center">
+      <div class="form-group" style="flex:1;margin-bottom:0">
+        <label>Note (per tutti i nuovi voti)</label>
+        <input type="text" id="reg-note-globale" placeholder="Opzionale — es. Verifica scritta">
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">💾 Salva tutti i voti inseriti</button>
+    <div id="reg-save-msg" style="margin-top:.5rem"></div>`;
+
+  $("registro-table").innerHTML = html;
+}
+
+function mediaColor(m) {
+  if (m>=28) return "#10b981";
+  if (m>=24) return "#60a5fa";
+  if (m>=18) return "#f59e0b";
+  return "#ef4444";
+}
+
+function _fmtDataIT(v) {
+  if (!v) return "";
+  const s = v instanceof Date ? v.toISOString().split("T")[0] : String(v);
+  if (s.includes("-") && s.length>=10) { const [y,m,d]=s.split("-"); return d+"/"+m+"/"+y; }
+  return s;
+}
+
+async function salvaRegistro(materia) {
+  const note = $("reg-note-globale").value.trim();
+  const inputs = document.querySelectorAll("#registro-table input[data-email]");
+  const daInserire = [];
+  inputs.forEach(inp => {
+    const v = inp.value.trim();
+    if (!v) return;
+    const num = parseFloat(v);
+    if (isNaN(num)||num<0||num>30) return;
+    daInserire.push({ emailStudente: inp.getAttribute("data-email"), materia, voto: num, note });
+  });
+  if (!daInserire.length) { $("reg-save-msg").innerHTML=`<div class="alert alert-danger">Nessun voto da salvare.</div>`; return; }
+
+  $("reg-save-msg").innerHTML=`<div style="text-align:center"><div class="spinner"></div> Salvataggio ${daInserire.length} voti...</div>`;
+  let ok=0, err=0;
+  for (const d of daInserire) {
+    const res = await api("inserisciVoto", d);
+    if (res.success) ok++; else err++;
+  }
+  $("reg-save-msg").innerHTML = ok>0
+    ? `<div class="alert alert-success">✅ ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`
+    : `<div class="alert alert-danger">Errore nel salvataggio.</div>`;
+  // Svuota i campi salvati con successo
+  if (ok>0) { inputs.forEach(inp=>{ if(inp.value.trim()) inp.value=""; }); }
+  // Ricarica il registro dopo 1.5s per aggiornare i voti esistenti
+  setTimeout(()=>apriRegistro(), 1500);
+}
+
+async function caricaVotiStudente() {
   $("voti-content").innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res = await api("getVoti",{emailStudente});
-  _votiData = res;
-  if (!res.success) { $("voti-content").innerHTML = `<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+  const res = await api("getVoti",{});
+  if (!res.success) { $("voti-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
   const perMateria = res.perMateria||[];
-  if (!perMateria.length) { $("voti-content").innerHTML = `<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
-  let html = "";
-  perMateria.forEach(m => {
-    const mc = votoClass(m.media);
-    html += `<div class="materia-block">
+  if (!perMateria.length) { $("voti-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
+  let html="";
+  perMateria.forEach(m=>{
+    html+=`<div class="materia-block">
       <div class="materia-header">
         <div class="materia-name">${esc(m.materia)}</div>
-        <div class="media-chip ${mc}">Media: ${m.media}/30</div>
+        <div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div>
       </div>
       <div class="voti-list">
         ${m.voti.map(v=>`<div class="voto-pill">
           <span class="v-num ${votoClass(v.voto)}">${v.voto}</span>
           <span class="v-date">${v.data}</span>
           ${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}
-          ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id}')">🗑</span>`:''}
         </div>`).join("")}
       </div>
       <div class="divider"></div>
     </div>`;
   });
-  $("voti-content").innerHTML = html;
+  $("voti-content").innerHTML=html;
 }
 
-async function apriInserisciVoto() {
-  // Carica studenti e materie
-  if (!_studenti.length && _user.ruolo!=="DOCENTE") {
-    const sr = await api("getStudenti",{}); _studenti=sr.studenti||[];
-  }
-  if (_user.ruolo==="DOCENTE" && !_materieDocente.length) {
-    const dr = await api("getDashboard",{}); _materieDocente=dr.materie||[];
-  }
-
-  $("modal-voto-title").textContent = "Inserisci voto";
-  $("voto-edit-id").value = "";
-  $("voto-val").value = "";
-  $("voto-note").value = "";
-
-  const selS = $("voto-studente");
-  selS.innerHTML = '<option value="">-- Studente --</option>';
-  if (_user.ruolo==="STUDENTE") {
-    hd("voto-form-studente");
-  } else {
-    sh("voto-form-studente");
-    _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome; selS.appendChild(o); });
-    if (_selectedStudenteVoti) selS.value = _selectedStudenteVoti;
-  }
-
-  const selM = $("voto-materia");
-  selM.innerHTML = '<option value="">-- Materia --</option>';
-  if (_user.ruolo==="DOCENTE" && _materieDocente.length) {
-    _materieDocente.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent=m; selM.appendChild(o); });
-  } else {
-    // Coordinatore: lista materie dai docenti
-    const dr = await api("getDocenti",{});
-    const mat = [...new Set((dr.docenti||[]).map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
-    mat.forEach(m=>{ const o=document.createElement("option"); o.value=m; o.textContent=m; selM.appendChild(o); });
-  }
-
-  hideErr("voto-err");
-  openModal("modal-voto");
+async function cambiaStudenteVoti(email) {
+  _selectedStudenteVoti = email||null;
+  const cont = $("voti-content");
+  if (!email) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
+  if(cont) cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res = await api("getVoti",{emailStudente:email});
+  if (!res.success) { if(cont) cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+  const perMateria = res.perMateria||[];
+  if (!perMateria.length) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
+  let html="";
+  perMateria.forEach(m=>{
+    html+=`<div class="materia-block">
+      <div class="materia-header">
+        <div class="materia-name">${esc(m.materia)}</div>
+        <div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div>
+      </div>
+      <div class="voti-list">
+        ${m.voti.map(v=>`<div class="voto-pill">
+          <span class="v-num ${votoClass(v.voto)}">${v.voto}</span>
+          <span class="v-date">${v.data}</span>
+          ${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}
+          ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id||v.ID}')">🗑</span>`:''}
+        </div>`).join("")}
+      </div>
+      <div class="divider"></div>
+    </div>`;
+  });
+  if(cont) cont.innerHTML=html;
 }
 
-async function salvaVoto() {
-  hideErr("voto-err");
-  const emailStudente = _user.ruolo==="STUDENTE" ? _user.email : $("voto-studente").value;
-  const materia = $("voto-materia").value;
-  const voto = $("voto-val").value;
-  const note = $("voto-note").value;
-  if (!emailStudente) return showErr("voto-err","Seleziona uno studente.");
-  if (!materia) return showErr("voto-err","Seleziona una materia.");
-  if (!voto) return showErr("voto-err","Inserisci il voto.");
-  const res = await api("inserisciVoto",{emailStudente,materia,voto,note});
-  if (!res.success) return showErr("voto-err",res.message);
-  chiudiModal("modal-voto");
-  await caricaVoti(_selectedStudenteVoti);
-}
+async function caricaVoti(emailStudente) { await cambiaStudenteVoti(emailStudente); }
+
+async function apriInserisciVoto() { await renderVoti(); }
 
 async function eliminaVotoById(id) {
   if (!confirm("Eliminare questo voto?")) return;
   const res = await api("eliminaVoto",{id});
-  if (res.success) await caricaVoti(_selectedStudenteVoti);
-  else alert(res.message);
+  if (res.success) {
+    // Ricarica registro o vista studente
+    if ($("voti-registro-pane") && !$("voti-registro-pane").classList.contains("hide")) apriRegistro();
+    else cambiaStudenteVoti(_selectedStudenteVoti);
+  } else alert(res.message);
 }
 
 // ═══════════════════════════════════════════════════
