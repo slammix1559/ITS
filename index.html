@@ -436,14 +436,35 @@ let _currentPane = "home";
 // API
 // ═══════════════════════════════════════════════════
 async function api(action, payload) {
-  const p = new URLSearchParams({ action, payload: JSON.stringify(payload||{}), token: _token||"" });
-  let r;
-  try { r = await fetch(API_URL + "?" + p, { method:"GET", redirect:"follow" }); }
-  catch(e) { throw new Error("Impossibile raggiungere il server. Controlla la connessione."); }
-  let d;
-  try { d = await r.json(); } catch(e) { throw new Error("Risposta server non valida."); }
-  if (d && d.code === "AUTH") { doLogout(); throw new Error(d.error||"Sessione scaduta."); }
-  return d;
+  return new Promise((resolve, reject) => {
+    const cbName = "cb_" + Date.now();
+    const p = new URLSearchParams({ 
+      action, 
+      payload: JSON.stringify(payload||{}), 
+      token: _token||"",
+      callback: cbName
+    });
+    const script = document.createElement("script");
+    script.src = API_URL + "?" + p.toString();
+    window[cbName] = function(data) {
+      delete window[cbName];
+      document.body.removeChild(script);
+      resolve(data);
+    };
+    script.onerror = function() {
+      delete window[cbName];
+      document.body.removeChild(script);
+      reject(new Error("Errore di connessione al server."));
+    };
+    setTimeout(() => {
+      if (window[cbName]) {
+        delete window[cbName];
+        try { document.body.removeChild(script); } catch(e) {}
+        reject(new Error("Timeout connessione."));
+      }
+    }, 15000);
+    document.body.appendChild(script);
+  });
 }
 
 // ═══════════════════════════════════════════════════
