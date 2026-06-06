@@ -422,7 +422,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 // ═══════════════════════════════════════════════════
 // CONFIG – sostituisci con l'URL del tuo script deployato
 // ═══════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const API_URL = "https://script.google.com/macros/s/INSERISCI_IL_TUO_URL_QUI/exec";
 
 let _token = localStorage.getItem("its_token") || null;
 let _user  = null;
@@ -816,14 +816,19 @@ async function _assicuraStudenti() {
 
 // Carica materie se non già caricate
 async function _assicuraMaterie() {
+  if (_materieList.length) return;
+  const dr = await api("getDocenti",{});
+  const tuttiDoc = dr.docenti||[];
+  if (_user.ruolo==="DOCENTE") {
+    // Solo le materie di questo docente
+    _materieList = tuttiDoc
+      .filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase())
+      .map(d=>d.materia).filter(m=>m);
+  }
   if (!_materieList.length) {
-    if (_user.ruolo==="DOCENTE") {
-      const dr = await api("getDashboard",{});
-      _materieList = dr.materie||[];
-    } else {
-      const dr = await api("getDocenti",{});
-      _materieList = [...new Set((dr.docenti||[]).map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
-    }
+    // Coordinatore o fallback: tutte le materie
+    _materieList = [...new Set(tuttiDoc.map(d=>d.materia)
+      .filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
   }
 }
 
@@ -901,12 +906,16 @@ async function renderRegistro() {
   const materiaOpts = _materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
   const annoOpts = `<option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option>`;
 
+  const preselectMateria = (_user.ruolo==="DOCENTE" && _materieList.length===1) ? _materieList[0] : "";
+
   pane.innerHTML = `
     <div class="card" style="margin-bottom:1rem">
       <div class="grid-2" style="gap:.75rem">
         <div class="form-group" style="margin-bottom:0">
           <label>Materia</label>
-          <select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select>
+          <select id="reg-materia">
+            <option value="">-- Seleziona materia --</option>${materiaOpts}
+          </select>
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label>Anno</label>
@@ -916,6 +925,12 @@ async function renderRegistro() {
       <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button>
     </div>
     <div id="registro-table"></div>`;
+
+  // Preseleziona materia se docente con una sola materia e apri subito
+  if (preselectMateria) {
+    $("reg-materia").value = preselectMateria;
+    await apriRegistro();
+  }
 }
 
 async function apriRegistro() {
@@ -1081,7 +1096,7 @@ async function cambiaStudenteVoti(email) {
 
 async function caricaVoti(emailStudente) { await cambiaStudenteVoti(emailStudente); }
 
-async function apriInserisciVoto() { await renderVoti(); }
+async function apriInserisciVoto() { switchPane("voti"); }
 
 async function eliminaVotoById(id) {
   if (!confirm("Eliminare questo voto?")) return;
