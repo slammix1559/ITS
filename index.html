@@ -114,7 +114,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 /* ═══════════════════ LOGIN ═══════════════════ */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;z-index:1}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:420px;padding:2rem 2rem 2.5rem;width:100%}
-.login-logo{text-align:center;margin-bottom:2rem}
+.login-logo{text-align:center;margin-bottom:1.5rem}
 .login-logo .logo-big{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--gold));border-radius:16px;color:#fff;font-family:var(--font-head);font-size:1.5rem;font-weight:800;height:64px;width:64px;margin-bottom:.75rem}
 .login-logo h2{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
 .login-logo p{color:var(--muted);font-size:.82rem}
@@ -198,8 +198,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 <!-- ══════ NAVBAR ══════ -->
 <nav id="navbar" class="navbar hide">
   <div class="navbar-brand">
-    <div class="logo-mark">ITS</div>
-    <span>Meccanica e Meccatronica</span>
+    <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:38px;width:auto;display:block">
   </div>
   <div class="navbar-actions">
     <div style="position:relative">
@@ -216,9 +215,8 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 <div id="view-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
-      <div class="logo-big">ITS</div>
-      <h2>ITS Meccanica e Meccatronica</h2>
-      <p>Lombardia — Area Studenti & Staff</p>
+      <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:90px;width:auto;display:block;margin:0 auto 1rem">
+      <p>Lombardia — Area Studenti &amp; Staff</p>
     </div>
 
     <!-- Form login -->
@@ -422,7 +420,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 // ═══════════════════════════════════════════════════
 // CONFIG – sostituisci con l'URL del tuo script deployato
 // ═══════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const API_URL = "https://script.google.com/macros/s/INSERISCI_IL_TUO_URL_QUI/exec";
 
 let _token = localStorage.getItem("its_token") || null;
 let _user  = null;
@@ -720,54 +718,90 @@ async function renderHome() {
 // ═══════════════════════════════════════════════════
 // ORARIO
 // ═══════════════════════════════════════════════════
+// Filtra lezioni per docente (confronto flessibile cognome)
+function _filtraLezioniDocente(lezioni) {
+  if (_user.ruolo !== "DOCENTE") return lezioni;
+  // Costruisce termini di ricerca dal cognome e nome utente
+  const cognome = (_user.cognome||"").toLowerCase().trim();
+  const nome    = (_user.nome||"").toLowerCase().trim();
+  return lezioni.filter(l => {
+    const doc = (l.docente||"").toLowerCase();
+    if (!doc) return false;
+    // Controlla se il campo docente contiene il cognome
+    if (cognome && doc.includes(cognome)) return true;
+    // Controlla anche nome+cognome invertito
+    if (nome && cognome && doc.includes(nome) && doc.includes(cognome)) return true;
+    return false;
+  });
+}
+
+function _renderLezioni(lezioni, tabsHtml) {
+  const oggi = todayISO();
+  const perData = {};
+  lezioni.forEach(l => {
+    const key = l.data || l.giornoFull;
+    if (!perData[key]) perData[key] = [];
+    perData[key].push(l);
+  });
+  if (!Object.keys(perData).length) return '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>';
+  return Object.keys(perData).sort().map(data => {
+    const isOggi = data === oggi;
+    const ls = perData[data];
+    const label = ls[0] ? `${ls[0].giorno} ${fmtData(data)}` : data;
+    return `<div class="schedule-day">
+      <div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI · </span>':''} ${esc(label)}</div>
+      ${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}">
+        <div class="lesson-time">⏰ ${esc(l.oraInizio)} – ${esc(l.oraFine)}</div>
+        <div class="lesson-uf">${esc(l.uf||"—")}</div>
+        <div class="lesson-meta">
+          ${l.docente?`<span>👤 ${esc(l.docente)}</span>`:''}
+          ${l.aula?`<span>📍 ${esc(l.aula)}</span>`:''}
+          ${l.luogo?`<span>🏢 ${esc(l.luogo)}</span>`:''}
+        </div>
+      </div>`).join("")}
+    </div>`;
+  }).join("");
+}
+
 async function renderOrario() {
   const pane = $("pane-orario");
   pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   try {
-    const annualita = _user.annualita || "1";
-    const res = await api("getOrario",{annualita});
-    if (!res.success) { $("pane-orario").innerHTML += `<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-    const lezioni = res.lezioni || [];
-    if (!lezioni.length) { $("pane-orario").innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`; return; }
-
-    // Tab per annualità (coordinatore/tutor vedono entrambe)
     const r = _user.ruolo;
+    const isDocente = r === "DOCENTE";
+
+    // Docente: carica entrambi gli anni e filtra per nome
+    // Coordinatore/Tutor: tab per anno, studente: solo il suo anno
     let tabsHtml = "";
-    if (["COORDINATORE","TUTOR","DOCENTE"].includes(r)) {
+    if (!isDocente && ["COORDINATORE","TUTOR"].includes(r)) {
       tabsHtml = `<div class="tab-row" style="margin-bottom:1rem">
         <button class="tab-btn active" id="tab-orario-1" onclick="cambiaOrario('1',this)">1° Anno</button>
         <button class="tab-btn" id="tab-orario-2" onclick="cambiaOrario('2',this)">2° Anno</button>
       </div>`;
     }
 
-    // Raggruppa per data
-    const perData = {};
-    lezioni.forEach(l => {
-      const key = l.data || l.giornoFull;
-      if (!perData[key]) perData[key] = [];
-      perData[key].push(l);
-    });
+    // Carica lezioni (per docente carica tutti gli anni)
+    let lezioni = [];
+    if (isDocente) {
+      const [r1, r2] = await Promise.all([
+        api("getOrario",{annualita:"1"}),
+        api("getOrario",{annualita:"2"})
+      ]);
+      lezioni = [...(r1.lezioni||[]), ...(r2.lezioni||[])];
+      lezioni = _filtraLezioniDocente(lezioni);
+    } else {
+      const annualita = _user.annualita || "1";
+      const res = await api("getOrario",{annualita});
+      if (!res.success) { $("pane-orario").innerHTML += `<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
+      lezioni = res.lezioni||[];
+    }
 
-    const oggi = todayISO();
-    let html = Object.keys(perData).sort().map(data => {
-      const isOggi = data === oggi;
-      const ls = perData[data];
-      const label = ls[0] ? `${ls[0].giorno} ${fmtData(data)}` : data;
-      return `<div class="schedule-day">
-        <div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI · </span>':''} ${esc(label)}</div>
-        ${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}">
-          <div class="lesson-time">⏰ ${esc(l.oraInizio)} – ${esc(l.oraFine)}</div>
-          <div class="lesson-uf">${esc(l.uf||"—")}</div>
-          <div class="lesson-meta">
-            ${l.docente?`<span>👤 ${esc(l.docente)}</span>`:''}
-            ${l.aula?`<span>📍 ${esc(l.aula)}</span>`:''}
-            ${l.luogo?`<span>🏢 ${esc(l.luogo)}</span>`:''}
-          </div>
-        </div>`).join("")}
-      </div>`;
-    }).join("");
+    const titolo = isDocente ? "📅 Il mio orario" : "📅 Orario lezioni";
+    const subtitle = isDocente
+      ? `${lezioni.length} lezioni in programma`
+      : `${lezioni.length} lezioni in programma`;
 
-    pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2><p class="text-muted">${lezioni.length} lezioni in programma</p></div>${tabsHtml}${html}`;
+    pane.innerHTML = `<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${subtitle}</p></div>${tabsHtml}` + _renderLezioni(lezioni, tabsHtml);
   } catch(e) {
     pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;
   }
@@ -777,25 +811,17 @@ async function cambiaOrario(ann, btn) {
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
   const pane = $("pane-orario");
-  const currentHeader = pane.querySelector(".page-header");
   const tabs = pane.querySelector(".tab-row");
   const loader = document.createElement("div");
   loader.style.textAlign="center"; loader.style.padding="2rem";
   loader.innerHTML='<div class="spinner"></div>';
-  // rimuovi tutto tranne header e tabs
   while(pane.lastChild !== tabs) pane.removeChild(pane.lastChild);
   pane.appendChild(loader);
   try {
     const res = await api("getOrario",{annualita:ann});
     if (!res.success) { loader.outerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-    const lezioni = res.lezioni||[];
-    const perData = {};
-    lezioni.forEach(l => { const k=l.data||l.giornoFull; if(!perData[k]) perData[k]=[]; perData[k].push(l); });
-    const oggi = todayISO();
-    loader.outerHTML = Object.keys(perData).sort().map(data => {
-      const isOggi=data===oggi, ls=perData[data], label=ls[0]?`${ls[0].giorno} ${fmtData(data)}`:data;
-      return `<div class="schedule-day"><div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI · </span>':''} ${esc(label)}</div>${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}"><div class="lesson-time">⏰ ${esc(l.oraInizio)} – ${esc(l.oraFine)}</div><div class="lesson-uf">${esc(l.uf||"—")}</div><div class="lesson-meta">${l.docente?`<span>👤 ${esc(l.docente)}</span>`:''}${l.aula?`<span>📍 ${esc(l.aula)}</span>`:''}${l.luogo?`<span>🏢 ${esc(l.luogo)}</span>`:''}</div></div>`).join("")}</div>`;
-    }).join("") || '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione per questo anno.</div>';
+    const html = _renderLezioni(res.lezioni||[]);
+    loader.outerHTML = html || '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione per questo anno.</div>';
   } catch(e) {}
 }
 
@@ -929,6 +955,7 @@ async function renderRegistro() {
   // Preseleziona materia se docente con una sola materia e apri subito
   if (preselectMateria) {
     $("reg-materia").value = preselectMateria;
+    $("reg-anno").value = "1"; // default 1° anno per docente
     await apriRegistro();
   }
 }
@@ -938,9 +965,15 @@ async function apriRegistro() {
   const anno = $("reg-anno").value;
   if (!materia) { alert("Seleziona una materia."); return; }
 
+  // Assicura che gli studenti siano caricati
+  await _assicuraStudenti();
+
   let studenti = _studenti;
   if (anno) studenti = studenti.filter(s=>String(s.annualita)===anno);
-  if (!studenti.length) { $("registro-table").innerHTML = `<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuno studente trovato.</div>`; return; }
+  if (!studenti.length) {
+    $("registro-table").innerHTML = `<div class="alert alert-danger">Nessuno studente trovato. Verifica che il foglio <b>1anno</b> o <b>2anno</b> nel Google Sheet database_ITS contenga dati.</div>`;
+    return;
+  }
 
   // Carica voti esistenti per questa materia
   $("registro-table").innerHTML = `<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
