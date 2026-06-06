@@ -1,5 +1,5 @@
 // sw.js – ITSApp Service Worker
-const CACHE_NAME = "itsapp-v1";
+const CACHE_NAME = "itsapp-v2";
 const STATIC_ASSETS = [
   "./",
   "./index.html"
@@ -37,8 +37,8 @@ self.addEventListener("push", e => {
   e.waitUntil(
     self.registration.showNotification(data.title || "ITSApp", {
       body: data.body || "",
-      icon: "./icon-192.png",
-      badge: "./icon-192.png"
+      icon: "./logoITS.png",
+      badge: "./logoITS.png"
     })
   );
 });
