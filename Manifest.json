@@ -3,6 +3,7 @@
   "short_name": "ITSApp",
   "description": "App per studenti, docenti e staff ITS Meccanica e Meccatronica Lombardia",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#070e1c",
   "theme_color": "#0a1628",
@@ -10,13 +11,15 @@
   "icons": [
     {
       "src": "logoITS.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "logoITS.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": ["education", "productivity"]
