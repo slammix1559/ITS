@@ -198,7 +198,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 <!-- ══════ NAVBAR ══════ -->
 <nav id="navbar" class="navbar hide">
   <div class="navbar-brand">
-    <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:120px;width:auto;display:block">
+    <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:38px;width:auto;display:block">
   </div>
   <div class="navbar-actions">
     <div style="position:relative">
@@ -215,7 +215,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 <div id="view-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
-      <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:200px;width:auto;display:block;margin:0 auto 1rem">
+      <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:90px;width:auto;display:block;margin:0 auto 1rem">
       <p>Lombardia — Area Studenti &amp; Staff</p>
     </div>
 
@@ -420,7 +420,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 // ═══════════════════════════════════════════════════
 // CONFIG – sostituisci con l'URL del tuo script deployato
 // ═══════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const API_URL = "https://script.google.com/macros/s/INSERISCI_IL_TUO_URL_QUI/exec";
 
 let _token = localStorage.getItem("its_token") || null;
 let _user  = null;
@@ -1411,14 +1411,42 @@ async function rimuoviDisp(id) {
 // ═══════════════════════════════════════════════════
 // NOTIFICHE
 // ═══════════════════════════════════════════════════
-function avviaNotifiche() {
+async function avviaNotifiche() {
   checkNotifiche();
-  _notifInterval=setInterval(checkNotifiche, 60000);
+  _notifInterval = setInterval(checkNotifiche, 60000);
 
-  // Richiedi permesso notifiche push
-  if ("Notification" in window && Notification.permission==="default") {
-    Notification.requestPermission();
+  // Richiedi permesso e registra dispositivo per push FCM
+  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
+  
+  let perm = Notification.permission;
+  if (perm === "default") {
+    perm = await Notification.requestPermission();
   }
+  if (perm !== "granted") return;
+
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+    // Invia subscription al backend per salvarla
+    await api("registraDevice", { subscription: JSON.stringify(sub), email: _user.email });
+  } catch(e) {
+    console.log("Push subscription non disponibile:", e.message);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
 }
 
 async function checkNotifiche() {
@@ -1434,8 +1462,8 @@ function aggiornaNotifiche(count) {
   if (count>0 && "Notification" in window && Notification.permission==="granted") {
     // Solo se la pagina non è in focus
     if (document.hidden) {
-      new Notification("ITSApp – "+count+" nuova comunicazione"+(count>1?"e":""),{
-        body:"Hai "+count+" comunicazione"+(count>1?"i":"")+" non letta"+(count>1?"e":"")+".",
+      new Notification("ITSApp – "+count+(count>1?" nuove comunicazioni":" nuova comunicazione"),{
+        body:"Hai "+count+(count>1?" comunicazioni non lette.":" comunicazione non letta."),
         icon:"icon-192.png"
       });
     }
