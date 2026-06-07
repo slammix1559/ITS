@@ -11,9 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap">
-
 <style>
-/* ═══════════════════ VARIABILI & RESET ═══════════════════ */
 :root {
   --bg: #070e1c;
   --surface: #0d1a2e;
@@ -34,10 +32,8 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;padding-top:env(safe-area-inset-top);overflow-x:hidden}
-
 body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
 body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:400px;height:400px;background:radial-gradient(circle,rgba(245,158,11,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
-
 .hide{display:none!important}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem;position:relative;z-index:1}
 .card-sm{padding:.875rem}
@@ -95,43 +91,27 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .chip-group{display:flex;flex-wrap:wrap;gap:.5rem}
 .chip{border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.8rem;padding:.35rem .75rem;transition:all .15s;color:var(--muted);background:transparent}
 .chip.selected{background:var(--accent);border-color:var(--accent);color:#fff}
-
-/* ═══════════════════ NAVBAR ═══════════════════ */
 .navbar{align-items:center;background:rgba(7,14,28,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;padding:.75rem 1rem;position:sticky;top:0;z-index:100}
 .navbar-brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--text)}
-.navbar-brand .logo-mark{background:linear-gradient(135deg,var(--accent),var(--gold));border-radius:8px;color:#fff;font-size:.75rem;font-weight:800;padding:.3rem .45rem;letter-spacing:-.01em}
 .navbar-actions{display:flex;gap:.5rem;align-items:center}
 .notif-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:var(--danger);border-radius:50%;border:2px solid var(--bg)}
-.user-chip{align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;gap:.5rem;font-size:.78rem;max-width:160px;overflow:hidden;padding:.35rem .6rem;white-space:nowrap;text-overflow:ellipsis}
-.role-badge{font-size:.6rem;font-weight:700;padding:.1rem .35rem;border-radius:4px;text-transform:uppercase;letter-spacing:.05em}
 .role-COORDINATORE{background:rgba(245,158,11,.2);color:#fbbf24}
 .role-TUTOR{background:rgba(16,185,129,.2);color:#34d399}
 .role-DOCENTE{background:rgba(139,92,246,.2);color:#a78bfa}
 .role-STUDENTE{background:rgba(59,130,246,.2);color:var(--accent2)}
-
-/* ═══════════════════ LOGIN ═══════════════════ */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;z-index:1}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:420px;padding:2rem 2rem 2.5rem;width:100%}
 .login-logo{text-align:center;margin-bottom:1.5rem}
-.login-logo .logo-big{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent),var(--gold));border-radius:16px;color:#fff;font-family:var(--font-head);font-size:1.5rem;font-weight:800;height:64px;width:64px;margin-bottom:.75rem}
-.login-logo h2{font-size:1.1rem;font-weight:700;margin-bottom:.2rem}
-.login-logo p{color:var(--muted);font-size:.82rem}
-
-/* ═══════════════════ MAIN LAYOUT ═══════════════════ */
 .main{max-width:720px;margin:0 auto;padding:1.25rem 1rem 6rem}
 .page-header{margin-bottom:1.25rem}
 .page-header h2{font-size:1.3rem;margin-bottom:.2rem}
 .page-header p{color:var(--muted);font-size:.85rem}
 .section-title{font-family:var(--font-head);font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem}
-
-/* ═══════════════════ BOTTOM NAV ═══════════════════ */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(7,14,28,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom));z-index:100}
 .bnav-item{align-items:center;background:none;border:none;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;font-family:var(--font-body);font-size:.6rem;font-weight:500;gap:3px;padding:.35rem .5rem;border-radius:8px;transition:all .18s;position:relative}
 .bnav-item.active{color:var(--accent)}
 .bnav-item .bicon{font-size:1.2rem;line-height:1}
 .bnav-dot{position:absolute;top:0;right:4px;width:8px;height:8px;background:var(--danger);border-radius:50%;border:2px solid var(--bg)}
-
-/* ═══════════════════ ORARIO ═══════════════════ */
 .schedule-day{margin-bottom:1.25rem}
 .day-label{font-family:var(--font-head);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
 .day-label::after{content:'';flex:1;height:1px;background:var(--border)}
@@ -140,9 +120,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .lesson-time{font-size:.75rem;color:var(--muted);margin-bottom:.2rem}
 .lesson-uf{font-weight:600;font-size:.9rem;margin-bottom:.15rem}
 .lesson-meta{font-size:.75rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:.5rem}
-
-/* ═══════════════════ VOTI ═══════════════════ */
-.voto-num{font-family:var(--font-head);font-size:1.4rem;font-weight:800}
 .voto-30{color:#10b981}.voto-high{color:#60a5fa}.voto-mid{color:#f59e0b}.voto-low{color:#ef4444}
 .materia-block{margin-bottom:1rem}
 .materia-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
@@ -154,49 +131,38 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .voto-pill .v-date{font-size:.62rem;color:var(--muted)}
 .voto-pill .v-del{font-size:.65rem;color:var(--muted);cursor:pointer;margin-top:2px}
 .voto-pill .v-del:hover{color:var(--danger)}
-
-/* ═══════════════════ PRESENZE ═══════════════════ */
 .presence-row{align-items:center;display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
 .presence-row:last-child{border-bottom:none}
 .tipo-badge{border-radius:6px;font-size:.7rem;font-weight:700;padding:.2rem .5rem;text-transform:uppercase;min-width:62px;text-align:center}
 .tipo-PRESENZA{background:rgba(16,185,129,.15);color:#34d399}
 .tipo-ASSENZA{background:rgba(239,68,68,.15);color:#f87171}
 .tipo-RITARDO{background:rgba(245,158,11,.15);color:#fbbf24}
-
-/* ═══════════════════ COMUNICAZIONI ═══════════════════ */
 .comm-card{border-radius:12px;border:1px solid var(--border);background:var(--surface);padding:1rem;margin-bottom:.6rem;cursor:pointer;transition:all .18s}
 .comm-card:hover{border-color:rgba(59,130,246,.3)}
 .comm-card.unread{border-left:3px solid var(--accent)}
 .comm-title{font-weight:600;font-size:.95rem;margin-bottom:.25rem}
 .comm-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.75rem;flex-wrap:wrap}
-.comm-dest{font-size:.7rem}
 .comm-preview{font-size:.82rem;color:var(--muted);margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-
-/* ═══════════════════ DISPONIBILITÀ ═══════════════════ */
 .disp-card{background:var(--surface2);border-radius:10px;padding:.85rem 1rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem}
 .disp-date{font-family:var(--font-head);font-weight:700;min-width:90px}
 .disp-time{font-size:.82rem;color:var(--muted)}
 .disp-note{font-size:.78rem;color:var(--muted);font-style:italic}
-
-/* ═══════════════════ RESPONSIVE ═══════════════════ */
 @media(max-width:420px){
   .grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}
   .stat-val{font-size:1.5rem}
   .navbar-brand span{display:none}
   .main{padding:1rem .875rem 5.5rem}
 }
-
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- ══════ FIREBASE SDK (compat, funziona senza bundler) ══════ -->
+<!-- ══════ FIREBASE SDK ══════ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script>
-// Inizializzazione Firebase — deve stare PRIMA del resto del codice
 firebase.initializeApp({
   apiKey:            "AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",
   authDomain:        "its-lombardia-meccatronica.firebaseapp.com",
@@ -230,7 +196,6 @@ firebase.initializeApp({
       <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:180px;width:auto;display:block;margin:0 auto 1rem">
       <p>Lombardia — Area Studenti &amp; Staff</p>
     </div>
-
     <div id="form-login">
       <div class="form-group">
         <label>Email istituzionale</label>
@@ -248,19 +213,14 @@ firebase.initializeApp({
       <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.75rem">Primo accesso? Usa la password predefinita comunicata dalla scuola.</p>
       <div id="login-loader" class="hide" style="text-align:center;margin-top:.75rem"><div class="spinner"></div></div>
     </div>
-
     <div id="form-reset1" class="hide">
       <h3 style="margin-bottom:.5rem">Recupero password</h3>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Riceverai un codice OTP valido 15 minuti.</p>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="reset-email" placeholder="La tua email">
-      </div>
+      <div class="form-group"><label>Email</label><input type="email" id="reset-email" placeholder="La tua email"></div>
       <div id="reset1-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:.5rem" onclick="inviaOTP()">Invia codice</button>
       <button class="btn btn-outline" style="width:100%" onclick="showLogin()">← Torna al login</button>
     </div>
-
     <div id="form-reset2" class="hide">
       <h3 style="margin-bottom:.5rem">Inserisci il codice</h3>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Codice inviato a: <b id="reset-email-show"></b></p>
@@ -284,7 +244,6 @@ firebase.initializeApp({
         <div id="dash-ruolo-badge"></div>
       </div>
     </div>
-
     <div id="pane-home" class="fade-in"></div>
     <div id="pane-orario" class="fade-in hide"></div>
     <div id="pane-voti" class="fade-in hide"></div>
@@ -297,7 +256,7 @@ firebase.initializeApp({
 <!-- ══════ BOTTOM NAV ══════ -->
 <nav id="bottom-nav" class="bottom-nav hide"></nav>
 
-<!-- ══════ MODAL password ══════ -->
+<!-- ══════ MODALI ══════ -->
 <div id="modal-pwd" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -312,8 +271,6 @@ firebase.initializeApp({
     <button class="btn btn-primary" style="width:100%" onclick="cambiaPwd()">Salva</button>
   </div>
 </div>
-
-<!-- ══════ MODAL comunicazione ══════ -->
 <div id="modal-nuova-comm" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -337,34 +294,21 @@ firebase.initializeApp({
     <button class="btn btn-primary" style="width:100%" onclick="inviaComunicazione()">Pubblica</button>
   </div>
 </div>
-
-<!-- ══════ MODAL voto ══════ -->
 <div id="modal-voto" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
       <h4 id="modal-voto-title">Inserisci voto</h4>
       <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-voto')">✕</button>
     </div>
-    <div id="voto-form-studente" class="form-group hide">
-      <label>Studente</label>
-      <select id="voto-studente"></select>
-    </div>
-    <div class="form-group">
-      <label>Materia</label>
-      <select id="voto-materia"></select>
-    </div>
-    <div class="form-group">
-      <label>Voto (0–30)</label>
-      <input type="number" id="voto-val" min="0" max="30" step="0.5" placeholder="Es. 27">
-    </div>
+    <div id="voto-form-studente" class="form-group hide"><label>Studente</label><select id="voto-studente"></select></div>
+    <div class="form-group"><label>Materia</label><select id="voto-materia"></select></div>
+    <div class="form-group"><label>Voto (0–30)</label><input type="number" id="voto-val" min="0" max="30" step="0.5" placeholder="Es. 27"></div>
     <div class="form-group"><label>Note (opzionale)</label><input type="text" id="voto-note" placeholder="Osservazioni"></div>
     <input type="hidden" id="voto-edit-id">
     <div id="voto-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
     <button class="btn btn-primary" style="width:100%" onclick="salvaVoto()">Salva voto</button>
   </div>
 </div>
-
-<!-- ══════ MODAL presenza ══════ -->
 <div id="modal-presenza" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -388,8 +332,6 @@ firebase.initializeApp({
     <button class="btn btn-primary" style="width:100%" onclick="salvaPresenza()">Salva</button>
   </div>
 </div>
-
-<!-- ══════ MODAL disponibilità ══════ -->
 <div id="modal-disp" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -407,8 +349,6 @@ firebase.initializeApp({
     <button class="btn btn-primary" style="width:100%" onclick="salvaDisponibilita()">Conferma disponibilità</button>
   </div>
 </div>
-
-<!-- ══════ MODAL dettaglio comunicazione ══════ -->
 <div id="modal-comm-detail" class="modal-overlay hide">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
@@ -422,9 +362,6 @@ firebase.initializeApp({
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
 const VAPID_PUBLIC_KEY = "BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
 
@@ -435,36 +372,27 @@ let _studenti = [];
 let _materieDocente = [];
 let _notifInterval = null;
 let _currentPane = "home";
-let _fcmMessaging = null; // istanza Firebase Messaging
+let _fcmMessaging = null;
 
-// ═══════════════════════════════════════════════════
-// API
-// ═══════════════════════════════════════════════════
 async function api(action, payload) {
   let r;
   try {
     r = await fetch(API_URL, {
-      method: 'POST',
-      redirect: 'follow',
+      method: 'POST', redirect: 'follow',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action, payload: payload||{}, token: _token||'' })
     });
-  } catch(e) { throw new Error("Impossibile raggiungere il server. Controlla la connessione."); }
+  } catch(e) { throw new Error("Impossibile raggiungere il server."); }
   let d;
   try { d = await r.json(); } catch(e) { throw new Error("Risposta server non valida."); }
   if (d && d.code === "AUTH") { doLogout(); throw new Error(d.error||"Sessione scaduta."); }
   return d;
 }
 
-// ═══════════════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════════════
 const $  = id => document.getElementById(id);
 const sh = id => $(id).classList.remove("hide");
 const hd = id => $(id).classList.add("hide");
-function esc(s) {
-  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-}
+function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function showErr(id, msg) { const el=$(id); el.textContent=msg; el.classList.remove("hide"); }
 function hideErr(id) { hd(id); }
 function openModal(id) { sh(id); }
@@ -476,47 +404,29 @@ function fmtData(iso) {
 }
 function todayISO() { return new Date().toISOString().split("T")[0]; }
 function votoClass(v) {
-  if (v===30) return "voto-30";
-  if (v>=27)  return "voto-high";
-  if (v>=21)  return "voto-mid";
-  return "voto-low";
+  if (v===30) return "voto-30"; if (v>=27) return "voto-high";
+  if (v>=21) return "voto-mid"; return "voto-low";
 }
-function ruoloLabel(r) {
-  return {COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente"}[r]||r;
-}
+function ruoloLabel(r) { return {COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente"}[r]||r; }
 
-// ═══════════════════════════════════════════════════
-// AUTH
-// ═══════════════════════════════════════════════════
-function showLogin() {
-  hd("form-reset1"); hd("form-reset2");
-  sh("form-login");
-}
-function showReset() {
-  hd("form-login"); hd("form-reset2");
-  sh("form-reset1");
-  $("reset-email").value = $("in-email").value || "";
-}
+function showLogin() { hd("form-reset1"); hd("form-reset2"); sh("form-login"); }
+function showReset() { hd("form-login"); hd("form-reset2"); sh("form-reset1"); $("reset-email").value = $("in-email").value || ""; }
+
 async function doLogin() {
   hideErr("login-err");
-  const email = $("in-email").value.trim();
-  const pwd   = $("in-pwd").value;
+  const email = $("in-email").value.trim(), pwd = $("in-pwd").value;
   if (!email || !pwd) return showErr("login-err","Inserisci email e password.");
   $("btn-login").disabled = true; sh("login-loader");
   try {
     const res = await api("login",{email,password:pwd});
     hd("login-loader"); $("btn-login").disabled=false;
     if (!res.success) return showErr("login-err",res.message||"Errore login.");
-    _token = res.sessionToken;
-    _user  = res.user;
+    _token = res.sessionToken; _user = res.user;
     localStorage.setItem("its_token",_token);
     localStorage.setItem("its_user",JSON.stringify(_user));
     if (res.isFirstAccess) setTimeout(()=>alert("Primo accesso! Ti consigliamo di cambiare la password dal pulsante 🔑 in alto."),500);
     avviaDashboard();
-  } catch(e) {
-    hd("login-loader"); $("btn-login").disabled=false;
-    showErr("login-err",e.message);
-  }
+  } catch(e) { hd("login-loader"); $("btn-login").disabled=false; showErr("login-err",e.message); }
 }
 async function inviaOTP() {
   const email = $("reset-email").value.trim();
@@ -527,19 +437,16 @@ async function inviaOTP() {
   hd("form-reset1"); sh("form-reset2");
 }
 async function confermaOTP() {
-  const email = $("reset-email").value.trim();
-  const codice= $("reset-otp").value.trim();
-  const p1    = $("reset-p1").value;
-  const p2    = $("reset-p2").value;
+  const email=$("reset-email").value.trim(), codice=$("reset-otp").value.trim();
+  const p1=$("reset-p1").value, p2=$("reset-p2").value;
   if (codice.length!==6) return showErr("reset2-err","Codice a 6 cifre.");
-  if (p1.length<6)       return showErr("reset2-err","Password min. 6 caratteri.");
-  if (p1!==p2)           return showErr("reset2-err","Le password non coincidono.");
+  if (p1.length<6) return showErr("reset2-err","Password min. 6 caratteri.");
+  if (p1!==p2) return showErr("reset2-err","Le password non coincidono.");
   hideErr("reset2-err");
   const res = await api("confermaOTP",{email,codice,newPwd:p1});
   if (!res.success) return showErr("reset2-err",res.message);
   alert("Password aggiornata! Effettua il login.");
-  $("in-email").value = email;
-  showLogin();
+  $("in-email").value = email; showLogin();
 }
 function doLogout() {
   if (_token) api("logout",{}).catch(()=>{});
@@ -550,57 +457,37 @@ function doLogout() {
   sh("view-login"); showLogin();
 }
 async function cambiaPwd() {
-  const o = $("pwd-old").value, n1=$("pwd-new").value, n2=$("pwd-new2").value;
+  const o=$("pwd-old").value, n1=$("pwd-new").value, n2=$("pwd-new2").value;
   hideErr("pwd-err"); hd("pwd-ok");
   if (n1.length<6) return showErr("pwd-err","Min 6 caratteri.");
   if (n1!==n2) return showErr("pwd-err","Le password non coincidono.");
   const res = await api("changePassword",{oldPwd:o,newPwd:n1});
   if (!res.success) return showErr("pwd-err",res.message);
-  sh("pwd-ok");
-  setTimeout(()=>chiudiModal("modal-pwd"),1200);
+  sh("pwd-ok"); setTimeout(()=>chiudiModal("modal-pwd"),1200);
 }
 function apriModalePwd() {
   $("pwd-old").value=$("pwd-new").value=$("pwd-new2").value="";
-  hideErr("pwd-err"); hd("pwd-ok");
-  openModal("modal-pwd");
+  hideErr("pwd-err"); hd("pwd-ok"); openModal("modal-pwd");
 }
 
-// ═══════════════════════════════════════════════════
-// DASHBOARD INIT
-// ═══════════════════════════════════════════════════
 async function avviaDashboard() {
   hd("view-login"); sh("view-dashboard"); sh("navbar"); sh("bottom-nav");
   $("dash-nome").textContent = _user.displayName || _user.email;
   $("dash-ruolo-badge").innerHTML = `<span class="badge role-${_user.ruolo}">${ruoloLabel(_user.ruolo)}</span>`;
-  buildBottomNav();
-  switchPane("home");
-  avviaNotifiche();
+  buildBottomNav(); switchPane("home"); avviaNotifiche();
 }
 
 function buildBottomNav() {
   const r = _user.ruolo;
   const items = [{ id:"home", icon:"🏠", label:"Home" }];
   if (r==="STUDENTE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"});
-    items.push({id:"voti",icon:"📊",label:"Voti"});
-    items.push({id:"presenze",icon:"✅",label:"Presenze"});
-    items.push({id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
+    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
   } else if (r==="COORDINATORE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"});
-    items.push({id:"voti",icon:"📊",label:"Voti"});
-    items.push({id:"presenze",icon:"✅",label:"Presenze"});
-    items.push({id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
-    items.push({id:"disponibilita",icon:"📆",label:"Disponib."});
+    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true},{id:"disponibilita",icon:"📆",label:"Disponib."});
   } else if (r==="TUTOR") {
-    items.push({id:"orario",icon:"📅",label:"Orario"});
-    items.push({id:"voti",icon:"📊",label:"Voti"});
-    items.push({id:"presenze",icon:"✅",label:"Presenze"});
-    items.push({id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
-    items.push({id:"disponibilita",icon:"📆",label:"Mia Disp."});
+    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true},{id:"disponibilita",icon:"📆",label:"Mia Disp."});
   } else if (r==="DOCENTE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"});
-    items.push({id:"voti",icon:"📊",label:"Voti"});
-    items.push({id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
+    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
   }
   $("bottom-nav").innerHTML = items.map(it =>
     `<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}">
@@ -612,13 +499,9 @@ function buildBottomNav() {
 
 function switchPane(name) {
   ["home","orario","voti","presenze","comunicazioni","disponibilita"].forEach(p => {
-    hd("pane-"+p);
-    const b = $("bnav-"+p);
-    if (b) b.classList.remove("active");
+    hd("pane-"+p); const b=$("bnav-"+p); if(b) b.classList.remove("active");
   });
-  sh("pane-"+name);
-  const b = $("bnav-"+name);
-  if (b) b.classList.add("active");
+  sh("pane-"+name); const b=$("bnav-"+name); if(b) b.classList.add("active");
   _currentPane = name;
   if (name==="home") renderHome();
   else if (name==="orario") renderOrario();
@@ -628,57 +511,41 @@ function switchPane(name) {
   else if (name==="disponibilita") renderDisponibilita();
 }
 
-// ═══════════════════════════════════════════════════
-// HOME
-// ═══════════════════════════════════════════════════
 async function renderHome() {
   const pane = $("pane-home");
   pane.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   try {
     const res = await api("getDashboard",{});
-    if (!res.success) { pane.innerHTML = `<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-    const r = _user.ruolo;
-    let html = "";
-
-    if (r === "STUDENTE") {
-      const s = res.stats||{};
-      html += `<div class="section-title">Le tue statistiche</div>
+    if (!res.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+    const r = _user.ruolo; let html = "";
+    if (r==="STUDENTE") {
+      const s=res.stats||{};
+      html+=`<div class="section-title">Le tue statistiche</div>
       <div class="grid-2" style="margin-bottom:1.25rem">
-        <div class="stat-card">
-          <div class="stat-val text-accent">${s.percPresenza||0}%</div>
-          <div class="stat-lbl">Presenze</div>
+        <div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div>
           <div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div>
           <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-val text-danger">${s.oreAssenza||0}</div>
-          <div class="stat-lbl">Ore assenza</div>
+        <div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div>
           <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Ritardi: ${s.oreRitardo||0}h</div>
         </div>
       </div>
       <div class="grid-2">
-        <div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')">
-          <div class="stat-val text-accent">${res.votiCount||0}</div>
-          <div class="stat-lbl">Voti inseriti</div>
-        </div>
-        <div class="stat-card" style="cursor:pointer;position:relative" onclick="switchPane('comunicazioni')">
+        <div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti inseriti</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')">
           <div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div>
           <div class="stat-lbl">Comunicazioni non lette</div>
         </div>
       </div>`;
     }
-
-    if (r === "COORDINATORE") {
-      const s = res.stats||{};
-      html += `<div class="section-title">Panoramica</div>
+    if (r==="COORDINATORE") {
+      const s=res.stats||{};
+      html+=`<div class="section-title">Panoramica</div>
       <div class="grid-2" style="margin-bottom:1.25rem">
         <div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div>
         <div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div>
         <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita')">
-          <div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div>
-          <div class="stat-lbl">Disponibilità tutor</div>
-        </div>
+        <div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilità tutor</div></div>
       </div>
       <div class="section-title">Accesso rapido</div>
       <div class="grid-2">
@@ -688,10 +555,9 @@ async function renderHome() {
         <button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita')">📆 Calendario tutor</button>
       </div>`;
     }
-
-    if (r === "TUTOR") {
-      const s = res.stats||{};
-      html += `<div class="section-title">Panoramica</div>
+    if (r==="TUTOR") {
+      const s=res.stats||{};
+      html+=`<div class="section-title">Panoramica</div>
       <div class="grid-2" style="margin-bottom:1.25rem">
         <div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div>
         <div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Mie disponibilità</div></div>
@@ -704,10 +570,9 @@ async function renderHome() {
         <button class="btn btn-outline" onclick="switchPane('comunicazioni')">📢 Bacheca</button>
       </div>`;
     }
-
-    if (r === "DOCENTE") {
-      const materie = res.materie||[];
-      html += `<div class="section-title">Le tue materie</div>
+    if (r==="DOCENTE") {
+      const materie=res.materie||[];
+      html+=`<div class="section-title">Le tue materie</div>
       <div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div>
       <div class="section-title">Accesso rapido</div>
       <div class="grid-2">
@@ -715,42 +580,28 @@ async function renderHome() {
         <button class="btn btn-outline" onclick="switchPane('comunicazioni')">📢 Bacheca</button>
       </div>`;
     }
-
     pane.innerHTML = html;
-  } catch(e) {
-    pane.innerHTML = `<div class="alert alert-danger">${esc(e.message)}</div>`;
-  }
+  } catch(e) { pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`; }
 }
 
-// ═══════════════════════════════════════════════════
-// ORARIO
-// ═══════════════════════════════════════════════════
 function _filtraLezioniDocente(lezioni) {
-  if (_user.ruolo !== "DOCENTE") return lezioni;
-  const cognome = (_user.cognome||"").toLowerCase().trim();
-  const nome    = (_user.nome||"").toLowerCase().trim();
+  if (_user.ruolo!=="DOCENTE") return lezioni;
+  const cognome=(_user.cognome||"").toLowerCase().trim(), nome=(_user.nome||"").toLowerCase().trim();
   return lezioni.filter(l => {
-    const doc = (l.docente||"").toLowerCase();
+    const doc=(l.docente||"").toLowerCase();
     if (!doc) return false;
     if (cognome && doc.includes(cognome)) return true;
     if (nome && cognome && doc.includes(nome) && doc.includes(cognome)) return true;
     return false;
   });
 }
-
-function _renderLezioni(lezioni, tabsHtml) {
-  const oggi = todayISO();
-  const perData = {};
-  lezioni.forEach(l => {
-    const key = l.data || l.giornoFull;
-    if (!perData[key]) perData[key] = [];
-    perData[key].push(l);
-  });
+function _renderLezioni(lezioni) {
+  const oggi=todayISO(), perData={};
+  lezioni.forEach(l => { const key=l.data||l.giornoFull; if(!perData[key]) perData[key]=[]; perData[key].push(l); });
   if (!Object.keys(perData).length) return '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>';
   return Object.keys(perData).sort().map(data => {
-    const isOggi = data === oggi;
-    const ls = perData[data];
-    const label = ls[0] ? `${ls[0].giorno} ${fmtData(data)}` : data;
+    const isOggi=data===oggi, ls=perData[data];
+    const label=ls[0]?`${ls[0].giorno} ${fmtData(data)}`:data;
     return `<div class="schedule-day">
       <div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI · </span>':''} ${esc(label)}</div>
       ${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}">
@@ -765,500 +616,290 @@ function _renderLezioni(lezioni, tabsHtml) {
     </div>`;
   }).join("");
 }
-
 async function renderOrario() {
-  const pane = $("pane-orario");
-  pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const pane=$("pane-orario");
+  pane.innerHTML=`<div class="page-header"><h2>📅 Orario lezioni</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   try {
-    const r = _user.ruolo;
-    const isDocente = r === "DOCENTE";
-
-    let tabsHtml = "";
+    const r=_user.ruolo, isDocente=r==="DOCENTE";
+    let tabsHtml="";
     if (!isDocente && ["COORDINATORE","TUTOR"].includes(r)) {
-      tabsHtml = `<div class="tab-row" style="margin-bottom:1rem">
-        <button class="tab-btn active" id="tab-orario-1" onclick="cambiaOrario('1',this)">1° Anno</button>
-        <button class="tab-btn" id="tab-orario-2" onclick="cambiaOrario('2',this)">2° Anno</button>
+      tabsHtml=`<div class="tab-row" style="margin-bottom:1rem">
+        <button class="tab-btn active" onclick="cambiaOrario('1',this)">1° Anno</button>
+        <button class="tab-btn" onclick="cambiaOrario('2',this)">2° Anno</button>
       </div>`;
     }
-
-    let lezioni = [];
+    let lezioni=[];
     if (isDocente) {
-      const [r1, r2] = await Promise.all([
-        api("getOrario",{annualita:"1"}),
-        api("getOrario",{annualita:"2"})
-      ]);
-      lezioni = [...(r1.lezioni||[]), ...(r2.lezioni||[])];
-      lezioni = _filtraLezioniDocente(lezioni);
+      const [r1,r2]=await Promise.all([api("getOrario",{annualita:"1"}),api("getOrario",{annualita:"2"})]);
+      lezioni=[...(r1.lezioni||[]),...(r2.lezioni||[])];
+      lezioni=_filtraLezioniDocente(lezioni);
     } else {
-      const annualita = _user.annualita || "1";
-      const res = await api("getOrario",{annualita});
-      if (!res.success) { $("pane-orario").innerHTML += `<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-      lezioni = res.lezioni||[];
+      const annualita=_user.annualita||"1";
+      const res=await api("getOrario",{annualita});
+      if (!res.success) { pane.innerHTML+=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
+      lezioni=res.lezioni||[];
     }
-
-    const titolo = isDocente ? "📅 Il mio orario" : "📅 Orario lezioni";
-    pane.innerHTML = `<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${lezioni.length} lezioni in programma</p></div>${tabsHtml}` + _renderLezioni(lezioni, tabsHtml);
-  } catch(e) {
-    pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;
-  }
+    const titolo=isDocente?"📅 Il mio orario":"📅 Orario lezioni";
+    pane.innerHTML=`<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${lezioni.length} lezioni in programma</p></div>${tabsHtml}`+_renderLezioni(lezioni);
+  } catch(e) { pane.innerHTML=`<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`; }
 }
-
 async function cambiaOrario(ann, btn) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  const pane = $("pane-orario");
-  const tabs = pane.querySelector(".tab-row");
-  const loader = document.createElement("div");
-  loader.style.textAlign="center"; loader.style.padding="2rem";
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
+  const pane=$("pane-orario"), tabs=pane.querySelector(".tab-row");
+  const loader=document.createElement("div"); loader.style.textAlign="center"; loader.style.padding="2rem";
   loader.innerHTML='<div class="spinner"></div>';
-  while(pane.lastChild !== tabs) pane.removeChild(pane.lastChild);
+  while(pane.lastChild!==tabs) pane.removeChild(pane.lastChild);
   pane.appendChild(loader);
   try {
-    const res = await api("getOrario",{annualita:ann});
+    const res=await api("getOrario",{annualita:ann});
     if (!res.success) { loader.outerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-    const html = _renderLezioni(res.lezioni||[]);
-    loader.outerHTML = html || '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione per questo anno.</div>';
+    loader.outerHTML=_renderLezioni(res.lezioni||[])||'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione.</div>';
   } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════
-// VOTI
-// ═══════════════════════════════════════════════════
-let _votiData = null;
-let _selectedStudenteVoti = null;
-let _materieList = [];
-
-async function _assicuraStudenti() {
-  if (!_studenti.length) {
-    const sr = await api("getStudenti",{});
-    _studenti = sr.studenti||[];
-  }
-}
-
+let _votiData=null, _selectedStudenteVoti=null, _materieList=[];
+async function _assicuraStudenti() { if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; } }
 async function _assicuraMaterie() {
   if (_materieList.length) return;
-  const dr = await api("getDocenti",{});
-  const tuttiDoc = dr.docenti||[];
-  if (_user.ruolo==="DOCENTE") {
-    _materieList = tuttiDoc
-      .filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase())
-      .map(d=>d.materia).filter(m=>m);
-  }
-  if (!_materieList.length) {
-    _materieList = [...new Set(tuttiDoc.map(d=>d.materia)
-      .filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
-  }
+  const dr=await api("getDocenti",{}); const tuttiDoc=dr.docenti||[];
+  if (_user.ruolo==="DOCENTE") { _materieList=tuttiDoc.filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase()).map(d=>d.materia).filter(m=>m); }
+  if (!_materieList.length) { _materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))]; }
 }
-
 async function renderVoti() {
-  const pane = $("pane-voti");
-  const r = _user.ruolo;
-
-  if (r === "STUDENTE") {
-    pane.innerHTML = `<div class="page-header"><h2>📊 I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-    await caricaVotiStudente();
-    return;
-  }
-
-  if (r === "TUTOR") {
-    pane.innerHTML = `<div class="page-header"><h2>📊 Voti studenti</h2></div>
-      <div class="form-group" style="margin-bottom:1rem">
-        <label>Studente</label>
-        <select id="sel-studente-voti" onchange="cambiaStudenteVoti(this.value)">
-          <option value="">-- Seleziona studente --</option>
-        </select>
-      </div>
-      <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>`;
+  const pane=$("pane-voti"), r=_user.ruolo;
+  if (r==="STUDENTE") { pane.innerHTML=`<div class="page-header"><h2>📊 I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`; await caricaVotiStudente(); return; }
+  if (r==="TUTOR") {
+    pane.innerHTML=`<div class="page-header"><h2>📊 Voti studenti</h2></div>
+      <div class="form-group" style="margin-bottom:1rem"><label>Studente</label>
+        <select id="sel-studente-voti" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select>
+      </div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>`;
     await _assicuraStudenti();
-    const sel = $("sel-studente-voti");
+    const sel=$("sel-studente-voti");
     _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
     return;
   }
-
-  pane.innerHTML = `<div class="page-header"><h2>📊 Registro voti</h2></div>
+  pane.innerHTML=`<div class="page-header"><h2>📊 Registro voti</h2></div>
     <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
       <button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">📝 Inserisci voti</button>
       <button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">🔍 Consulta</button>
     </div>
     <div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
     <div id="voti-consulta-pane" class="hide">
-      <div class="form-group">
-        <label>Studente</label>
-        <select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)">
-          <option value="">-- Seleziona studente --</option>
-        </select>
+      <div class="form-group"><label>Studente</label>
+        <select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select>
       </div>
       <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>
     </div>`;
-
-  await _assicuraStudenti();
-  await _assicuraMaterie();
-  await renderRegistro();
+  await _assicuraStudenti(); await _assicuraMaterie(); await renderRegistro();
 }
-
 function switchVotiTab(tab, btn) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  if (tab==="registro") {
-    sh("voti-registro-pane"); hd("voti-consulta-pane");
-  } else {
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
+  if (tab==="registro") { sh("voti-registro-pane"); hd("voti-consulta-pane"); }
+  else {
     hd("voti-registro-pane"); sh("voti-consulta-pane");
-    const sel = $("sel-studente-consulta");
-    if (sel && sel.options.length <= 1) {
-      _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
-    }
+    const sel=$("sel-studente-consulta");
+    if (sel&&sel.options.length<=1) _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
   }
 }
-
 async function renderRegistro() {
-  const pane = $("voti-registro-pane");
-  if (!_materieList.length) {
-    pane.innerHTML = `<div class="alert alert-danger">Nessuna materia trovata. Verifica il foglio docenti.</div>`;
-    return;
-  }
-
-  const materiaOpts = _materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
-  const annoOpts = `<option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option>`;
-  const preselectMateria = (_user.ruolo==="DOCENTE" && _materieList.length===1) ? _materieList[0] : "";
-
-  pane.innerHTML = `
-    <div class="card" style="margin-bottom:1rem">
-      <div class="grid-2" style="gap:.75rem">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Materia</label>
-          <select id="reg-materia">
-            <option value="">-- Seleziona materia --</option>${materiaOpts}
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Anno</label>
-          <select id="reg-anno">${annoOpts}</select>
-        </div>
-      </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button>
+  const pane=$("voti-registro-pane");
+  if (!_materieList.length) { pane.innerHTML=`<div class="alert alert-danger">Nessuna materia trovata.</div>`; return; }
+  const materiaOpts=_materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
+  const preselectMateria=(_user.ruolo==="DOCENTE"&&_materieList.length===1)?_materieList[0]:"";
+  pane.innerHTML=`<div class="card" style="margin-bottom:1rem">
+    <div class="grid-2" style="gap:.75rem">
+      <div class="form-group" style="margin-bottom:0"><label>Materia</label><select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select></div>
+      <div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="reg-anno"><option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option></select></div>
     </div>
-    <div id="registro-table"></div>`;
-
-  if (preselectMateria) {
-    $("reg-materia").value = preselectMateria;
-    $("reg-anno").value = "1";
-    await apriRegistro();
-  }
+    <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button>
+  </div><div id="registro-table"></div>`;
+  if (preselectMateria) { $("reg-materia").value=preselectMateria; $("reg-anno").value="1"; await apriRegistro(); }
 }
-
 async function apriRegistro() {
-  const materia = $("reg-materia").value;
-  const anno = $("reg-anno").value;
+  const materia=$("reg-materia").value, anno=$("reg-anno").value;
   if (!materia) { alert("Seleziona una materia."); return; }
-
   await _assicuraStudenti();
-
-  let studenti = _studenti;
-  if (anno) studenti = studenti.filter(s=>String(s.annualita)===anno);
-  if (!studenti.length) {
-    $("registro-table").innerHTML = `<div class="alert alert-danger">Nessuno studente trovato.</div>`;
-    return;
-  }
-
-  $("registro-table").innerHTML = `<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
-  const res = await api("getVoti",{emailStudente:null});
-  const tuttiVoti = res.success ? (res.voti||[]) : [];
-  const votiMateria = {};
-  tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{
-    const em = String(v.EMAIL_STUDENTE||"").toLowerCase();
-    if (!votiMateria[em]) votiMateria[em]=[];
-    votiMateria[em].push(v);
+  let studenti=_studenti;
+  if (anno) studenti=studenti.filter(s=>String(s.annualita)===anno);
+  if (!studenti.length) { $("registro-table").innerHTML=`<div class="alert alert-danger">Nessuno studente trovato.</div>`; return; }
+  $("registro-table").innerHTML=`<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
+  const res=await api("getVoti",{emailStudente:null});
+  const tuttiVoti=res.success?(res.voti||[]):[];
+  const votiMateria={};
+  tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{ const em=String(v.EMAIL_STUDENTE||"").toLowerCase(); if(!votiMateria[em]) votiMateria[em]=[]; votiMateria[em].push(v); });
+  let html=`<div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div><div class="card" style="padding:.5rem">`;
+  studenti.forEach(s=>{
+    const email=s.email.toLowerCase(), votiSt=votiMateria[email]||[];
+    const media=votiSt.length?Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10:null;
+    const pillsHtml=votiSt.map(v=>`<span class="voto-pill" style="min-width:48px;padding:.3rem .5rem">
+      <span class="v-num ${votoClass(parseFloat(v.VOTO))}">${v.VOTO}</span>
+      <span class="v-date">${_fmtDataIT(v.DATA)}</span>
+      ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.ID}')">🗑</span>`:''}
+    </span>`).join("");
+    html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .5rem;border-bottom:1px solid var(--border)">
+      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.nome)}</div>
+      <div style="font-size:.7rem;color:var(--muted)">${s.annualita}° anno</div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center">${pillsHtml}</div>
+      ${media!==null?`<div style="font-family:var(--font-head);font-weight:800;font-size:.95rem;color:${mediaColor(media)};min-width:38px;text-align:center">${media}</div>`:'<div style="min-width:38px"></div>'}
+      <input type="number" min="0" max="30" step="0.5" placeholder="—" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}"
+        style="width:62px;padding:.4rem .5rem;font-size:.9rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text)">
+    </div>`;
   });
-
-  let html = `
-    <div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div>
-    <div class="card" style="padding:.5rem">`;
-
-  studenti.forEach(s => {
-    const email = s.email.toLowerCase();
-    const votiSt = votiMateria[email]||[];
-    const media = votiSt.length ? Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10 : null;
-    const pillsHtml = votiSt.map(v=>`
-      <span class="voto-pill" style="min-width:48px;padding:.3rem .5rem">
-        <span class="v-num ${votoClass(parseFloat(v.VOTO))}">${v.VOTO}</span>
-        <span class="v-date">${_fmtDataIT(v.DATA)}</span>
-        ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.ID}')">🗑</span>`:''}
-      </span>`).join("");
-
-    html += `
-      <div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .5rem;border-bottom:1px solid var(--border)">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.nome)}</div>
-          <div style="font-size:.7rem;color:var(--muted)">${s.annualita}° anno</div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center">${pillsHtml}</div>
-        ${media!==null?`<div style="font-family:var(--font-head);font-weight:800;font-size:.95rem;color:${mediaColor(media)};min-width:38px;text-align:center">${media}</div>`:'<div style="min-width:38px"></div>'}
-        <input type="number" min="0" max="30" step="0.5" placeholder="—"
-          id="inp-${btoa(email).replace(/=/g,'')}"
-          data-email="${esc(email)}"
-          style="width:62px;padding:.4rem .5rem;font-size:.9rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text)">
-      </div>`;
-  });
-
-  html += `</div>
-    <div style="margin-top:1rem;display:flex;gap:.5rem;align-items:center">
-      <div class="form-group" style="flex:1;margin-bottom:0">
-        <label>Note (per tutti i nuovi voti)</label>
-        <input type="text" id="reg-note-globale" placeholder="Opzionale — es. Verifica scritta">
-      </div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">💾 Salva tutti i voti inseriti</button>
-    <div id="reg-save-msg" style="margin-top:.5rem"></div>`;
-
-  $("registro-table").innerHTML = html;
+  html+=`</div><div style="margin-top:1rem">
+    <div class="form-group" style="margin-bottom:0"><label>Note (per tutti i nuovi voti)</label><input type="text" id="reg-note-globale" placeholder="Opzionale"></div>
+  </div>
+  <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">💾 Salva tutti i voti inseriti</button>
+  <div id="reg-save-msg" style="margin-top:.5rem"></div>`;
+  $("registro-table").innerHTML=html;
 }
-
-function mediaColor(m) {
-  if (m>=28) return "#10b981";
-  if (m>=24) return "#60a5fa";
-  if (m>=18) return "#f59e0b";
-  return "#ef4444";
-}
-
+function mediaColor(m) { if(m>=28) return "#10b981"; if(m>=24) return "#60a5fa"; if(m>=18) return "#f59e0b"; return "#ef4444"; }
 function _fmtDataIT(v) {
   if (!v) return "";
-  const s = v instanceof Date ? v.toISOString().split("T")[0] : String(v);
-  if (s.includes("-") && s.length>=10) { const [y,m,d]=s.split("-"); return d+"/"+m+"/"+y; }
+  const s=v instanceof Date?v.toISOString().split("T")[0]:String(v);
+  if (s.includes("-")&&s.length>=10) { const [y,m,d]=s.split("-"); return d+"/"+m+"/"+y; }
   return s;
 }
-
 async function salvaRegistro(materia) {
-  const note = $("reg-note-globale").value.trim();
-  const inputs = document.querySelectorAll("#registro-table input[data-email]");
-  const daInserire = [];
-  inputs.forEach(inp => {
-    const v = inp.value.trim();
-    if (!v) return;
-    const num = parseFloat(v);
-    if (isNaN(num)||num<0||num>30) return;
-    daInserire.push({ emailStudente: inp.getAttribute("data-email"), materia, voto: num, note });
-  });
+  const note=$("reg-note-globale").value.trim();
+  const inputs=document.querySelectorAll("#registro-table input[data-email]");
+  const daInserire=[];
+  inputs.forEach(inp=>{ const v=inp.value.trim(); if(!v) return; const num=parseFloat(v); if(isNaN(num)||num<0||num>30) return; daInserire.push({emailStudente:inp.getAttribute("data-email"),materia,voto:num,note}); });
   if (!daInserire.length) { $("reg-save-msg").innerHTML=`<div class="alert alert-danger">Nessun voto da salvare.</div>`; return; }
-
   $("reg-save-msg").innerHTML=`<div style="text-align:center"><div class="spinner"></div> Salvataggio ${daInserire.length} voti...</div>`;
-  let ok=0, err=0;
-  for (const d of daInserire) {
-    const res = await api("inserisciVoto", d);
-    if (res.success) ok++; else err++;
-  }
-  $("reg-save-msg").innerHTML = ok>0
-    ? `<div class="alert alert-success">✅ ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`
-    : `<div class="alert alert-danger">Errore nel salvataggio.</div>`;
+  let ok=0,err=0;
+  for (const d of daInserire) { const res=await api("inserisciVoto",d); if(res.success) ok++; else err++; }
+  $("reg-save-msg").innerHTML=ok>0?`<div class="alert alert-success">✅ ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`:`<div class="alert alert-danger">Errore nel salvataggio.</div>`;
   if (ok>0) { inputs.forEach(inp=>{ if(inp.value.trim()) inp.value=""; }); }
-  setTimeout(()=>apriRegistro(), 1500);
+  setTimeout(()=>apriRegistro(),1500);
 }
-
 async function caricaVotiStudente() {
-  $("voti-content").innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res = await api("getVoti",{});
+  $("voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res=await api("getVoti",{});
   if (!res.success) { $("voti-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  const perMateria = res.perMateria||[];
+  const perMateria=res.perMateria||[];
   if (!perMateria.length) { $("voti-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
   let html="";
   perMateria.forEach(m=>{
-    html+=`<div class="materia-block">
-      <div class="materia-header">
-        <div class="materia-name">${esc(m.materia)}</div>
-        <div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div>
-      </div>
-      <div class="voti-list">
-        ${m.voti.map(v=>`<div class="voto-pill">
-          <span class="v-num ${votoClass(v.voto)}">${v.voto}</span>
-          <span class="v-date">${v.data}</span>
-          ${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}
-        </div>`).join("")}
-      </div>
-      <div class="divider"></div>
-    </div>`;
+    html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div>
+    <div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;
   });
   $("voti-content").innerHTML=html;
 }
-
 async function cambiaStudenteVoti(email) {
-  _selectedStudenteVoti = email||null;
-  const cont = $("voti-content");
+  _selectedStudenteVoti=email||null;
+  const cont=$("voti-content");
   if (!email) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
   if(cont) cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res = await api("getVoti",{emailStudente:email});
+  const res=await api("getVoti",{emailStudente:email});
   if (!res.success) { if(cont) cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  const perMateria = res.perMateria||[];
+  const perMateria=res.perMateria||[];
   if (!perMateria.length) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
   let html="";
   perMateria.forEach(m=>{
-    html+=`<div class="materia-block">
-      <div class="materia-header">
-        <div class="materia-name">${esc(m.materia)}</div>
-        <div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div>
-      </div>
-      <div class="voti-list">
-        ${m.voti.map(v=>`<div class="voto-pill">
-          <span class="v-num ${votoClass(v.voto)}">${v.voto}</span>
-          <span class="v-date">${v.data}</span>
-          ${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}
-          ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id||v.ID}')">🗑</span>`:''}
-        </div>`).join("")}
-      </div>
-      <div class="divider"></div>
-    </div>`;
+    html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div>
+    <div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''
+    }${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id||v.ID}')">🗑</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;
   });
   if(cont) cont.innerHTML=html;
 }
-
-async function caricaVoti(emailStudente) { await cambiaStudenteVoti(emailStudente); }
+async function caricaVoti(e) { await cambiaStudenteVoti(e); }
 async function apriInserisciVoto() { switchPane("voti"); }
-
 async function eliminaVotoById(id) {
   if (!confirm("Eliminare questo voto?")) return;
-  const res = await api("eliminaVoto",{id});
-  if (res.success) {
-    if ($("voti-registro-pane") && !$("voti-registro-pane").classList.contains("hide")) apriRegistro();
-    else cambiaStudenteVoti(_selectedStudenteVoti);
-  } else alert(res.message);
+  const res=await api("eliminaVoto",{id});
+  if (res.success) { if($("voti-registro-pane")&&!$("voti-registro-pane").classList.contains("hide")) apriRegistro(); else cambiaStudenteVoti(_selectedStudenteVoti); }
+  else alert(res.message);
 }
 
-// ═══════════════════════════════════════════════════
-// PRESENZE
-// ═══════════════════════════════════════════════════
-let _selectedStudentePresenze = null;
-
+let _selectedStudentePresenze=null;
 async function renderPresenze() {
-  const pane = $("pane-presenze");
-  const r = _user.ruolo;
-  let header = `<div class="page-header"><h2>✅ Presenze</h2></div>`;
-  let actions = "";
-  if (["COORDINATORE","TUTOR"].includes(r)) {
-    actions = `<button class="btn btn-primary btn-sm" onclick="apriInserisciPresenza()" style="margin-bottom:1rem">➕ Registra</button>`;
-  }
-  let selectorHtml = "";
-  if (r!=="STUDENTE") {
-    selectorHtml = `<div class="form-group" style="margin-bottom:1rem">
-      <label>Studente</label>
-      <select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)">
-        <option value="">-- Seleziona studente --</option>
-      </select>
-    </div>`;
-  }
-  pane.innerHTML = header + actions + selectorHtml + `<div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-
+  const pane=$("pane-presenze"), r=_user.ruolo;
+  let actions="";
+  if (["COORDINATORE","TUTOR"].includes(r)) actions=`<button class="btn btn-primary btn-sm" onclick="apriInserisciPresenza()" style="margin-bottom:1rem">➕ Registra</button>`;
+  let selectorHtml="";
+  if (r!=="STUDENTE") selectorHtml=`<div class="form-group" style="margin-bottom:1rem"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona studente --</option></select></div>`;
+  pane.innerHTML=`<div class="page-header"><h2>✅ Presenze</h2></div>${actions}${selectorHtml}<div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
   if (r!=="STUDENTE") {
     if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; }
     const sel=$("sel-studente-pres");
     _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
     $("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`;
-  } else {
-    await caricaPresenze(null);
-  }
+  } else { await caricaPresenze(null); }
 }
-
 async function cambiaStudentePresenze(email) {
-  _selectedStudentePresenze = email||null;
+  _selectedStudentePresenze=email||null;
   if (!email) { $("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
   await caricaPresenze(email);
 }
-
 async function caricaPresenze(emailStudente) {
   $("presenze-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res = await api("getPresenze",{emailStudente});
+  const res=await api("getPresenze",{emailStudente});
   if (!res.success) { $("presenze-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  const presenze = res.presenze||[];
-  const s = res.stats||{};
-  const oreTot = ORE_TOTALI_JS[_user.annualita||"1"]||500;
-  const perc = Math.min(100,Math.round((s.orePresenti/oreTot)*100*10)/10)||0;
-
-  let html = `<div class="grid-3" style="margin-bottom:1rem">
+  const presenze=res.presenze||[], s=res.stats||{};
+  const oreTot=ORE_TOTALI_JS[_user.annualita||"1"]||500;
+  const perc=Math.min(100,Math.round((s.orePresenti/oreTot)*100*10)/10)||0;
+  let html=`<div class="grid-3" style="margin-bottom:1rem">
     <div class="stat-card card-sm"><div class="stat-val text-success" style="font-size:1.3rem">${s.orePresenti||0}</div><div class="stat-lbl">Presenti</div></div>
     <div class="stat-card card-sm"><div class="stat-val text-danger" style="font-size:1.3rem">${s.oreAssenza||0}</div><div class="stat-lbl">Assente</div></div>
     <div class="stat-card card-sm"><div class="stat-val text-warning" style="font-size:1.3rem">${s.oreRitardo||0}</div><div class="stat-lbl">Ritardi</div></div>
   </div>
   <div class="card" style="margin-bottom:1rem;padding:.9rem">
-    <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-      <span style="font-size:.82rem">Frequenza</span>
-      <span style="font-family:var(--font-head);font-weight:700">${perc}% · ${s.orePresenti||0}/${oreTot}h</span>
-    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}% · ${s.orePresenti||0}/${oreTot}h</span></div>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${perc}%"></div></div>
   </div>`;
-
-  if (!presenze.length) { html += `<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuna registrazione.</div>`; }
+  if (!presenze.length) { html+=`<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuna registrazione.</div>`; }
   else {
-    html += `<div class="card">`;
+    html+=`<div class="card">`;
     presenze.slice().reverse().forEach(p=>{
-      html += `<div class="presence-row">
-        <span class="tipo-badge tipo-${p.TIPO}">${p.TIPO}</span>
+      html+=`<div class="presence-row"><span class="tipo-badge tipo-${p.TIPO}">${p.TIPO}</span>
         <div style="flex:1"><div style="font-size:.88rem;font-weight:500">${esc(p.dataIT||fmtData(p.DATA))}</div>
         <div style="font-size:.72rem;color:var(--muted)">${p.ORA_INIZIO?p.ORA_INIZIO+' – '+p.ORA_FINE:''} · ${p.ORE}h</div></div>
         ${["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.8rem" onclick="eliminaPresenzaById('${p.ID}')">🗑</button>`:''}
       </div>`;
     });
-    html += `</div>`;
+    html+=`</div>`;
   }
-  $("presenze-content").innerHTML = html;
+  $("presenze-content").innerHTML=html;
 }
-
-const ORE_TOTALI_JS = {"1":500,"2":500};
-
+const ORE_TOTALI_JS={"1":500,"2":500};
 async function apriInserisciPresenza() {
   if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; }
-  const sel=$("pres-studente");
-  sel.innerHTML='<option value="">-- Studente --</option>';
+  const sel=$("pres-studente"); sel.innerHTML='<option value="">-- Studente --</option>';
   _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome; sel.appendChild(o); });
   if (_selectedStudentePresenze) sel.value=_selectedStudentePresenze;
-  $("pres-data").value = todayISO();
-  $("pres-tipo").value="PRESENZA";
-  document.querySelectorAll("#modal-presenza .chip").forEach((c,i)=>{ c.classList.toggle("selected",i===0); });
-  hideErr("pres-err");
-  openModal("modal-presenza");
+  $("pres-data").value=todayISO(); $("pres-tipo").value="PRESENZA";
+  document.querySelectorAll("#modal-presenza .chip").forEach((c,i)=>c.classList.toggle("selected",i===0));
+  hideErr("pres-err"); openModal("modal-presenza");
 }
-
-function selTipoPresenza(el, tipo) {
-  document.querySelectorAll("#modal-presenza .chip").forEach(c=>c.classList.remove("selected"));
-  el.classList.add("selected");
-  $("pres-tipo").value=tipo;
-}
-
+function selTipoPresenza(el,tipo) { document.querySelectorAll("#modal-presenza .chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); $("pres-tipo").value=tipo; }
 async function salvaPresenza() {
   hideErr("pres-err");
-  const emailStudente=$("pres-studente").value, data=$("pres-data").value;
-  const tipo=$("pres-tipo").value, ini=$("pres-ini").value, fin=$("pres-fin").value;
+  const emailStudente=$("pres-studente").value, data=$("pres-data").value, tipo=$("pres-tipo").value, ini=$("pres-ini").value, fin=$("pres-fin").value;
   if (!emailStudente) return showErr("pres-err","Seleziona studente.");
   if (!data) return showErr("pres-err","Inserisci data.");
-  const res = await api("inserisciPresenza",{emailStudente,data,oraInizio:ini,oraFine:fin,tipo});
+  const res=await api("inserisciPresenza",{emailStudente,data,oraInizio:ini,oraFine:fin,tipo});
   if (!res.success) return showErr("pres-err",res.message);
   chiudiModal("modal-presenza");
   if (_currentPane==="presenze") await caricaPresenze(_selectedStudentePresenze||null);
 }
-
 async function eliminaPresenzaById(id) {
   if (!confirm("Eliminare questa registrazione?")) return;
-  const res = await api("eliminaPresenza",{id});
-  if (res.success) await caricaPresenze(_selectedStudentePresenze||null);
-  else alert(res.message);
+  const res=await api("eliminaPresenza",{id});
+  if (res.success) await caricaPresenze(_selectedStudentePresenze||null); else alert(res.message);
 }
 
-// ═══════════════════════════════════════════════════
-// COMUNICAZIONI
-// ═══════════════════════════════════════════════════
-let _comunicazioni = [];
-
+let _comunicazioni=[];
 async function renderComunicazioni() {
-  const pane = $("pane-comunicazioni");
-  const r = _user.ruolo;
-  let actions="";
-  if (r==="COORDINATORE") actions=`<button class="btn btn-primary btn-sm" onclick="apriNuovaComunicazione()" style="margin-bottom:1rem">✏️ Nuova comunicazione</button>`;
+  const pane=$("pane-comunicazioni"), r=_user.ruolo;
+  let actions=r==="COORDINATORE"?`<button class="btn btn-primary btn-sm" onclick="apriNuovaComunicazione()" style="margin-bottom:1rem">✏️ Nuova comunicazione</button>`:"";
   pane.innerHTML=`<div class="page-header"><h2>📢 Bacheca comunicazioni</h2></div>${actions}<div id="comm-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-  const res = await api("getComunicazioni",{});
+  const res=await api("getComunicazioni",{});
   if (!res.success) { $("comm-list").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  _comunicazioni = res.comunicazioni||[];
-  renderListaComunicazioni();
-  aggiornaNotifiche(0);
+  _comunicazioni=res.comunicazioni||[];
+  renderListaComunicazioni(); aggiornaNotifiche(0);
 }
-
 function renderListaComunicazioni() {
-  const cont = $("comm-list");
+  const cont=$("comm-list");
   if (!_comunicazioni.length) { cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>`; return; }
   const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team",coordinatore:"Coordinatore"};
   cont.innerHTML=_comunicazioni.map(c=>`
@@ -1267,51 +908,31 @@ function renderListaComunicazioni() {
         <div class="comm-title">${esc(c.TITOLO)}${!c.letta?` <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>`:''}</div>
         ${_user.ruolo==="COORDINATORE"?`<button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);flex-shrink:0" onclick="event.stopPropagation();eliminaComm('${esc(c.ID)}')">🗑</button>`:''}
       </div>
-      <div class="comm-meta">
-        <span>📅 ${fmtData(c.DATA_CREAZIONE)}</span>
-        <span class="badge badge-gray">${DEST_LABELS[c.DESTINATARI]||esc(c.DESTINATARI)}</span>
-      </div>
+      <div class="comm-meta"><span>📅 ${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DEST_LABELS[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div>
       <div class="comm-preview">${esc(c.TESTO)}</div>
     </div>`).join("");
 }
-
 function apriComunicazione(id) {
-  const c = _comunicazioni.find(x=>x.ID===id); if (!c) return;
+  const c=_comunicazioni.find(x=>x.ID===id); if (!c) return;
   const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team"};
   $("comm-detail-title").textContent=c.TITOLO;
   $("comm-detail-meta").textContent=`${fmtData(c.DATA_CREAZIONE)} · Destinatari: ${DEST_LABELS[c.DESTINATARI]||c.DESTINATARI}`;
   $("comm-detail-testo").textContent=c.TESTO;
   $("comm-detail-actions").innerHTML="";
   openModal("modal-comm-detail");
-  if (!c.letta) {
-    api("segnaComunicazioneLetta",{id}).then(()=>{
-      c.letta=true;
-      renderListaComunicazioni();
-      checkNotifiche();
-    });
-  }
+  if (!c.letta) { api("segnaComunicazioneLetta",{id}).then(()=>{ c.letta=true; renderListaComunicazioni(); checkNotifiche(); }); }
 }
-
 async function eliminaComm(id) {
   if (!confirm("Eliminare questa comunicazione?")) return;
-  const res=await api("eliminaComunicazione",{id});
-  if (res.success) renderComunicazioni();
-  else alert(res.message);
+  const res=await api("eliminaComunicazione",{id}); if(res.success) renderComunicazioni(); else alert(res.message);
 }
-
 function apriNuovaComunicazione() {
   $("comm-titolo").value=$("comm-testo").value="";
   document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
-  hideErr("comm-err");
-  openModal("modal-nuova-comm");
+  hideErr("comm-err"); openModal("modal-nuova-comm");
   if (_currentPane!=="comunicazioni") switchPane("comunicazioni");
 }
-
-function toggleChip(el,val) {
-  document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
-  el.classList.add("selected");
-}
-
+function toggleChip(el,val) { document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); }
 async function inviaComunicazione() {
   hideErr("comm-err");
   const titolo=$("comm-titolo").value.trim(), testo=$("comm-testo").value.trim();
@@ -1323,50 +944,37 @@ async function inviaComunicazione() {
   if (!destFinal) return showErr("comm-err","Seleziona i destinatari.");
   const res=await api("creaComunicazione",{titolo,testo,destinatari:destFinal});
   if (!res.success) return showErr("comm-err",res.message);
-  chiudiModal("modal-nuova-comm");
-  renderComunicazioni();
+  chiudiModal("modal-nuova-comm"); renderComunicazioni();
 }
 
-// ═══════════════════════════════════════════════════
-// DISPONIBILITÀ
-// ═══════════════════════════════════════════════════
 async function renderDisponibilita() {
   const pane=$("pane-disponibilita"), r=_user.ruolo;
-  let title=r==="COORDINATORE"?"📆 Disponibilità tutor":"📆 Le mie disponibilità";
-  let actions=r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="openModal('modal-disp')" style="margin-bottom:1rem">➕ Inserisci disponibilità</button>`:"";
+  const title=r==="COORDINATORE"?"📆 Disponibilità tutor":"📆 Le mie disponibilità";
+  const actions=r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="openModal('modal-disp')" style="margin-bottom:1rem">➕ Inserisci disponibilità</button>`:"";
   pane.innerHTML=`<div class="page-header"><h2>${title}</h2></div>${actions}<div id="disp-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
   hideErr("disp-err");
   const res=await api("getDisponibilita",{});
   if (!res.success) { $("disp-content").innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
   const lista=res.disponibilita||[];
   if (!lista.length) { $("disp-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilità inserita.</div>`; return; }
-
   const perMese={};
-  lista.sort((a,b)=>String(a.DATA)>String(b.DATA)?1:-1).forEach(d=>{
-    const key=String(d.DATA||"").slice(0,7);
-    if(!perMese[key]) perMese[key]=[];
-    perMese[key].push(d);
-  });
+  lista.sort((a,b)=>String(a.DATA)>String(b.DATA)?1:-1).forEach(d=>{ const key=String(d.DATA||"").slice(0,7); if(!perMese[key]) perMese[key]=[]; perMese[key].push(d); });
   let html="";
   Object.keys(perMese).sort().forEach(mese=>{
     const [y,m]=mese.split("-");
     const MESI=["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
     html+=`<div class="section-title">${MESI[parseInt(m)]} ${y}</div>`;
     perMese[mese].forEach(d=>{
-      html+=`<div class="disp-card">
-        <div>
-          <div class="disp-date">${esc(d.dataIT||fmtData(d.DATA))}</div>
-          <div class="disp-time">⏰ ${esc(d.ORA_INIZIO)} – ${esc(d.ORA_FINE)}</div>
-          ${d.EMAIL_TUTOR&&r==="COORDINATORE"?`<div style="font-size:.72rem;color:var(--muted)">👤 ${esc(d.EMAIL_TUTOR)}</div>`:''}
-          ${d.NOTE?`<div class="disp-note">${esc(d.NOTE)}</div>`:''}
-        </div>
-        ${r==="COORDINATORE"?`<button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:#f87171;margin-left:auto" onclick="rimuoviDisp('${d.ID}')">Rimuovi</button>`:''}
-      </div>`;
+      html+=`<div class="disp-card"><div>
+        <div class="disp-date">${esc(d.dataIT||fmtData(d.DATA))}</div>
+        <div class="disp-time">⏰ ${esc(d.ORA_INIZIO)} – ${esc(d.ORA_FINE)}</div>
+        ${d.EMAIL_TUTOR&&r==="COORDINATORE"?`<div style="font-size:.72rem;color:var(--muted)">👤 ${esc(d.EMAIL_TUTOR)}</div>`:''}
+        ${d.NOTE?`<div class="disp-note">${esc(d.NOTE)}</div>`:''}
+      </div>${r==="COORDINATORE"?`<button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:#f87171;margin-left:auto" onclick="rimuoviDisp('${d.ID}')">Rimuovi</button>`:''}</div>`;
     });
   });
   $("disp-content").innerHTML=html;
 }
-
 async function salvaDisponibilita() {
   hideErr("disp-err");
   const data=$("disp-data").value, ini=$("disp-ini").value, fin=$("disp-fin").value, note=$("disp-note").value;
@@ -1374,102 +982,48 @@ async function salvaDisponibilita() {
   if (!ini||!fin) return showErr("disp-err","Inserisci l'orario.");
   const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});
   if (!res.success) return showErr("disp-err",res.message);
-  chiudiModal("modal-disp");
-  renderDisponibilita();
+  chiudiModal("modal-disp"); renderDisponibilita();
 }
-
 async function rimuoviDisp(id) {
   if (!confirm("Rimuovere questa disponibilità?")) return;
-  const res=await api("rimuoviDisponibilita",{id});
-  if (res.success) renderDisponibilita();
-  else alert(res.message);
+  const res=await api("rimuoviDisponibilita",{id}); if(res.success) renderDisponibilita(); else alert(res.message);
 }
 
 // ═══════════════════════════════════════════════════
-// NOTIFICHE PUSH FCM — VERSIONE CORRETTA
+// NOTIFICHE — SW UNIFICATO
 // ═══════════════════════════════════════════════════
 async function avviaNotifiche() {
-  // Polling come backup (ogni 60s)
   checkNotifiche();
   _notifInterval = setInterval(checkNotifiche, 60000);
-
-  // Verifica supporto browser
-  if (!("Notification" in window)) {
-    console.log("Notifiche non supportate da questo browser.");
-    return;
-  }
-  if (!("serviceWorker" in navigator)) {
-    console.log("Service Worker non supportato.");
-    return;
-  }
-
-  // Richiedi permesso
+  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
   let perm = Notification.permission;
-  if (perm === "default") {
-    perm = await Notification.requestPermission();
-  }
-  if (perm !== "granted") {
-    console.log("Permesso notifiche negato.");
-    return;
-  }
-
-  // Inizializza Firebase Messaging
+  if (perm === "default") perm = await Notification.requestPermission();
+  if (perm !== "granted") return;
   try {
     _fcmMessaging = firebase.messaging();
-
-// Registra esplicitamente firebase-messaging-sw.js
-const swReg = await navigator.serviceWorker.register(
-  "./firebase-messaging-sw.js",
-  { scope: "./" }
-);
-
-// Aspetta che sia attivo
-await navigator.serviceWorker.ready;
-
-// Ottieni il token FCM passando il SW corretto
-const fcmToken = await _fcmMessaging.getToken({
-  vapidKey: VAPID_PUBLIC_KEY,
-  serviceWorkerRegistration: swReg
-});
-
+    // Usa sw.js unificato — non registrare firebase-messaging-sw.js separatamente
+    const swReg = await navigator.serviceWorker.ready;
+    const fcmToken = await _fcmMessaging.getToken({
+      vapidKey: VAPID_PUBLIC_KEY,
+      serviceWorkerRegistration: swReg
+    });
     if (fcmToken) {
-      console.log("FCM token ottenuto:", fcmToken.substring(0,20) + "...");
-      // Salva il token nel backend GAS
-      await api("registraDevice", {
-        subscription: JSON.stringify({ fcmToken: fcmToken }),
-        email: _user.email
-      });
-    } else {
-      console.warn("Nessun token FCM ricevuto.");
+      await api("registraDevice", { subscription: JSON.stringify({ fcmToken: fcmToken }), email: _user.email });
     }
-
-    // Gestisci messaggi in FOREGROUND (app aperta)
+    // Messaggi in foreground
     _fcmMessaging.onMessage(function(payload) {
-      console.log("Messaggio FCM in foreground:", payload);
       const n = payload.notification || {};
-      // Mostra notifica nativa anche in foreground
       if (Notification.permission === "granted") {
-        new Notification(n.title || "ITSApp", {
-          body: n.body || "",
-          icon: "https://slammix1559.github.io/ITS/logoITS.png"
-        });
+        new Notification(n.title || "ITSApp", { body: n.body || "", icon: "https://slammix1559.github.io/ITS/logoITS.png" });
       }
-      // Aggiorna il contatore notifiche
       checkNotifiche();
     });
-
-  } catch(e) {
-    console.error("Errore inizializzazione FCM:", e.message);
-  }
+  } catch(e) { console.error("Errore FCM:", e.message); }
 }
 
 async function checkNotifiche() {
-  try {
-    const res=await api("getNuoveComunicazioni",{});
-    aggiornaNotifiche(res.count||0);
-  } catch(e){}
+  try { const res=await api("getNuoveComunicazioni",{}); aggiornaNotifiche(res.count||0); } catch(e) {}
 }
-
 function aggiornaNotifiche(count) {
   const dot=$("notif-dot"); if(dot) { count>0?sh("notif-dot"):hd("notif-dot"); }
   const bdot=$("bnav-dot-comunicazioni"); if(bdot) { count>0?sh("bnav-dot-comunicazioni"):hd("bnav-dot-comunicazioni"); }
@@ -1479,35 +1033,20 @@ function aggiornaNotifiche(count) {
 // INIT
 // ═══════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", function() {
-  // Enter per login
-  [$("in-email"),$("in-pwd")].forEach(function(el) {
-    if(el) el.addEventListener("keydown", function(e) { if(e.key==="Enter") doLogin(); });
-  });
-
-  // Chiudi modal cliccando overlay
-  document.querySelectorAll(".modal-overlay").forEach(function(m) {
-    m.addEventListener("click", function(e) { if(e.target===m) m.classList.add("hide"); });
-  });
-
-  // Auto login se token valido
-  if (_token && _user) {
-    api("checkSession",{}).then(function(res) {
-      if (res&&res.success) avviaDashboard();
-    }).catch(function(){});
-  }
+  [$("in-email"),$("in-pwd")].forEach(function(el) { if(el) el.addEventListener("keydown", function(e) { if(e.key==="Enter") doLogin(); }); });
+  document.querySelectorAll(".modal-overlay").forEach(function(m) { m.addEventListener("click", function(e) { if(e.target===m) m.classList.add("hide"); }); });
+  if (_token && _user) { api("checkSession",{}).then(function(res) { if(res&&res.success) avviaDashboard(); }).catch(function(){}); }
 });
 
-// Registra Service Worker PWA
+// ── SERVICE WORKER UNIFICATO ──
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
-    // Registra sw.js (cache PWA)
-    navigator.serviceWorker.register("./sw.js").catch(function(e) {
-      console.warn("sw.js non registrato:", e.message);
+    navigator.serviceWorker.register("./sw.js").then(function(reg) {
+      console.log("SW unificato registrato:", reg.scope);
+    }).catch(function(e) {
+      console.warn("SW non registrato:", e.message);
     });
-    // Registra firebase-messaging-sw.js (notifiche push)
-    navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(function(e) {
-      console.warn("firebase-messaging-sw.js non registrato:", e.message);
-    });
+    // NON registrare firebase-messaging-sw.js — tutto è in sw.js
   });
 }
 </script>
