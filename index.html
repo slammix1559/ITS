@@ -1417,14 +1417,20 @@ async function avviaNotifiche() {
   try {
     _fcmMessaging = firebase.messaging();
 
-    // Aspetta che il SW sia pronto
-    const swReg = await navigator.serviceWorker.ready;
+// Registra esplicitamente firebase-messaging-sw.js
+const swReg = await navigator.serviceWorker.register(
+  "./firebase-messaging-sw.js",
+  { scope: "./" }
+);
 
-    // Ottieni il token FCM
-    const fcmToken = await _fcmMessaging.getToken({
-      vapidKey: VAPID_PUBLIC_KEY,
-      serviceWorkerRegistration: swReg
-    });
+// Aspetta che sia attivo
+await navigator.serviceWorker.ready;
+
+// Ottieni il token FCM passando il SW corretto
+const fcmToken = await _fcmMessaging.getToken({
+  vapidKey: VAPID_PUBLIC_KEY,
+  serviceWorkerRegistration: swReg
+});
 
     if (fcmToken) {
       console.log("FCM token ottenuto:", fcmToken.substring(0,20) + "...");
