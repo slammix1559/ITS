@@ -1,5 +1,5 @@
-// sw.js – ITSApp Service Worker v6
-const CACHE_NAME = "itsapp-v6";
+// sw.js – ITSApp Service Worker v5
+const CACHE_NAME = "itsapp-v5";
 const STATIC_ASSETS = ["./", "./index.html", "./firebase-messaging-sw.js"];
 
 self.addEventListener("install", function(e) {
@@ -35,11 +35,4 @@ self.addEventListener("fetch", function(e) {
       });
     })
   );
-});
-
-// Intercetta i messaggi push — li delega a firebase-messaging-sw.js
-// NON mostrare nessuna notifica di default qui
-self.addEventListener("push", function(e) {
-  // Firebase gestisce questo tramite firebase-messaging-sw.js
-  // Non fare nulla qui per evitare notifiche duplicate
 });
