@@ -35,11 +35,9 @@
 html{height:100%;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;padding-top:env(safe-area-inset-top);overflow-x:hidden}
 
-/* Sfondo decorativo */
 body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
 body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:400px;height:400px;background:radial-gradient(circle,rgba(245,158,11,.06) 0%,transparent 70%);pointer-events:none;z-index:0}
 
-/* ═══════════════════ UTILITY ═══════════════════ */
 .hide{display:none!important}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem;position:relative;z-index:1}
 .card-sm{padding:.875rem}
@@ -188,12 +186,26 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
   .main{padding:1rem .875rem 5.5rem}
 }
 
-/* ═══════════════════ ANIMAZIONI ═══════════════════ */
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
+
+<!-- ══════ FIREBASE SDK (compat, funziona senza bundler) ══════ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
+<script>
+// Inizializzazione Firebase — deve stare PRIMA del resto del codice
+firebase.initializeApp({
+  apiKey:            "AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",
+  authDomain:        "its-lombardia-meccatronica.firebaseapp.com",
+  projectId:         "its-lombardia-meccatronica",
+  storageBucket:     "its-lombardia-meccatronica.firebasestorage.app",
+  messagingSenderId: "260932633943",
+  appId:             "1:260932633943:web:1bcdb5d8f2393ff667aa12"
+});
+</script>
 
 <!-- ══════ NAVBAR ══════ -->
 <nav id="navbar" class="navbar hide">
@@ -219,7 +231,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
       <p>Lombardia — Area Studenti &amp; Staff</p>
     </div>
 
-    <!-- Form login -->
     <div id="form-login">
       <div class="form-group">
         <label>Email istituzionale</label>
@@ -238,7 +249,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
       <div id="login-loader" class="hide" style="text-align:center;margin-top:.75rem"><div class="spinner"></div></div>
     </div>
 
-    <!-- Reset step 1 -->
     <div id="form-reset1" class="hide">
       <h3 style="margin-bottom:.5rem">Recupero password</h3>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Riceverai un codice OTP valido 15 minuti.</p>
@@ -251,7 +261,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
       <button class="btn btn-outline" style="width:100%" onclick="showLogin()">← Torna al login</button>
     </div>
 
-    <!-- Reset step 2 -->
     <div id="form-reset2" class="hide">
       <h3 style="margin-bottom:.5rem">Inserisci il codice</h3>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:1rem">Codice inviato a: <b id="reset-email-show"></b></p>
@@ -268,7 +277,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 <!-- ══════ DASHBOARD ══════ -->
 <div id="view-dashboard" class="hide">
   <div class="main">
-    <!-- Header utente -->
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem" class="fade-in">
       <div style="flex:1">
         <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em">Benvenuto</div>
@@ -277,7 +285,6 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
       </div>
     </div>
 
-    <!-- Pane attivi -->
     <div id="pane-home" class="fade-in"></div>
     <div id="pane-orario" class="fade-in hide"></div>
     <div id="pane-voti" class="fade-in hide"></div>
@@ -288,9 +295,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 </div>
 
 <!-- ══════ BOTTOM NAV ══════ -->
-<nav id="bottom-nav" class="bottom-nav hide">
-  <!-- generata dinamicamente -->
-</nav>
+<nav id="bottom-nav" class="bottom-nav hide"></nav>
 
 <!-- ══════ MODAL password ══════ -->
 <div id="modal-pwd" class="modal-overlay hide">
@@ -418,9 +423,10 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 
 <script>
 // ═══════════════════════════════════════════════════
-// CONFIG – sostituisci con l'URL del tuo script deployato
+// CONFIG
 // ═══════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const VAPID_PUBLIC_KEY = "BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
 
 let _token = localStorage.getItem("its_token") || null;
 let _user  = null;
@@ -429,6 +435,7 @@ let _studenti = [];
 let _materieDocente = [];
 let _notifInterval = null;
 let _currentPane = "home";
+let _fcmMessaging = null; // istanza Firebase Messaging
 
 // ═══════════════════════════════════════════════════
 // API
@@ -718,18 +725,14 @@ async function renderHome() {
 // ═══════════════════════════════════════════════════
 // ORARIO
 // ═══════════════════════════════════════════════════
-// Filtra lezioni per docente (confronto flessibile cognome)
 function _filtraLezioniDocente(lezioni) {
   if (_user.ruolo !== "DOCENTE") return lezioni;
-  // Costruisce termini di ricerca dal cognome e nome utente
   const cognome = (_user.cognome||"").toLowerCase().trim();
   const nome    = (_user.nome||"").toLowerCase().trim();
   return lezioni.filter(l => {
     const doc = (l.docente||"").toLowerCase();
     if (!doc) return false;
-    // Controlla se il campo docente contiene il cognome
     if (cognome && doc.includes(cognome)) return true;
-    // Controlla anche nome+cognome invertito
     if (nome && cognome && doc.includes(nome) && doc.includes(cognome)) return true;
     return false;
   });
@@ -770,8 +773,6 @@ async function renderOrario() {
     const r = _user.ruolo;
     const isDocente = r === "DOCENTE";
 
-    // Docente: carica entrambi gli anni e filtra per nome
-    // Coordinatore/Tutor: tab per anno, studente: solo il suo anno
     let tabsHtml = "";
     if (!isDocente && ["COORDINATORE","TUTOR"].includes(r)) {
       tabsHtml = `<div class="tab-row" style="margin-bottom:1rem">
@@ -780,7 +781,6 @@ async function renderOrario() {
       </div>`;
     }
 
-    // Carica lezioni (per docente carica tutti gli anni)
     let lezioni = [];
     if (isDocente) {
       const [r1, r2] = await Promise.all([
@@ -797,11 +797,7 @@ async function renderOrario() {
     }
 
     const titolo = isDocente ? "📅 Il mio orario" : "📅 Orario lezioni";
-    const subtitle = isDocente
-      ? `${lezioni.length} lezioni in programma`
-      : `${lezioni.length} lezioni in programma`;
-
-    pane.innerHTML = `<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${subtitle}</p></div>${tabsHtml}` + _renderLezioni(lezioni, tabsHtml);
+    pane.innerHTML = `<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${lezioni.length} lezioni in programma</p></div>${tabsHtml}` + _renderLezioni(lezioni, tabsHtml);
   } catch(e) {
     pane.innerHTML = `<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;
   }
@@ -830,9 +826,8 @@ async function cambiaOrario(ann, btn) {
 // ═══════════════════════════════════════════════════
 let _votiData = null;
 let _selectedStudenteVoti = null;
-let _materieList = []; // lista materie globale
+let _materieList = [];
 
-// Carica studenti se non già caricati
 async function _assicuraStudenti() {
   if (!_studenti.length) {
     const sr = await api("getStudenti",{});
@@ -840,19 +835,16 @@ async function _assicuraStudenti() {
   }
 }
 
-// Carica materie se non già caricate
 async function _assicuraMaterie() {
   if (_materieList.length) return;
   const dr = await api("getDocenti",{});
   const tuttiDoc = dr.docenti||[];
   if (_user.ruolo==="DOCENTE") {
-    // Solo le materie di questo docente
     _materieList = tuttiDoc
       .filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase())
       .map(d=>d.materia).filter(m=>m);
   }
   if (!_materieList.length) {
-    // Coordinatore o fallback: tutte le materie
     _materieList = [...new Set(tuttiDoc.map(d=>d.materia)
       .filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
   }
@@ -863,14 +855,12 @@ async function renderVoti() {
   const r = _user.ruolo;
 
   if (r === "STUDENTE") {
-    // Studente: vede solo i propri voti per materia
     pane.innerHTML = `<div class="page-header"><h2>📊 I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
     await caricaVotiStudente();
     return;
   }
 
   if (r === "TUTOR") {
-    // Tutor: seleziona studente e vede i voti (sola lettura)
     pane.innerHTML = `<div class="page-header"><h2>📊 Voti studenti</h2></div>
       <div class="form-group" style="margin-bottom:1rem">
         <label>Studente</label>
@@ -885,7 +875,6 @@ async function renderVoti() {
     return;
   }
 
-  // COORDINATORE o DOCENTE: vista registro
   pane.innerHTML = `<div class="page-header"><h2>📊 Registro voti</h2></div>
     <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
       <button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">📝 Inserisci voti</button>
@@ -914,7 +903,6 @@ function switchVotiTab(tab, btn) {
     sh("voti-registro-pane"); hd("voti-consulta-pane");
   } else {
     hd("voti-registro-pane"); sh("voti-consulta-pane");
-    // Popola select consulta
     const sel = $("sel-studente-consulta");
     if (sel && sel.options.length <= 1) {
       _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
@@ -931,7 +919,6 @@ async function renderRegistro() {
 
   const materiaOpts = _materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
   const annoOpts = `<option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option>`;
-
   const preselectMateria = (_user.ruolo==="DOCENTE" && _materieList.length===1) ? _materieList[0] : "";
 
   pane.innerHTML = `
@@ -952,10 +939,9 @@ async function renderRegistro() {
     </div>
     <div id="registro-table"></div>`;
 
-  // Preseleziona materia se docente con una sola materia e apri subito
   if (preselectMateria) {
     $("reg-materia").value = preselectMateria;
-    $("reg-anno").value = "1"; // default 1° anno per docente
+    $("reg-anno").value = "1";
     await apriRegistro();
   }
 }
@@ -965,17 +951,15 @@ async function apriRegistro() {
   const anno = $("reg-anno").value;
   if (!materia) { alert("Seleziona una materia."); return; }
 
-  // Assicura che gli studenti siano caricati
   await _assicuraStudenti();
 
   let studenti = _studenti;
   if (anno) studenti = studenti.filter(s=>String(s.annualita)===anno);
   if (!studenti.length) {
-    $("registro-table").innerHTML = `<div class="alert alert-danger">Nessuno studente trovato. Verifica che il foglio <b>1anno</b> o <b>2anno</b> nel Google Sheet database_ITS contenga dati.</div>`;
+    $("registro-table").innerHTML = `<div class="alert alert-danger">Nessuno studente trovato.</div>`;
     return;
   }
 
-  // Carica voti esistenti per questa materia
   $("registro-table").innerHTML = `<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
   const res = await api("getVoti",{emailStudente:null});
   const tuttiVoti = res.success ? (res.voti||[]) : [];
@@ -1065,9 +1049,7 @@ async function salvaRegistro(materia) {
   $("reg-save-msg").innerHTML = ok>0
     ? `<div class="alert alert-success">✅ ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`
     : `<div class="alert alert-danger">Errore nel salvataggio.</div>`;
-  // Svuota i campi salvati con successo
   if (ok>0) { inputs.forEach(inp=>{ if(inp.value.trim()) inp.value=""; }); }
-  // Ricarica il registro dopo 1.5s per aggiornare i voti esistenti
   setTimeout(()=>apriRegistro(), 1500);
 }
 
@@ -1128,14 +1110,12 @@ async function cambiaStudenteVoti(email) {
 }
 
 async function caricaVoti(emailStudente) { await cambiaStudenteVoti(emailStudente); }
-
 async function apriInserisciVoto() { switchPane("voti"); }
 
 async function eliminaVotoById(id) {
   if (!confirm("Eliminare questo voto?")) return;
   const res = await api("eliminaVoto",{id});
   if (res.success) {
-    // Ricarica registro o vista studente
     if ($("voti-registro-pane") && !$("voti-registro-pane").classList.contains("hide")) apriRegistro();
     else cambiaStudenteVoti(_selectedStudenteVoti);
   } else alert(res.message);
@@ -1328,7 +1308,6 @@ function apriNuovaComunicazione() {
 }
 
 function toggleChip(el,val) {
-  // Solo selezione singola
   document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
   el.classList.add("selected");
 }
@@ -1337,9 +1316,8 @@ async function inviaComunicazione() {
   hideErr("comm-err");
   const titolo=$("comm-titolo").value.trim(), testo=$("comm-testo").value.trim();
   const destEl=document.querySelector("#chip-dest .chip.selected");
-  const destinatari=destEl?destEl.dataset.val||destEl.textContent.toLowerCase().replace(/[°\s]+/g,"").trim():"";
   const destMap={"Tutti":"tutti","Studenti (tutti)":"studenti","Studenti 1° anno":"1anno","Studenti 2° anno":"2anno","Docenti":"docenti","Team":"team"};
-  const destFinal=destMap[destEl?.textContent]||destinatari;
+  const destFinal=destMap[destEl?.textContent]||"";
   if (!titolo) return showErr("comm-err","Inserisci il titolo.");
   if (!testo) return showErr("comm-err","Inserisci il testo.");
   if (!destFinal) return showErr("comm-err","Seleziona i destinatari.");
@@ -1363,7 +1341,6 @@ async function renderDisponibilita() {
   const lista=res.disponibilita||[];
   if (!lista.length) { $("disp-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilità inserita.</div>`; return; }
 
-  // Raggruppa per mese
   const perMese={};
   lista.sort((a,b)=>String(a.DATA)>String(b.DATA)?1:-1).forEach(d=>{
     const key=String(d.DATA||"").slice(0,7);
@@ -1409,44 +1386,75 @@ async function rimuoviDisp(id) {
 }
 
 // ═══════════════════════════════════════════════════
-// NOTIFICHE
+// NOTIFICHE PUSH FCM — VERSIONE CORRETTA
 // ═══════════════════════════════════════════════════
 async function avviaNotifiche() {
+  // Polling come backup (ogni 60s)
   checkNotifiche();
   _notifInterval = setInterval(checkNotifiche, 60000);
 
-  // Richiedi permesso e registra dispositivo per push FCM
-  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-  
+  // Verifica supporto browser
+  if (!("Notification" in window)) {
+    console.log("Notifiche non supportate da questo browser.");
+    return;
+  }
+  if (!("serviceWorker" in navigator)) {
+    console.log("Service Worker non supportato.");
+    return;
+  }
+
+  // Richiedi permesso
   let perm = Notification.permission;
   if (perm === "default") {
     perm = await Notification.requestPermission();
   }
-  if (perm !== "granted") return;
-
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
-    }
-    // Invia subscription al backend per salvarla
-    await api("registraDevice", { subscription: JSON.stringify(sub), email: _user.email });
-  } catch(e) {
-    console.log("Push subscription non disponibile:", e.message);
+  if (perm !== "granted") {
+    console.log("Permesso notifiche negato.");
+    return;
   }
-}
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
+  // Inizializza Firebase Messaging
+  try {
+    _fcmMessaging = firebase.messaging();
+
+    // Aspetta che il SW sia pronto
+    const swReg = await navigator.serviceWorker.ready;
+
+    // Ottieni il token FCM
+    const fcmToken = await _fcmMessaging.getToken({
+      vapidKey: VAPID_PUBLIC_KEY,
+      serviceWorkerRegistration: swReg
+    });
+
+    if (fcmToken) {
+      console.log("FCM token ottenuto:", fcmToken.substring(0,20) + "...");
+      // Salva il token nel backend GAS
+      await api("registraDevice", {
+        subscription: JSON.stringify({ fcmToken: fcmToken }),
+        email: _user.email
+      });
+    } else {
+      console.warn("Nessun token FCM ricevuto.");
+    }
+
+    // Gestisci messaggi in FOREGROUND (app aperta)
+    _fcmMessaging.onMessage(function(payload) {
+      console.log("Messaggio FCM in foreground:", payload);
+      const n = payload.notification || {};
+      // Mostra notifica nativa anche in foreground
+      if (Notification.permission === "granted") {
+        new Notification(n.title || "ITSApp", {
+          body: n.body || "",
+          icon: "https://slammix1559.github.io/ITS/logoITS.png"
+        });
+      }
+      // Aggiorna il contatore notifiche
+      checkNotifiche();
+    });
+
+  } catch(e) {
+    console.error("Errore inizializzazione FCM:", e.message);
+  }
 }
 
 async function checkNotifiche() {
@@ -1459,41 +1467,41 @@ async function checkNotifiche() {
 function aggiornaNotifiche(count) {
   const dot=$("notif-dot"); if(dot) { count>0?sh("notif-dot"):hd("notif-dot"); }
   const bdot=$("bnav-dot-comunicazioni"); if(bdot) { count>0?sh("bnav-dot-comunicazioni"):hd("bnav-dot-comunicazioni"); }
-  if (count>0 && "Notification" in window && Notification.permission==="granted") {
-    // Solo se la pagina non è in focus
-    if (document.hidden) {
-      new Notification("ITSApp – "+count+(count>1?" nuove comunicazioni":" nuova comunicazione"),{
-        body:"Hai "+count+(count>1?" comunicazioni non lette.":" comunicazione non letta."),
-        icon:"icon-192.png"
-      });
-    }
-  }
 }
 
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
-document.addEventListener("DOMContentLoaded",()=>{
+document.addEventListener("DOMContentLoaded", function() {
   // Enter per login
-  [$("in-email"),$("in-pwd")].forEach(el=>{ if(el) el.addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); }); });
-
-  // Chiudi modal cliccando overlay
-  document.querySelectorAll(".modal-overlay").forEach(m=>{
-    m.addEventListener("click",e=>{ if(e.target===m) m.classList.add("hide"); });
+  [$("in-email"),$("in-pwd")].forEach(function(el) {
+    if(el) el.addEventListener("keydown", function(e) { if(e.key==="Enter") doLogin(); });
   });
 
-  // Auto login
+  // Chiudi modal cliccando overlay
+  document.querySelectorAll(".modal-overlay").forEach(function(m) {
+    m.addEventListener("click", function(e) { if(e.target===m) m.classList.add("hide"); });
+  });
+
+  // Auto login se token valido
   if (_token && _user) {
-    api("checkSession",{}).then(res=>{
+    api("checkSession",{}).then(function(res) {
       if (res&&res.success) avviaDashboard();
-    }).catch(()=>{});
+    }).catch(function(){});
   }
 });
 
-// Service Worker per PWA
+// Registra Service Worker PWA
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load",()=>{
-    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  window.addEventListener("load", function() {
+    // Registra sw.js (cache PWA)
+    navigator.serviceWorker.register("./sw.js").catch(function(e) {
+      console.warn("sw.js non registrato:", e.message);
+    });
+    // Registra firebase-messaging-sw.js (notifiche push)
+    navigator.serviceWorker.register("./firebase-messaging-sw.js").catch(function(e) {
+      console.warn("firebase-messaging-sw.js non registrato:", e.message);
+    });
   });
 }
 </script>
