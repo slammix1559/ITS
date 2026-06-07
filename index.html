@@ -929,22 +929,27 @@ async function apriRegistro() {
   const tuttiVoti=res.success?(res.voti||[]):[];
   const votiMateria={};
   tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{ const em=String(v.EMAIL_STUDENTE||"").toLowerCase(); if(!votiMateria[em]) votiMateria[em]=[]; votiMateria[em].push(v); });
-  let html=`<div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div><div class="card" style="padding:.5rem">`;
+  let html=`<div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
   studenti.forEach(s=>{
     const email=s.email.toLowerCase(), votiSt=votiMateria[email]||[];
     const media=votiSt.length?Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10:null;
-    const pillsHtml=votiSt.map(v=>`<span class="voto-pill" style="min-width:48px;padding:.3rem .5rem">
-      <span class="v-num ${votoClass(parseFloat(v.VOTO))}">${v.VOTO}</span>
-      <span class="v-date">${_fmtDataIT(v.DATA)}</span>
-      ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.ID}')">🗑</span>`:''}
-    </span>`).join("");
-    html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.6rem .5rem;border-bottom:1px solid var(--border)">
-      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.nome)}</div>
-      <div style="font-size:.7rem;color:var(--muted)">${s.annualita}° anno</div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:3px;align-items:center">${pillsHtml}</div>
-      ${media!==null?`<div style="font-family:var(--font-head);font-weight:800;font-size:.95rem;color:${mediaColor(media)};min-width:38px;text-align:center">${media}</div>`:'<div style="min-width:38px"></div>'}
-      <input type="number" min="0" max="30" step="0.5" placeholder="—" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}"
-        style="width:62px;padding:.4rem .5rem;font-size:.9rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text)">
+    // Pill compatte: solo numero + eventuale cestino, data in tooltip
+    const pillsHtml=votiSt.map(v=>{
+      const num=parseFloat(v.VOTO); const cls=votoClass(num);
+      const dataStr=_fmtDataIT(v.DATA);
+      return `<span title="${dataStr}" style="display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.18rem .38rem;font-family:var(--font-head);font-weight:700;font-size:.8rem" class="${cls}">${v.VOTO}${_user.ruolo==="COORDINATORE"?`<span style="font-size:.6rem;cursor:pointer;opacity:.6;margin-left:1px" onclick="eliminaVotoById('${v.ID}')" title="Elimina">✕</span>`:''}</span>`;
+    }).join("");
+    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
+        <div style="flex:1;min-width:0">
+          <span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span>
+          <span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${s.annualita}° anno</span>
+        </div>
+        ${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)};white-space:nowrap">⌀ ${media}</span>`:''}
+        <input type="number" min="0" max="30" step="0.5" placeholder="—" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}"
+          style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0">
+      </div>
+      ${pillsHtml?`<div style="display:flex;flex-wrap:wrap;gap:4px">${pillsHtml}</div>`:'<div style="font-size:.72rem;color:var(--muted);font-style:italic">Nessun voto</div>'}
     </div>`;
   });
   html+=`</div><div style="margin-top:1rem">
