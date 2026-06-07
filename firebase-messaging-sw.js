@@ -1,6 +1,4 @@
 // firebase-messaging-sw.js – ITSApp
-// IMPORTANTE: questo file deve stare nella ROOT del sito (stessa cartella di index.html e sw.js)
-
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
@@ -15,19 +13,23 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Notifiche quando l'app è in BACKGROUND o chiusa
+// Notifiche in background
 messaging.onBackgroundMessage(function(payload) {
   const n = payload.notification || {};
-  self.registration.showNotification(n.title || "ITSApp", {
-    body:    n.body  || "Nuova comunicazione",
+  const title = n.title || "ITSApp";
+  const body  = n.body  || "Nuova comunicazione";
+  return self.registration.showNotification(title, {
+    body:    body,
     icon:    "https://slammix1559.github.io/ITS/logoITS.png",
     badge:   "https://slammix1559.github.io/ITS/logoITS.png",
     vibrate: [200, 100, 200],
+    tag:     "itsapp-notifica",
+    renotify: true,
     data:    { url: "https://slammix1559.github.io/ITS/" }
   });
 });
 
-// Clic sulla notifica → porta in primo piano l'app
+// Clic sulla notifica
 self.addEventListener("notificationclick", function(e) {
   e.notification.close();
   const target = (e.notification.data && e.notification.data.url)
