@@ -55,12 +55,12 @@ self.addEventListener("fetch", function(e) {
 // ── NOTIFICHE FCM IN BACKGROUND ──
 messaging.onBackgroundMessage(function(payload) {
   const n = payload.notification || {};
-  const title = n.title || "ITSApp";
+  const title = n.title || "Libretto digitale";
   const body  = n.body  || "Nuova comunicazione";
   return self.registration.showNotification(title, {
     body:     body,
-    icon:     "https://slammix1559.github.io/ITS/logoITS.png",
-    badge:    "https://slammix1559.github.io/ITS/logoITS.png",
+    icon:     "https://slammix1559.github.io/ITS/ITS_academy_logo.png",
+    badge:    "https://slammix1559.github.io/ITS/ITS_academy_logo.png",
     vibrate:  [200, 100, 200],
     tag:      "itsapp-notifica",
     renotify: true,
