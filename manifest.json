@@ -1,6 +1,6 @@
 {
   "name": "ITSApp – Meccanica e Meccatronica Lombardia",
-  "short_name": "ITSApp",
+  "short_name": "Libretto Digitale",
   "description": "App per studenti, docenti e staff ITS Meccanica e Meccatronica Lombardia",
   "start_url": "./index.html",
   "scope": "./",
@@ -10,13 +10,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "logoITS.png",
+      "src": "ITS_academy_logo.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logoITS.png",
+      "src": "ITS_academy_logo.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
