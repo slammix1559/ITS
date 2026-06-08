@@ -1182,6 +1182,31 @@ let _dispColorMap = {};  // email -> indice colore
 let _dispLista = [];     // cache disponibilità
 let _calWeekOffset = 0;  // 0 = settimana corrente
 
+// Estrae cognome dall'email: fbarbarossa -> Barbarossa, g.vitellaro -> Vitellaro
+function _getTutorName(email) {
+  if (!email) return "";
+  const local = email.split("@")[0].toLowerCase();
+  // Formato iniziale+cognome (es. fbarbarossa, dbrancati)
+  // oppure iniziale.cognome (es. g.vitellaro) o nome.cognome
+  let cleaned = local;
+  // Rimuovi suffissi .docenti .studenti ecc.
+  cleaned = cleaned.replace(/\.(docenti|studenti|tutor)$/i, "");
+  // Se contiene un punto: prendi la seconda parte (nome.cognome -> cognome)
+  if (cleaned.includes(".")) {
+    const parts = cleaned.split(".");
+    cleaned = parts[parts.length - 1];
+  } else {
+    // inizialeCognome: rimuovi primo carattere se è una sola lettera iniziale
+    // es. fbarbarossa -> barbarossa, ma "barbarossa" da solo rimane
+    if (cleaned.length > 1 && /^[a-z]/.test(cleaned)) {
+      // Euristica: se il primo char è seguito da almeno 4 char, è probabile sia iniziale+cognome
+      cleaned = cleaned.slice(1);
+    }
+  }
+  // Capitalizza
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
 function _getTutorColor(email) {
   if (!email) return TUTOR_COLORS[0];
   if (_dispColorMap[email] === undefined) {
@@ -1328,7 +1353,7 @@ function _renderCalendario() {
       const emailT=String(d.EMAIL_TUTOR||_user.email||"");
       const col=_getTutorColor(emailT);
       // Nome breve tutor
-      const nomeTutor = emailT ? emailT.split("@")[0].replace(/\./g," ") : "";
+      const nomeTutor = _getTutorName(emailT);
       const mostraElimina = (r==="COORDINATORE") || (r==="TUTOR" && emailT.toLowerCase()===(_user.email||"").toLowerCase());
       slotsHtml+=`<div style="position:absolute;top:${top}px;left:1px;right:1px;height:${h}px;background:${col.bg};border-left:3px solid ${col.border};border-radius:4px;padding:2px 4px;overflow:hidden;cursor:default;z-index:2"
         title="${esc(emailT)}: ${d.ORA_INIZIO}–${d.ORA_FINE}${d.NOTE?' ('+d.NOTE+')':''}">
@@ -1353,7 +1378,7 @@ function _renderCalendario() {
     legendaHtml=`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem">`;
     tutorList.forEach(email=>{
       const col=_getTutorColor(email);
-      const nome=email.split("@")[0].replace(/\./g," ");
+      const nome=_getTutorName(email);
       legendaHtml+=`<div style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;background:var(--surface2);border-radius:6px;padding:.2rem .5rem;border:1px solid var(--border)">
         <span style="width:8px;height:8px;border-radius:50%;background:${col.border};display:inline-block;flex-shrink:0"></span>
         <span style="color:var(--text)">${esc(nome)}</span>
@@ -1405,7 +1430,7 @@ function aggiornaSlotOccupati() {
   let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot già occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
   altriSlot.forEach(d=>{
     const col=_getTutorColor(d.EMAIL_TUTOR||"");
-    const nome=(d.EMAIL_TUTOR||"").split("@")[0];
+    const nome=_getTutorName(d.EMAIL_TUTOR||"");
     html+=`<span style="background:${col.bg};border-radius:5px;padding:.15rem .4rem;font-size:.72rem;font-weight:600;color:${col.text}">${esc(d.ORA_INIZIO)}–${esc(d.ORA_FINE)} (${esc(nome)})</span>`;
   });
   html+=`</div>`;
@@ -1427,7 +1452,7 @@ function verificaConflittoLive() {
     return _overlap(iniMin,finMin,_parseMinutes(d.ORA_INIZIO),_parseMinutes(d.ORA_FINE));
   });
   if (conflitto) {
-    const nome=(conflitto.EMAIL_TUTOR||"").split("@")[0];
+    const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");
     conflDiv.textContent=`⚠️ Conflitto con ${nome} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE})`;
     conflDiv.style.display="block";
   } else {
@@ -1463,7 +1488,7 @@ async function salvaDisponibilita() {
   });
   if (conflitto) {
     const emailC=conflitto.EMAIL_TUTOR||"altro tutor";
-    return showErr("disp-err",`Slot già occupato da ${emailC.split("@")[0]} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE}). Scegli un orario diverso.`);
+    return showErr("disp-err",`Slot già occupato da ${_getTutorName(emailC)} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE}). Scegli un orario diverso.`);
   }
 
   const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});
