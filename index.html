@@ -341,12 +341,14 @@ firebase.initializeApp({
       <h4>Inserisci disponibilità</h4>
       <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp')">✕</button>
     </div>
-    <div class="form-group"><label>Data</label><input type="date" id="disp-data"></div>
-    <div class="form-group"><label>Ora disponibile dalle</label><input type="time" id="disp-ini"></div>
-    <div class="form-group"><label>Ora disponibile fino alle</label><input type="time" id="disp-fin"></div>
+    <div class="form-group"><label>Data</label><input type="date" id="disp-data" onchange="aggiornaSlotOccupati()"></div>
+    <div id="disp-slot-occupati" style="margin-bottom:.75rem;display:none"></div>
+    <div class="form-group"><label>Ora inizio</label><input type="time" id="disp-ini" oninput="verificaConflittoLive()"></div>
+    <div class="form-group"><label>Ora fine</label><input type="time" id="disp-fin" oninput="verificaConflittoLive()"></div>
     <div class="form-group"><label>Note (opzionale)</label><input type="text" id="disp-note" placeholder="Es. solo mattina, telefonare..."></div>
+    <div id="disp-conflict" class="alert" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:.8rem;margin-bottom:.75rem;display:none"></div>
     <div class="alert" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;font-size:.8rem;margin-bottom:.75rem">
-      ⚠️ Una volta inserita, la disponibilità non può essere modificata. Contatta il coordinatore per rimuoverla.
+      ⚠️ Slot già occupati da altri tutor non sono selezionabili.
     </div>
     <div id="disp-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
     <button class="btn btn-primary" style="width:100%" onclick="salvaDisponibilita()">Conferma disponibilità</button>
@@ -1164,48 +1166,317 @@ async function inviaComunicazione() {
 }
 
 /* ═══════════════════════════════════════════════════
-   DISPONIBILITÀ
+   DISPONIBILITÀ — CALENDARIO SETTIMANALE
 ═══════════════════════════════════════════════════ */
+
+// Colori tutor: assegnati dinamicamente per email
+const TUTOR_COLORS = [
+  {bg:"rgba(59,130,246,.85)",  border:"#3b82f6",  text:"#fff"},  // blu
+  {bg:"rgba(239,68,68,.85)",   border:"#ef4444",  text:"#fff"},  // rosso
+  {bg:"rgba(16,185,129,.85)",  border:"#10b981",  text:"#fff"},  // verde
+  {bg:"rgba(245,158,11,.85)",  border:"#f59e0b",  text:"#000"},  // giallo
+  {bg:"rgba(139,92,246,.85)",  border:"#8b5cf6",  text:"#fff"},  // viola
+  {bg:"rgba(236,72,153,.85)",  border:"#ec4899",  text:"#fff"},  // rosa
+];
+let _dispColorMap = {};  // email -> indice colore
+let _dispLista = [];     // cache disponibilità
+let _calWeekOffset = 0;  // 0 = settimana corrente
+
+function _getTutorColor(email) {
+  if (!email) return TUTOR_COLORS[0];
+  if (_dispColorMap[email] === undefined) {
+    const idx = Object.keys(_dispColorMap).length % TUTOR_COLORS.length;
+    _dispColorMap[email] = idx;
+  }
+  return TUTOR_COLORS[_dispColorMap[email]];
+}
+
+function _getMondayOf(weekOffset) {
+  const now = new Date();
+  const day = now.getDay(); // 0=dom
+  const diffToMon = (day === 0) ? -6 : 1 - day;
+  const mon = new Date(now);
+  mon.setDate(now.getDate() + diffToMon + weekOffset * 7);
+  mon.setHours(0,0,0,0);
+  return mon;
+}
+
+function _isoDate(d) {
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function _parseMinutes(hhmm) {
+  if (!hhmm) return null;
+  const [h,m] = String(hhmm).split(":").map(Number);
+  return h*60 + (m||0);
+}
+
+function _fmtHM(min) {
+  return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0");
+}
+
+// Controlla sovrapposizione tra due slot [ini1,fin1) e [ini2,fin2) in minuti
+function _overlap(ini1,fin1,ini2,fin2) {
+  return ini1 < fin2 && ini2 < fin1;
+}
+
 async function renderDisponibilita() {
   const pane=$("pane-disponibilita"), r=_user.ruolo;
-  const title=r==="COORDINATORE"?"📆 Disponibilità tutor":"📆 Le mie disponibilità";
-  const actions=r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="openModal('modal-disp')" style="margin-bottom:1rem">➕ Inserisci disponibilità</button>`:"";
-  pane.innerHTML=`<div class="page-header"><h2>${title}</h2></div>${actions}<div id="disp-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-  hideErr("disp-err");
-  const res=await api("getDisponibilita",{});
-  if (!res.success) { $("disp-content").innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-  const lista=res.disponibilita||[];
-  if (!lista.length) { $("disp-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilità inserita.</div>`; return; }
-  const perMese={};
-  lista.sort((a,b)=>String(a.DATA)>String(b.DATA)?1:-1).forEach(d=>{ const key=String(d.DATA||"").slice(0,7); if(!perMese[key]) perMese[key]=[]; perMese[key].push(d); });
-  let html="";
-  Object.keys(perMese).sort().forEach(mese=>{
-    const [y,m]=mese.split("-");
-    const MESI=["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
-    html+=`<div class="section-title">${MESI[parseInt(m)]} ${y}</div>`;
-    perMese[mese].forEach(d=>{
-      html+=`<div class="disp-card"><div>
-        <div class="disp-date">${esc(d.dataIT||fmtData(d.DATA))}</div>
-        <div class="disp-time">⏰ ${esc(d.ORA_INIZIO)} – ${esc(d.ORA_FINE)}</div>
-        ${d.EMAIL_TUTOR&&r==="COORDINATORE"?`<div style="font-size:.72rem;color:var(--muted)">👤 ${esc(d.EMAIL_TUTOR)}</div>`:''}
-        ${d.NOTE?`<div class="disp-note">${esc(d.NOTE)}</div>`:''}
-      </div>${r==="COORDINATORE"?`<button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:#f87171;margin-left:auto" onclick="rimuoviDisp('${d.ID}')">Rimuovi</button>`:''}</div>`;
-    });
-  });
-  $("disp-content").innerHTML=html;
+  const title = r==="COORDINATORE" ? "📆 Disponibilità tutor" : "📆 Le mie disponibilità";
+  pane.innerHTML=`<div class="page-header"><h2>${title}</h2></div>
+    <div id="disp-toolbar" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+      ${r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="apriModalDisp()">➕ Aggiungi</button>`:""}
+      <div style="display:flex;align-items:center;gap:.25rem;margin-left:auto">
+        <button class="btn btn-outline btn-sm" onclick="cambiaSettimana(-1)">‹</button>
+        <span id="disp-week-label" style="font-size:.8rem;font-weight:600;min-width:120px;text-align:center"></span>
+        <button class="btn btn-outline btn-sm" onclick="cambiaSettimana(1)">›</button>
+        <button class="btn btn-outline btn-sm" onclick="tornaOggi()">Oggi</button>
+      </div>
+    </div>
+    <div id="disp-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
+    <div id="disp-legenda" style="margin-top:.75rem"></div>`;
+  await _caricaERenderCalendario();
 }
+
+async function _caricaERenderCalendario() {
+  const cont=$("disp-content");
+  cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res=await api("getDisponibilita",{});
+  if (!res.success) { cont.innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
+  _dispLista = res.disponibilita||[];
+  _dispColorMap = {};
+  _renderCalendario();
+}
+
+function _renderCalendario() {
+  const cont=$("disp-content"), r=_user.ruolo;
+  const lbl=$("disp-week-label");
+
+  const monday = _getMondayOf(_calWeekOffset);
+  const giorni = [];
+  const GIORNI_SHORT = ["Lun","Mar","Mer","Gio","Ven","Sab","Dom"];
+  const MESI_SHORT = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+  for (let i=0;i<7;i++) {
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    giorni.push(d);
+  }
+  const sunday = giorni[6];
+
+  // Label settimana
+  if (lbl) {
+    const s=monday, e=sunday;
+    lbl.textContent = `${s.getDate()} ${MESI_SHORT[s.getMonth()]} – ${e.getDate()} ${MESI_SHORT[e.getMonth()]} ${e.getFullYear()}`;
+  }
+
+  // Filtro disponibilità della settimana
+  const isoStart=_isoDate(monday), isoEnd=_isoDate(sunday);
+  const dispSettimana=_dispLista.filter(d=>{
+    const iso=String(d.DATA||"").split("T")[0];
+    return iso>=isoStart && iso<=isoEnd;
+  });
+
+  // Calcola range ore da mostrare (min 8:00–20:00, espandi se necessario)
+  let minOra=8*60, maxOra=20*60;
+  dispSettimana.forEach(d=>{
+    const ini=_parseMinutes(d.ORA_INIZIO), fin=_parseMinutes(d.ORA_FINE);
+    if (ini!==null && ini<minOra) minOra=Math.floor(ini/60)*60;
+    if (fin!==null && fin>maxOra) maxOra=Math.ceil(fin/60)*60;
+  });
+  const totalMin = maxOra - minOra;
+  const PX_PER_MIN = 1.2; // px per minuto
+  const totalH = Math.round(totalMin * PX_PER_MIN);
+
+  // Oggi
+  const todayIso = _isoDate(new Date());
+
+  // Build colore tutor
+  dispSettimana.forEach(d=>{ if(d.EMAIL_TUTOR) _getTutorColor(d.EMAIL_TUTOR); });
+
+  // Riga etichette ore (sx)
+  let oreHtml='';
+  for (let m=minOra; m<=maxOra; m+=60) {
+    const top = Math.round((m-minOra)*PX_PER_MIN);
+    oreHtml+=`<div style="position:absolute;top:${top}px;left:0;right:0;font-size:.62rem;color:var(--muted);line-height:1;padding-right:2px;text-align:right">${_fmtHM(m)}</div>`;
+  }
+
+  // Colonne giorni
+  let colsHtml='';
+  giorni.forEach((giorno,gi)=>{
+    const isoG=_isoDate(giorno);
+    const isOggi=isoG===todayIso;
+    const dispGiorno=dispSettimana.filter(d=>String(d.DATA||"").split("T")[0]===isoG);
+
+    // Header giorno
+    const hdr=`<div style="text-align:center;padding:.2rem 0;font-size:.7rem;font-weight:700;color:${isOggi?'var(--accent)':'var(--muted)'};border-bottom:1px solid var(--border);background:var(--surface2);border-radius:6px 6px 0 0;white-space:nowrap">
+      ${GIORNI_SHORT[gi]}<br><span style="font-size:.78rem;color:${isOggi?'var(--accent)':'var(--text)'};font-weight:${isOggi?'800':'600'}">${giorno.getDate()}</span>
+    </div>`;
+
+    // Linee ore di sfondo
+    let bgLines='';
+    for (let m=minOra; m<=maxOra; m+=60) {
+      const top=Math.round((m-minOra)*PX_PER_MIN);
+      bgLines+=`<div style="position:absolute;top:${top}px;left:0;right:0;height:1px;background:var(--border)"></div>`;
+    }
+
+    // Slot disponibilità
+    let slotsHtml='';
+    dispGiorno.forEach(d=>{
+      const ini=_parseMinutes(d.ORA_INIZIO), fin=_parseMinutes(d.ORA_FINE);
+      if (ini===null||fin===null) return;
+      const top=Math.round((ini-minOra)*PX_PER_MIN);
+      const h=Math.max(18, Math.round((fin-ini)*PX_PER_MIN));
+      const emailT=String(d.EMAIL_TUTOR||_user.email||"");
+      const col=_getTutorColor(emailT);
+      // Nome breve tutor
+      const nomeTutor = emailT ? emailT.split("@")[0].replace(/\./g," ") : "";
+      const mostraElimina = (r==="COORDINATORE") || (r==="TUTOR" && emailT.toLowerCase()===(_user.email||"").toLowerCase());
+      slotsHtml+=`<div style="position:absolute;top:${top}px;left:1px;right:1px;height:${h}px;background:${col.bg};border-left:3px solid ${col.border};border-radius:4px;padding:2px 4px;overflow:hidden;cursor:default;z-index:2"
+        title="${esc(emailT)}: ${d.ORA_INIZIO}–${d.ORA_FINE}${d.NOTE?' ('+d.NOTE+')':''}">
+        <div style="font-size:.6rem;font-weight:700;color:${col.text};line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.ORA_INIZIO)}–${esc(d.ORA_FINE)}</div>
+        ${h>28?`<div style="font-size:.58rem;color:${col.text};opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(nomeTutor)}</div>`:''}
+        ${mostraElimina&&h>22?`<div style="position:absolute;bottom:1px;right:2px;font-size:.58rem;cursor:pointer;opacity:.8;color:${col.text}" onclick="rimuoviDisp('${d.ID}')">✕</div>`:''}
+      </div>`;
+    });
+
+    colsHtml+=`<div style="flex:1;min-width:0">
+      ${hdr}
+      <div style="position:relative;height:${totalH}px;background:${isOggi?'rgba(59,130,246,.04)':'transparent'}">
+        ${bgLines}${slotsHtml}
+      </div>
+    </div>`;
+  });
+
+  // Legenda tutor (solo coordinatore o se ci sono più tutor)
+  let legendaHtml='';
+  const tutorList=Object.keys(_dispColorMap);
+  if (tutorList.length>0 && (r==="COORDINATORE" || tutorList.length>1)) {
+    legendaHtml=`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem">`;
+    tutorList.forEach(email=>{
+      const col=_getTutorColor(email);
+      const nome=email.split("@")[0].replace(/\./g," ");
+      legendaHtml+=`<div style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;background:var(--surface2);border-radius:6px;padding:.2rem .5rem;border:1px solid var(--border)">
+        <span style="width:8px;height:8px;border-radius:50%;background:${col.border};display:inline-block;flex-shrink:0"></span>
+        <span style="color:var(--text)">${esc(nome)}</span>
+      </div>`;
+    });
+    legendaHtml+=`</div>`;
+  }
+
+  if ($("disp-legenda")) $("disp-legenda").innerHTML=legendaHtml;
+
+  if (!dispSettimana.length) {
+    cont.innerHTML=`<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <div style="display:flex">
+        <div style="width:30px;flex-shrink:0"></div>
+        ${colsHtml}
+      </div>
+      <div class="text-muted" style="text-align:center;padding:1.5rem;font-size:.85rem">Nessuna disponibilità questa settimana</div>
+    </div>`;
+    return;
+  }
+
+  cont.innerHTML=`<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
+    <div style="display:flex;min-width:280px">
+      <div style="width:30px;flex-shrink:0;position:relative;padding-top:32px">${oreHtml}</div>
+      ${colsHtml}
+    </div>
+  </div>`;
+}
+
+function cambiaSettimana(delta) {
+  _calWeekOffset += delta;
+  _renderCalendario();
+}
+function tornaOggi() {
+  _calWeekOffset = 0;
+  _renderCalendario();
+}
+
+function aggiornaSlotOccupati() {
+  const data=$("disp-data")&&$("disp-data").value;
+  const cont=$("disp-slot-occupati"); if(!cont) return;
+  if (!data || !_dispLista.length) { cont.style.display="none"; return; }
+  const myEmail=(_user.email||"").toLowerCase();
+  const altriSlot=_dispLista.filter(d=>{
+    const iso=String(d.DATA||"").split("T")[0];
+    return iso===data && String(d.EMAIL_TUTOR||"").toLowerCase()!==myEmail;
+  });
+  if (!altriSlot.length) { cont.style.display="none"; return; }
+  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot già occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
+  altriSlot.forEach(d=>{
+    const col=_getTutorColor(d.EMAIL_TUTOR||"");
+    const nome=(d.EMAIL_TUTOR||"").split("@")[0];
+    html+=`<span style="background:${col.bg};border-radius:5px;padding:.15rem .4rem;font-size:.72rem;font-weight:600;color:${col.text}">${esc(d.ORA_INIZIO)}–${esc(d.ORA_FINE)} (${esc(nome)})</span>`;
+  });
+  html+=`</div>`;
+  cont.innerHTML=html; cont.style.display="block";
+  verificaConflittoLive();
+}
+function verificaConflittoLive() {
+  const data=$("disp-data")&&$("disp-data").value;
+  const ini=$("disp-ini")&&$("disp-ini").value;
+  const fin=$("disp-fin")&&$("disp-fin").value;
+  const conflDiv=$("disp-conflict"); if(!conflDiv) return;
+  if (!data||!ini||!fin||ini>=fin) { conflDiv.style.display="none"; return; }
+  const iniMin=_parseMinutes(ini), finMin=_parseMinutes(fin);
+  const myEmail=(_user.email||"").toLowerCase();
+  const conflitto=_dispLista.find(d=>{
+    const iso=String(d.DATA||"").split("T")[0];
+    if (iso!==data) return false;
+    if (String(d.EMAIL_TUTOR||"").toLowerCase()===myEmail) return false;
+    return _overlap(iniMin,finMin,_parseMinutes(d.ORA_INIZIO),_parseMinutes(d.ORA_FINE));
+  });
+  if (conflitto) {
+    const nome=(conflitto.EMAIL_TUTOR||"").split("@")[0];
+    conflDiv.textContent=`⚠️ Conflitto con ${nome} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE})`;
+    conflDiv.style.display="block";
+  } else {
+    conflDiv.style.display="none";
+  }
+}
+
+function apriModalDisp() {
+  // Controlla se lo slot richiesto si sovrappone a uno già esistente di un altro tutor
+  $("disp-data").value=todayISO();
+  $("disp-ini").value=""; $("disp-fin").value=""; $("disp-note").value="";
+  hideErr("disp-err"); openModal("modal-disp");
+}
+
 async function salvaDisponibilita() {
   hideErr("disp-err");
   const data=$("disp-data").value, ini=$("disp-ini").value, fin=$("disp-fin").value, note=$("disp-note").value;
   if (!data) return showErr("disp-err","Inserisci la data.");
   if (!ini||!fin) return showErr("disp-err","Inserisci l'orario.");
+  if (ini>=fin) return showErr("disp-err","L'ora fine deve essere dopo l'ora inizio.");
+
+  // Controllo sovrapposizione lato client: lo slot non può sovrapporsi a uno già occupato da un ALTRO tutor
+  const iniMin=_parseMinutes(ini), finMin=_parseMinutes(fin);
+  const myEmail=(_user.email||"").toLowerCase();
+  const conflitto=_dispLista.find(d=>{
+    const isoD=String(d.DATA||"").split("T")[0];
+    if (isoD!==data) return false;
+    const emailT=String(d.EMAIL_TUTOR||"").toLowerCase();
+    if (emailT===myEmail) return false; // stesso tutor: sovrapposizione permessa (modifica)
+    const dIni=_parseMinutes(d.ORA_INIZIO), dFin=_parseMinutes(d.ORA_FINE);
+    if (dIni===null||dFin===null) return false;
+    return _overlap(iniMin,finMin,dIni,dFin);
+  });
+  if (conflitto) {
+    const emailC=conflitto.EMAIL_TUTOR||"altro tutor";
+    return showErr("disp-err",`Slot già occupato da ${emailC.split("@")[0]} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE}). Scegli un orario diverso.`);
+  }
+
   const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});
   if (!res.success) return showErr("disp-err",res.message);
-  chiudiModal("modal-disp"); renderDisponibilita();
+  chiudiModal("modal-disp");
+  // Aggiorna cache e ri-renderizza senza rifare la chiamata API
+  await _caricaERenderCalendario();
 }
+
 async function rimuoviDisp(id) {
   if (!confirm("Rimuovere questa disponibilità?")) return;
-  const res=await api("rimuoviDisponibilita",{id}); if(res.success) renderDisponibilita(); else alert(res.message);
+  const res=await api("rimuoviDisponibilita",{id});
+  if (res.success) await _caricaERenderCalendario(); else alert(res.message);
 }
 
 /* ═══════════════════════════════════════════════════
