@@ -7,28 +7,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a1628">
-<title>ITSApp – ITS Meccanica e Meccatronica Lombardia</title>
+<title>ITSApp - ITS Meccanica e Meccatronica Lombardia</title>
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap">
 <style>
-:root {
-  --bg: #070e1c;
-  --surface: #0d1a2e;
-  --surface2: #122040;
-  --border: rgba(255,255,255,.08);
-  --accent: #3b82f6;
-  --accent2: #60a5fa;
-  --gold: #f59e0b;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --card-radius: 16px;
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
-}
+:root{--bg:#070e1c;--surface:#0d1a2e;--surface2:#122040;--border:rgba(255,255,255,.08);--accent:#3b82f6;--accent2:#60a5fa;--gold:#f59e0b;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--text:#e2e8f0;--muted:#64748b;--card-radius:16px;--font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{height:100%;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15px;line-height:1.6;padding-top:env(safe-area-inset-top);overflow-x:hidden}
@@ -38,20 +22,14 @@ body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:400px;heig
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.25rem;position:relative;z-index:1}
 .card-sm{padding:.875rem}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:10px;cursor:pointer;font-family:var(--font-body);font-size:.875rem;font-weight:500;padding:.55rem 1.1rem;transition:all .18s ease;text-decoration:none;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#2563eb;transform:translateY(-1px)}
-.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-outline:hover{background:var(--surface2);border-color:var(--accent)}
-.btn-danger{background:var(--danger);color:#fff}
-.btn-danger:hover{background:#dc2626}
-.btn-success{background:var(--success);color:#fff}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#2563eb;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}.btn-outline:hover{background:var(--surface2);border-color:var(--accent)}
+.btn-danger{background:var(--danger);color:#fff}.btn-success{background:var(--success);color:#fff}
 .btn-sm{font-size:.78rem;padding:.4rem .8rem;border-radius:8px}
 .btn-icon{width:36px;height:36px;padding:0;border-radius:8px}
 .badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:600;padding:.25rem .6rem;border-radius:6px}
-.badge-blue{background:rgba(59,130,246,.18);color:var(--accent2)}
-.badge-green{background:rgba(16,185,129,.18);color:#34d399}
-.badge-yellow{background:rgba(245,158,11,.18);color:#fbbf24}
-.badge-red{background:rgba(239,68,68,.18);color:#f87171}
+.badge-blue{background:rgba(59,130,246,.18);color:var(--accent2)}.badge-green{background:rgba(16,185,129,.18);color:#34d399}
+.badge-yellow{background:rgba(245,158,11,.18);color:#fbbf24}.badge-red{background:rgba(239,68,68,.18);color:#f87171}
 .badge-gray{background:rgba(100,116,139,.18);color:var(--muted)}
 input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:.9rem;padding:.65rem .9rem;outline:none;transition:border-color .18s}
 input::placeholder,textarea::placeholder{color:var(--muted)}
@@ -65,11 +43,7 @@ label{display:block;font-size:.8rem;font-weight:500;color:var(--muted);margin-bo
 .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .divider{height:1px;background:var(--border);margin:1rem 0}
-.text-muted{color:var(--muted)}
-.text-accent{color:var(--accent)}
-.text-success{color:var(--success)}
-.text-danger{color:var(--danger)}
-.text-warning{color:var(--warning)}
+.text-muted{color:var(--muted)}.text-accent{color:var(--accent)}.text-success{color:var(--success)}.text-danger{color:var(--danger)}.text-warning{color:var(--warning)}
 h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);padding:1.1rem 1.25rem}
 .stat-val{font-family:var(--font-head);font-size:1.8rem;font-weight:800;line-height:1}
@@ -95,10 +69,8 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .navbar-brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-head);font-weight:800;font-size:1rem;color:var(--text)}
 .navbar-actions{display:flex;gap:.5rem;align-items:center}
 .notif-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:var(--danger);border-radius:50%;border:2px solid var(--bg)}
-.role-COORDINATORE{background:rgba(245,158,11,.2);color:#fbbf24}
-.role-TUTOR{background:rgba(16,185,129,.2);color:#34d399}
-.role-DOCENTE{background:rgba(139,92,246,.2);color:#a78bfa}
-.role-STUDENTE{background:rgba(59,130,246,.2);color:var(--accent2)}
+.role-COORDINATORE{background:rgba(245,158,11,.2);color:#fbbf24}.role-TUTOR{background:rgba(16,185,129,.2);color:#34d399}
+.role-DOCENTE{background:rgba(139,92,246,.2);color:#a78bfa}.role-STUDENTE{background:rgba(59,130,246,.2);color:var(--accent2)}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;z-index:1}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:420px;padding:2rem 2rem 2.5rem;width:100%}
 .login-logo{text-align:center;margin-bottom:1.5rem}
@@ -129,90 +101,60 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .voto-pill{align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;font-family:var(--font-head);gap:1px;padding:.5rem .75rem;min-width:60px;text-align:center}
 .voto-pill .v-num{font-size:1.15rem;font-weight:800}
 .voto-pill .v-date{font-size:.62rem;color:var(--muted)}
-.voto-pill .v-del{font-size:.65rem;color:var(--muted);cursor:pointer;margin-top:2px}
-.voto-pill .v-del:hover{color:var(--danger)}
 .presence-row{align-items:center;display:flex;gap:.75rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
 .presence-row:last-child{border-bottom:none}
 .tipo-badge{border-radius:6px;font-size:.7rem;font-weight:700;padding:.2rem .5rem;text-transform:uppercase;min-width:62px;text-align:center}
-.tipo-PRESENZA{background:rgba(16,185,129,.15);color:#34d399}
-.tipo-ASSENZA{background:rgba(239,68,68,.15);color:#f87171}
-.tipo-RITARDO{background:rgba(245,158,11,.15);color:#fbbf24}
+.tipo-PRESENZA{background:rgba(16,185,129,.15);color:#34d399}.tipo-ASSENZA{background:rgba(239,68,68,.15);color:#f87171}.tipo-RITARDO{background:rgba(245,158,11,.15);color:#fbbf24}
 .comm-card{border-radius:12px;border:1px solid var(--border);background:var(--surface);padding:1rem;margin-bottom:.6rem;cursor:pointer;transition:all .18s}
-.comm-card:hover{border-color:rgba(59,130,246,.3)}
-.comm-card.unread{border-left:3px solid var(--accent)}
+.comm-card:hover{border-color:rgba(59,130,246,.3)}.comm-card.unread{border-left:3px solid var(--accent)}
 .comm-title{font-weight:600;font-size:.95rem;margin-bottom:.25rem}
 .comm-meta{font-size:.75rem;color:var(--muted);display:flex;gap:.75rem;flex-wrap:wrap}
 .comm-preview{font-size:.82rem;color:var(--muted);margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .disp-card{background:var(--surface2);border-radius:10px;padding:.85rem 1rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.75rem}
 .disp-date{font-family:var(--font-head);font-weight:700;min-width:90px}
 .disp-time{font-size:.82rem;color:var(--muted)}
-.disp-note{font-size:.78rem;color:var(--muted);font-style:italic}
-/* Tabellone voti */
 .tabellone-row:hover td{background:rgba(59,130,246,.06)!important}
 .tabellone-row:hover td:first-child{background:rgba(59,130,246,.1)!important}
-@media(max-width:420px){
-  .grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}
-  .stat-val{font-size:1.5rem}
-  .navbar-brand span{display:none}
-  .main{padding:1rem .875rem 5.5rem}
-}
+@media(max-width:420px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.stat-val{font-size:1.5rem}.navbar-brand span{display:none}.main{padding:1rem .875rem 5.5rem}}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
 
-<!-- ══════ FIREBASE SDK ══════ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:            "AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",
-  authDomain:        "its-lombardia-meccatronica.firebaseapp.com",
-  projectId:         "its-lombardia-meccatronica",
-  storageBucket:     "its-lombardia-meccatronica.firebasestorage.app",
-  messagingSenderId: "260932633943",
-  appId:             "1:260932633943:web:1bcdb5d8f2393ff667aa12"
-});
+firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDomain:"its-lombardia-meccatronica.firebaseapp.com",projectId:"its-lombardia-meccatronica",storageBucket:"its-lombardia-meccatronica.firebasestorage.app",messagingSenderId:"260932633943",appId:"1:260932633943:web:1bcdb5d8f2393ff667aa12"});
 </script>
 
-<!-- ══════ NAVBAR ══════ -->
 <nav id="navbar" class="navbar hide">
   <div class="navbar-brand">
-    <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:80px;width:auto;display:block">
+    <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS" style="height:80px;width:auto;display:block">
   </div>
   <div class="navbar-actions">
     <div style="position:relative">
-      <button class="btn btn-icon btn-outline" id="notif-btn" onclick="switchPane('comunicazioni')" title="Comunicazioni">🔔
+      <button class="btn btn-icon btn-outline" id="notif-btn" onclick="switchPane('comunicazioni')" title="Comunicazioni">&#128276;
         <span class="notif-dot hide" id="notif-dot"></span>
       </button>
     </div>
-    <button class="btn btn-sm btn-outline" onclick="apriModalePwd()">🔑</button>
+    <button class="btn btn-sm btn-outline" onclick="apriModalePwd()">&#128273;</button>
     <button class="btn btn-sm btn-outline" onclick="doLogout()">Esci</button>
   </div>
 </nav>
 
-<!-- ══════ LOGIN ══════ -->
 <div id="view-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
-      <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Meccanica e Meccatronica" style="height:180px;width:auto;display:block;margin:0 auto 1rem">
-      <p>Lombardia — Area Studenti &amp; Staff</p>
+      <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS" style="height:180px;width:auto;display:block;margin:0 auto 1rem">
+      <p>Lombardia &mdash; Area Studenti &amp; Staff</p>
     </div>
     <div id="form-login">
-      <div class="form-group">
-        <label>Email istituzionale</label>
-        <input type="email" id="in-email" placeholder="nome.cognome@..." autocomplete="username">
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="in-pwd" placeholder="Password" autocomplete="current-password">
-      </div>
+      <div class="form-group"><label>Email istituzionale</label><input type="email" id="in-email" placeholder="nome.cognome@..." autocomplete="username"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="in-pwd" placeholder="Password" autocomplete="current-password"></div>
       <div id="login-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:.75rem" onclick="doLogin()" id="btn-login">Accedi</button>
-      <div style="text-align:center">
-        <a href="#" style="color:var(--accent);font-size:.85rem" onclick="showReset();return false">Password dimenticata?</a>
-      </div>
+      <div style="text-align:center"><a href="#" style="color:var(--accent);font-size:.85rem" onclick="showReset();return false">Password dimenticata?</a></div>
       <p style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.75rem">Primo accesso? Usa la password predefinita comunicata dalla scuola.</p>
       <div id="login-loader" class="hide" style="text-align:center;margin-top:.75rem"><div class="spinner"></div></div>
     </div>
@@ -222,7 +164,7 @@ firebase.initializeApp({
       <div class="form-group"><label>Email</label><input type="email" id="reset-email" placeholder="La tua email"></div>
       <div id="reset1-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:.5rem" onclick="inviaOTP()">Invia codice</button>
-      <button class="btn btn-outline" style="width:100%" onclick="showLogin()">← Torna al login</button>
+      <button class="btn btn-outline" style="width:100%" onclick="showLogin()">&#8592; Torna al login</button>
     </div>
     <div id="form-reset2" class="hide">
       <h3 style="margin-bottom:.5rem">Inserisci il codice</h3>
@@ -237,7 +179,6 @@ firebase.initializeApp({
   </div>
 </div>
 
-<!-- ══════ DASHBOARD ══════ -->
 <div id="view-dashboard" class="hide">
   <div class="main">
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem" class="fade-in">
@@ -253,1313 +194,699 @@ firebase.initializeApp({
     <div id="pane-presenze" class="fade-in hide"></div>
     <div id="pane-comunicazioni" class="fade-in hide"></div>
     <div id="pane-disponibilita" class="fade-in hide"></div>
+    <div id="pane-disponibilita-docente" class="fade-in hide"></div>
   </div>
 </div>
 
-<!-- ══════ BOTTOM NAV ══════ -->
 <nav id="bottom-nav" class="bottom-nav hide"></nav>
 
-<!-- ══════ MODALI ══════ -->
-<div id="modal-pwd" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4>Cambia password</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-pwd')">✕</button>
+<!-- MODALI -->
+<div id="modal-pwd" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Cambia password</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-pwd')">&#10005;</button></div>
+  <div class="form-group"><label>Password attuale</label><input type="password" id="pwd-old" placeholder="Attuale"></div>
+  <div class="form-group"><label>Nuova password</label><input type="password" id="pwd-new" placeholder="Min. 6 caratteri"></div>
+  <div class="form-group"><label>Conferma</label><input type="password" id="pwd-new2" placeholder="Ripeti"></div>
+  <div id="pwd-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <div id="pwd-ok" class="alert alert-success hide" style="margin-bottom:.75rem">Password aggiornata!</div>
+  <button class="btn btn-primary" style="width:100%" onclick="cambiaPwd()">Salva</button>
+</div></div>
+
+<div id="modal-nuova-comm" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Nuova comunicazione</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-nuova-comm')">&#10005;</button></div>
+  <div class="form-group"><label>Titolo</label><input type="text" id="comm-titolo" placeholder="Oggetto"></div>
+  <div class="form-group"><label>Destinatari</label>
+    <div class="chip-group" id="chip-dest">
+      <div class="chip" onclick="toggleChip(this,'tutti')">Tutti</div>
+      <div class="chip" onclick="toggleChip(this,'studenti')">Studenti (tutti)</div>
+      <div class="chip" onclick="toggleChip(this,'1anno')">Studenti 1&#176; anno</div>
+      <div class="chip" onclick="toggleChip(this,'2anno')">Studenti 2&#176; anno</div>
+      <div class="chip" onclick="toggleChip(this,'docenti')">Docenti</div>
+      <div class="chip" onclick="toggleChip(this,'team')">Team</div>
     </div>
-    <div class="form-group"><label>Password attuale</label><input type="password" id="pwd-old" placeholder="Attuale"></div>
-    <div class="form-group"><label>Nuova password</label><input type="password" id="pwd-new" placeholder="Min. 6 caratteri"></div>
-    <div class="form-group"><label>Conferma</label><input type="password" id="pwd-new2" placeholder="Ripeti"></div>
-    <div id="pwd-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <div id="pwd-ok" class="alert alert-success hide" style="margin-bottom:.75rem">Password aggiornata!</div>
-    <button class="btn btn-primary" style="width:100%" onclick="cambiaPwd()">Salva</button>
   </div>
-</div>
-<div id="modal-nuova-comm" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4>Nuova comunicazione</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-nuova-comm')">✕</button>
+  <div class="form-group"><label>Testo</label><textarea id="comm-testo" rows="5" placeholder="Scrivi qui il messaggio..." style="resize:vertical"></textarea></div>
+  <div id="comm-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="inviaComunicazione()">Pubblica</button>
+</div></div>
+
+<div id="modal-presenza" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Registra presenze</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-presenza')">&#10005;</button></div>
+  <div class="form-group"><label>Studente</label><select id="pres-studente"></select></div>
+  <div class="form-group"><label>Data</label><input type="date" id="pres-data"></div>
+  <div class="form-group"><label>Tipo</label>
+    <div class="chip-group">
+      <div class="chip selected" onclick="selTipoPresenza(this,'PRESENZA')">&#10004; Presenza</div>
+      <div class="chip" onclick="selTipoPresenza(this,'ASSENZA')">&#10005; Assenza</div>
+      <div class="chip" onclick="selTipoPresenza(this,'RITARDO')">&#9200; Ritardo</div>
     </div>
-    <div class="form-group"><label>Titolo</label><input type="text" id="comm-titolo" placeholder="Oggetto"></div>
-    <div class="form-group">
-      <label>Destinatari</label>
-      <div class="chip-group" id="chip-dest">
-        <div class="chip" onclick="toggleChip(this,'tutti')">Tutti</div>
-        <div class="chip" onclick="toggleChip(this,'studenti')">Studenti (tutti)</div>
-        <div class="chip" onclick="toggleChip(this,'1anno')">Studenti 1° anno</div>
-        <div class="chip" onclick="toggleChip(this,'2anno')">Studenti 2° anno</div>
-        <div class="chip" onclick="toggleChip(this,'docenti')">Docenti</div>
-        <div class="chip" onclick="toggleChip(this,'team')">Team</div>
-      </div>
-    </div>
-    <div class="form-group"><label>Testo</label><textarea id="comm-testo" rows="5" placeholder="Scrivi qui il messaggio..." style="resize:vertical"></textarea></div>
-    <div id="comm-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="inviaComunicazione()">Pubblica</button>
   </div>
-</div>
-<div id="modal-voto" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4 id="modal-voto-title">Inserisci voto</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-voto')">✕</button>
+  <input type="hidden" id="pres-tipo" value="PRESENZA">
+  <div class="form-group"><label>Ora inizio</label><input type="time" id="pres-ini"></div>
+  <div class="form-group"><label>Ora fine</label><input type="time" id="pres-fin"></div>
+  <div id="pres-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="salvaPresenza()">Salva</button>
+</div></div>
+
+<div id="modal-disp" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Inserisci disponibilit&#224;</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp')">&#10005;</button></div>
+  <div class="form-group"><label>Data</label><input type="date" id="disp-data" onchange="aggiornaSlotOccupati()"></div>
+  <div id="disp-slot-occupati" style="margin-bottom:.75rem;display:none"></div>
+  <div class="form-group"><label>Ora inizio</label><input type="time" id="disp-ini" oninput="verificaConflittoLive()"></div>
+  <div class="form-group"><label>Ora fine</label><input type="time" id="disp-fin" oninput="verificaConflittoLive()"></div>
+  <div class="form-group"><label>Note (opzionale)</label><input type="text" id="disp-note" placeholder="Es. solo mattina, telefonare..."></div>
+  <div id="disp-conflict" class="alert" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:.8rem;margin-bottom:.75rem;display:none"></div>
+  <div class="alert" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;font-size:.8rem;margin-bottom:.75rem">&#9888; Slot gi&#224; occupati da altri tutor non sono selezionabili.</div>
+  <div id="disp-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="salvaDisponibilita()">Conferma disponibilit&#224;</button>
+</div></div>
+
+<div id="modal-disp-docente" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Disponibilit&#224; docente</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp-docente')">&#10005;</button></div>
+  <div class="form-group">
+    <label>Periodo</label>
+    <div class="chip-group" id="chips-periodo">
+      <div class="chip" onclick="selChipSingle(this,'periodo','1')">1&#176; (Set&#8211;Nov)</div>
+      <div class="chip" onclick="selChipSingle(this,'periodo','2')">2&#176; (Dic&#8211;Feb)</div>
+      <div class="chip" onclick="selChipSingle(this,'periodo','3')">3&#176; (Mar&#8211;Mag)</div>
     </div>
-    <div id="voto-form-studente" class="form-group hide"><label>Studente</label><select id="voto-studente"></select></div>
-    <div class="form-group"><label>Materia</label><select id="voto-materia"></select></div>
-    <div class="form-group"><label>Voto (0–30)</label><input type="number" id="voto-val" min="0" max="30" step="0.5" placeholder="Es. 27"></div>
-    <div class="form-group"><label>Note (opzionale)</label><input type="text" id="voto-note" placeholder="Osservazioni"></div>
-    <input type="hidden" id="voto-edit-id">
-    <div id="voto-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="salvaVoto()">Salva voto</button>
+    <input type="hidden" id="dd-periodo">
   </div>
-</div>
-<div id="modal-presenza" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4>Registra presenze</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-presenza')">✕</button>
+  <div class="form-group">
+    <label>Giorno</label>
+    <div class="chip-group" id="chips-giorno">
+      <div class="chip" onclick="selChipSingle(this,'giorno','LUN')">Lun</div>
+      <div class="chip" onclick="selChipSingle(this,'giorno','MAR')">Mar</div>
+      <div class="chip" onclick="selChipSingle(this,'giorno','MER')">Mer</div>
+      <div class="chip" onclick="selChipSingle(this,'giorno','GIO')">Gio</div>
+      <div class="chip" onclick="selChipSingle(this,'giorno','VEN')">Ven</div>
     </div>
-    <div class="form-group"><label>Studente</label><select id="pres-studente"></select></div>
-    <div class="form-group"><label>Data</label><input type="date" id="pres-data"></div>
-    <div class="form-group">
-      <label>Tipo</label>
-      <div class="chip-group">
-        <div class="chip selected" onclick="selTipoPresenza(this,'PRESENZA')">✔ Presenza</div>
-        <div class="chip" onclick="selTipoPresenza(this,'ASSENZA')">✕ Assenza</div>
-        <div class="chip" onclick="selTipoPresenza(this,'RITARDO')">⏱ Ritardo</div>
-      </div>
-    </div>
-    <input type="hidden" id="pres-tipo" value="PRESENZA">
-    <div class="form-group"><label>Ora inizio</label><input type="time" id="pres-ini"></div>
-    <div class="form-group"><label>Ora fine</label><input type="time" id="pres-fin"></div>
-    <div id="pres-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="salvaPresenza()">Salva</button>
+    <input type="hidden" id="dd-giorno">
   </div>
-</div>
-<div id="modal-disp" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4>Inserisci disponibilità</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp')">✕</button>
-    </div>
-    <div class="form-group"><label>Data</label><input type="date" id="disp-data" onchange="aggiornaSlotOccupati()"></div>
-    <div id="disp-slot-occupati" style="margin-bottom:.75rem;display:none"></div>
-    <div class="form-group"><label>Ora inizio</label><input type="time" id="disp-ini" oninput="verificaConflittoLive()"></div>
-    <div class="form-group"><label>Ora fine</label><input type="time" id="disp-fin" oninput="verificaConflittoLive()"></div>
-    <div class="form-group"><label>Note (opzionale)</label><input type="text" id="disp-note" placeholder="Es. solo mattina, telefonare..."></div>
-    <div id="disp-conflict" class="alert" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:.8rem;margin-bottom:.75rem;display:none"></div>
-    <div class="alert" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;font-size:.8rem;margin-bottom:.75rem">
-      ⚠️ Slot già occupati da altri tutor non sono selezionabili.
-    </div>
-    <div id="disp-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="salvaDisponibilita()">Conferma disponibilità</button>
-  </div>
-</div>
-<div id="modal-comm-detail" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4 id="comm-detail-title" style="flex:1;padding-right:1rem"></h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-comm-detail')">✕</button>
-    </div>
-    <div class="text-muted" id="comm-detail-meta" style="font-size:.78rem;margin-bottom:.75rem"></div>
-    <div id="comm-detail-testo" style="font-size:.92rem;line-height:1.7;white-space:pre-wrap"></div>
-    <div id="comm-detail-actions" style="margin-top:1rem"></div>
-  </div>
-</div>
+  <div class="form-group"><label>Ora inizio</label><select id="dd-ini"></select></div>
+  <div class="form-group"><label>Ora fine</label><select id="dd-fin"></select></div>
+  <div class="form-group"><label>Note (opzionale)</label><input type="text" id="dd-note" placeholder="Es. solo se non ho ore di recupero"></div>
+  <div id="dd-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <div id="dd-edit-id" data-id=""></div>
+  <button class="btn btn-primary" style="width:100%" id="dd-save-btn" onclick="salvaDispDocente()">Salva disponibilit&#224;</button>
+</div></div>
+
+<div id="modal-comm-detail" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4 id="comm-detail-title" style="flex:1;padding-right:1rem"></h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-comm-detail')">&#10005;</button></div>
+  <div class="text-muted" id="comm-detail-meta" style="font-size:.78rem;margin-bottom:.75rem"></div>
+  <div id="comm-detail-testo" style="font-size:.92rem;line-height:1.7;white-space:pre-wrap"></div>
+  <div id="comm-detail-actions" style="margin-top:1rem"></div>
+</div></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
-const VAPID_PUBLIC_KEY = "BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
+const API_URL="https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
+const VAPID_PUBLIC_KEY="BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
+let _token=localStorage.getItem("its_token")||null;
+let _user=null;
+try{_user=JSON.parse(localStorage.getItem("its_user"));}catch(e){}
+let _studenti=[],_materieDocente=[],_notifInterval=null,_currentPane="home",_fcmMessaging=null;
 
-let _token = localStorage.getItem("its_token") || null;
-let _user  = null;
-try { _user = JSON.parse(localStorage.getItem("its_user")); } catch(e) {}
-let _studenti = [];
-let _materieDocente = [];
-let _notifInterval = null;
-let _currentPane = "home";
-let _fcmMessaging = null;
-
-async function api(action, payload) {
+async function api(action,payload){
   let r;
-  try {
-    r = await fetch(API_URL, {
-      method: 'POST', redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, payload: payload||{}, token: _token||'' })
-    });
-  } catch(e) { throw new Error("Impossibile raggiungere il server."); }
+  try{r=await fetch(API_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload:payload||{},token:_token||''})});}
+  catch(e){throw new Error("Impossibile raggiungere il server.");}
   let d;
-  try { d = await r.json(); } catch(e) { throw new Error("Risposta server non valida."); }
-  if (d && d.code === "AUTH") { doLogout(); throw new Error(d.error||"Sessione scaduta."); }
+  try{d=await r.json();}catch(e){throw new Error("Risposta server non valida.");}
+  if(d&&d.code==="AUTH"){doLogout();throw new Error(d.error||"Sessione scaduta.");}
   return d;
 }
 
-const $  = id => document.getElementById(id);
-const sh = id => $(id).classList.remove("hide");
-const hd = id => $(id).classList.add("hide");
-function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function showErr(id, msg) { const el=$(id); el.textContent=msg; el.classList.remove("hide"); }
-function hideErr(id) { hd(id); }
-function openModal(id) { sh(id); }
-function chiudiModal(id) { hd(id); }
-function fmtData(iso) {
-  if (!iso) return "";
-  if (iso instanceof Date) iso = iso.toISOString().split("T")[0];
-  const [y,m,d] = String(iso).split("-"); return `${d}/${m}/${y}`;
-}
-function todayISO() { return new Date().toISOString().split("T")[0]; }
-function votoClass(v) {
-  if (v===30) return "voto-30"; if (v>=27) return "voto-high";
-  if (v>=21) return "voto-mid"; return "voto-low";
-}
-function ruoloLabel(r) { return {COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente"}[r]||r; }
+const $=id=>document.getElementById(id);
+const sh=id=>$(id).classList.remove("hide");
+const hd=id=>$(id).classList.add("hide");
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function showErr(id,msg){const el=$(id);el.textContent=msg;el.classList.remove("hide");}
+function hideErr(id){hd(id);}
+function openModal(id){sh(id);}
+function chiudiModal(id){hd(id);}
+function fmtData(iso){if(!iso)return"";if(iso instanceof Date)iso=iso.toISOString().split("T")[0];const[y,m,d]=String(iso).split("-");return`${d}/${m}/${y}`;}
+function todayISO(){return new Date().toISOString().split("T")[0];}
+function votoClass(v){if(v===30)return"voto-30";if(v>=27)return"voto-high";if(v>=21)return"voto-mid";return"voto-low";}
+function ruoloLabel(r){return{COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente"}[r]||r;}
+function showLogin(){hd("form-reset1");hd("form-reset2");sh("form-login");}
+function showReset(){hd("form-login");hd("form-reset2");sh("form-reset1");$("reset-email").value=$("in-email").value||"";}
 
-function showLogin() { hd("form-reset1"); hd("form-reset2"); sh("form-login"); }
-function showReset() { hd("form-login"); hd("form-reset2"); sh("form-reset1"); $("reset-email").value = $("in-email").value || ""; }
-
-async function doLogin() {
+async function doLogin(){
   hideErr("login-err");
-  const email = $("in-email").value.trim(), pwd = $("in-pwd").value;
-  if (!email || !pwd) return showErr("login-err","Inserisci email e password.");
-  $("btn-login").disabled = true; sh("login-loader");
-  try {
-    const res = await api("login",{email,password:pwd});
-    hd("login-loader"); $("btn-login").disabled=false;
-    if (!res.success) return showErr("login-err",res.message||"Errore login.");
-    _token = res.sessionToken; _user = res.user;
-    localStorage.setItem("its_token",_token);
-    localStorage.setItem("its_user",JSON.stringify(_user));
-    if (res.isFirstAccess) setTimeout(()=>alert("Primo accesso! Ti consigliamo di cambiare la password dal pulsante 🔑 in alto."),500);
+  const email=$("in-email").value.trim(),pwd=$("in-pwd").value;
+  if(!email||!pwd)return showErr("login-err","Inserisci email e password.");
+  $("btn-login").disabled=true;sh("login-loader");
+  try{
+    const res=await api("login",{email,password:pwd});
+    hd("login-loader");$("btn-login").disabled=false;
+    if(!res.success)return showErr("login-err",res.message||"Errore login.");
+    _token=res.sessionToken;_user=res.user;
+    localStorage.setItem("its_token",_token);localStorage.setItem("its_user",JSON.stringify(_user));
+    if(res.isFirstAccess)setTimeout(()=>alert("Primo accesso! Ti consigliamo di cambiare la password dal pulsante in alto."),500);
     avviaDashboard();
-  } catch(e) { hd("login-loader"); $("btn-login").disabled=false; showErr("login-err",e.message); }
+  }catch(e){hd("login-loader");$("btn-login").disabled=false;showErr("login-err",e.message);}
 }
-async function inviaOTP() {
-  const email = $("reset-email").value.trim();
-  if (!email) return showErr("reset1-err","Inserisci email.");
-  hideErr("reset1-err");
-  await api("richiediOTP",{email});
-  $("reset-email-show").textContent = email;
-  hd("form-reset1"); sh("form-reset2");
+async function inviaOTP(){
+  const email=$("reset-email").value.trim();if(!email)return showErr("reset1-err","Inserisci email.");hideErr("reset1-err");
+  await api("richiediOTP",{email});$("reset-email-show").textContent=email;hd("form-reset1");sh("form-reset2");
 }
-async function confermaOTP() {
-  const email=$("reset-email").value.trim(), codice=$("reset-otp").value.trim();
-  const p1=$("reset-p1").value, p2=$("reset-p2").value;
-  if (codice.length!==6) return showErr("reset2-err","Codice a 6 cifre.");
-  if (p1.length<6) return showErr("reset2-err","Password min. 6 caratteri.");
-  if (p1!==p2) return showErr("reset2-err","Le password non coincidono.");
+async function confermaOTP(){
+  const email=$("reset-email").value.trim(),codice=$("reset-otp").value.trim();
+  const p1=$("reset-p1").value,p2=$("reset-p2").value;
+  if(codice.length!==6)return showErr("reset2-err","Codice a 6 cifre.");
+  if(p1.length<6)return showErr("reset2-err","Password min. 6 caratteri.");
+  if(p1!==p2)return showErr("reset2-err","Le password non coincidono.");
   hideErr("reset2-err");
-  const res = await api("confermaOTP",{email,codice,newPwd:p1});
-  if (!res.success) return showErr("reset2-err",res.message);
-  alert("Password aggiornata! Effettua il login.");
-  $("in-email").value = email; showLogin();
+  const res=await api("confermaOTP",{email,codice,newPwd:p1});
+  if(!res.success)return showErr("reset2-err",res.message);
+  alert("Password aggiornata! Effettua il login.");$("in-email").value=email;showLogin();
 }
-function doLogout() {
-  if (_token) api("logout",{}).catch(()=>{});
-  _token=null; _user=null;
-  localStorage.removeItem("its_token"); localStorage.removeItem("its_user");
-  if (_notifInterval) clearInterval(_notifInterval);
-  hd("view-dashboard"); hd("navbar"); hd("bottom-nav");
-  sh("view-login"); showLogin();
+function doLogout(){
+  if(_token)api("logout",{}).catch(()=>{});
+  _token=null;_user=null;localStorage.removeItem("its_token");localStorage.removeItem("its_user");
+  if(_notifInterval)clearInterval(_notifInterval);
+  hd("view-dashboard");hd("navbar");hd("bottom-nav");sh("view-login");showLogin();
 }
-async function cambiaPwd() {
-  const o=$("pwd-old").value, n1=$("pwd-new").value, n2=$("pwd-new2").value;
-  hideErr("pwd-err"); hd("pwd-ok");
-  if (n1.length<6) return showErr("pwd-err","Min 6 caratteri.");
-  if (n1!==n2) return showErr("pwd-err","Le password non coincidono.");
-  const res = await api("changePassword",{oldPwd:o,newPwd:n1});
-  if (!res.success) return showErr("pwd-err",res.message);
-  sh("pwd-ok"); setTimeout(()=>chiudiModal("modal-pwd"),1200);
+async function cambiaPwd(){
+  const o=$("pwd-old").value,n1=$("pwd-new").value,n2=$("pwd-new2").value;
+  hideErr("pwd-err");hd("pwd-ok");
+  if(n1.length<6)return showErr("pwd-err","Min 6 caratteri.");
+  if(n1!==n2)return showErr("pwd-err","Le password non coincidono.");
+  const res=await api("changePassword",{oldPwd:o,newPwd:n1});
+  if(!res.success)return showErr("pwd-err",res.message);
+  sh("pwd-ok");setTimeout(()=>chiudiModal("modal-pwd"),1200);
 }
-function apriModalePwd() {
-  $("pwd-old").value=$("pwd-new").value=$("pwd-new2").value="";
-  hideErr("pwd-err"); hd("pwd-ok"); openModal("modal-pwd");
+function apriModalePwd(){$("pwd-old").value=$("pwd-new").value=$("pwd-new2").value="";hideErr("pwd-err");hd("pwd-ok");openModal("modal-pwd");}
+
+async function avviaDashboard(){
+  hd("view-login");sh("view-dashboard");sh("navbar");sh("bottom-nav");
+  $("dash-nome").textContent=_user.displayName||_user.email;
+  $("dash-ruolo-badge").innerHTML=`<span class="badge role-${_user.ruolo}">${ruoloLabel(_user.ruolo)}</span>`;
+  buildBottomNav();switchPane("home");avviaNotifiche();
 }
 
-async function avviaDashboard() {
-  hd("view-login"); sh("view-dashboard"); sh("navbar"); sh("bottom-nav");
-  $("dash-nome").textContent = _user.displayName || _user.email;
-  $("dash-ruolo-badge").innerHTML = `<span class="badge role-${_user.ruolo}">${ruoloLabel(_user.ruolo)}</span>`;
-  buildBottomNav(); switchPane("home"); avviaNotifiche();
+function buildBottomNav(){
+  const r=_user.ruolo;
+  const items=[{id:"home",icon:"&#127968;",label:"Home"}];
+  if(r==="STUDENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
+  else if(r==="COORDINATORE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Disponib."});
+  else if(r==="TUTOR")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Mia Disp."});
+  else if(r==="DOCENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."});
+  $("bottom-nav").innerHTML=items.map(it=>`<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}"><span class="bicon">${it.icon}</span>${esc(it.label)}${it.notif?`<span class="bnav-dot hide" id="bnav-dot-${it.id}"></span>`:""}</button>`).join("");
 }
 
-function buildBottomNav() {
-  const r = _user.ruolo;
-  const items = [{ id:"home", icon:"🏠", label:"Home" }];
-  if (r==="STUDENTE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
-  } else if (r==="COORDINATORE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true},{id:"disponibilita",icon:"📆",label:"Disponib."});
-  } else if (r==="TUTOR") {
-    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"presenze",icon:"✅",label:"Presenze"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true},{id:"disponibilita",icon:"📆",label:"Mia Disp."});
-  } else if (r==="DOCENTE") {
-    items.push({id:"orario",icon:"📅",label:"Orario"},{id:"voti",icon:"📊",label:"Voti"},{id:"comunicazioni",icon:"📢",label:"Bacheca",notif:true});
-  }
-  $("bottom-nav").innerHTML = items.map(it =>
-    `<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}">
-      <span class="bicon">${it.icon}</span>${esc(it.label)}
-      ${it.notif?`<span class="bnav-dot hide" id="bnav-dot-${it.id}"></span>`:""}
-    </button>`
-  ).join("");
+function switchPane(name){
+  ["home","orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente"].forEach(p=>{hd("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
+  sh("pane-"+name);const b=$("bnav-"+name);if(b)b.classList.add("active");
+  _currentPane=name;
+  if(name==="home")renderHome();
+  else if(name==="orario")renderOrario();
+  else if(name==="voti")renderVoti();
+  else if(name==="presenze")renderPresenze();
+  else if(name==="comunicazioni")renderComunicazioni();
+  else if(name==="disponibilita")renderDisponibilita();
+  else if(name==="disponibilita-docente")renderDisponibilitaDocente();
 }
 
-function switchPane(name) {
-  ["home","orario","voti","presenze","comunicazioni","disponibilita"].forEach(p => {
-    hd("pane-"+p); const b=$("bnav-"+p); if(b) b.classList.remove("active");
-  });
-  sh("pane-"+name); const b=$("bnav-"+name); if(b) b.classList.add("active");
-  _currentPane = name;
-  if (name==="home") renderHome();
-  else if (name==="orario") renderOrario();
-  else if (name==="voti") renderVoti();
-  else if (name==="presenze") renderPresenze();
-  else if (name==="comunicazioni") renderComunicazioni();
-  else if (name==="disponibilita") renderDisponibilita();
+/* HOME */
+async function renderHome(){
+  const pane=$("pane-home");
+  pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  try{
+    const res=await api("getDashboard",{});
+    if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+    const r=_user.ruolo;let html="";
+    if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Ritardi: ${s.oreRitardo||0}h</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni non lette</div></div></div>`;}
+    if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilita' tutor</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Gestisci voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Gestisci presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Scrivi comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita')">&#128198; Calendario tutor</button></div>`;}
+    if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Mie disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilita'</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Visualizza voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button></div>`;}
+    if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="apriInserisciVoto()">&#10133; Inserisci voto</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponibilita'</button></div>`;}
+    pane.innerHTML=html;
+  }catch(e){pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
 
-async function renderHome() {
-  const pane = $("pane-home");
-  pane.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  try {
-    const res = await api("getDashboard",{});
-    if (!res.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-    const r = _user.ruolo; let html = "";
-    if (r==="STUDENTE") {
-      const s=res.stats||{};
-      html+=`<div class="section-title">Le tue statistiche</div>
-      <div class="grid-2" style="margin-bottom:1.25rem">
-        <div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div>
-          <div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div>
-        </div>
-        <div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Ritardi: ${s.oreRitardo||0}h</div>
-        </div>
-      </div>
-      <div class="grid-2">
-        <div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti inseriti</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')">
-          <div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div>
-          <div class="stat-lbl">Comunicazioni non lette</div>
-        </div>
-      </div>`;
-    }
-    if (r==="COORDINATORE") {
-      const s=res.stats||{};
-      html+=`<div class="section-title">Panoramica</div>
-      <div class="grid-2" style="margin-bottom:1.25rem">
-        <div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div>
-        <div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div>
-        <div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilità tutor</div></div>
-      </div>
-      <div class="section-title">Accesso rapido</div>
-      <div class="grid-2">
-        <button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">📊 Gestisci voti</button>
-        <button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">✅ Gestisci presenze</button>
-        <button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">📢 Scrivi comunicazione</button>
-        <button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita')">📆 Calendario tutor</button>
-      </div>`;
-    }
-    if (r==="TUTOR") {
-      const s=res.stats||{};
-      html+=`<div class="section-title">Panoramica</div>
-      <div class="grid-2" style="margin-bottom:1.25rem">
-        <div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div>
-        <div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Mie disponibilità</div></div>
-      </div>
-      <div class="section-title">Accesso rapido</div>
-      <div class="grid-2">
-        <button class="btn btn-outline" onclick="switchPane('presenze')">✅ Presenze</button>
-        <button class="btn btn-outline" onclick="switchPane('disponibilita')">📆 Disponibilità</button>
-        <button class="btn btn-outline" onclick="switchPane('voti')">📊 Visualizza voti</button>
-        <button class="btn btn-outline" onclick="switchPane('comunicazioni')">📢 Bacheca</button>
-      </div>`;
-    }
-    if (r==="DOCENTE") {
-      const materie=res.materie||[];
-      html+=`<div class="section-title">Le tue materie</div>
-      <div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div>
-      <div class="section-title">Accesso rapido</div>
-      <div class="grid-2">
-        <button class="btn btn-outline" onclick="apriInserisciVoto()">➕ Inserisci voto</button>
-        <button class="btn btn-outline" onclick="switchPane('comunicazioni')">📢 Bacheca</button>
-      </div>`;
-    }
-    pane.innerHTML = html;
-  } catch(e) { pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`; }
+/* ORARIO */
+function _filtraLezioniDocente(lezioni){
+  if(_user.ruolo!=="DOCENTE")return lezioni;
+  const cognome=(_user.cognome||"").toLowerCase().trim(),nome=(_user.nome||"").toLowerCase().trim();
+  return lezioni.filter(l=>{const doc=(l.docente||"").toLowerCase();if(!doc)return false;if(cognome&&doc.includes(cognome))return true;if(nome&&cognome&&doc.includes(nome)&&doc.includes(cognome))return true;return false;});
 }
-
-function _filtraLezioniDocente(lezioni) {
-  if (_user.ruolo!=="DOCENTE") return lezioni;
-  const cognome=(_user.cognome||"").toLowerCase().trim(), nome=(_user.nome||"").toLowerCase().trim();
-  return lezioni.filter(l => {
-    const doc=(l.docente||"").toLowerCase();
-    if (!doc) return false;
-    if (cognome && doc.includes(cognome)) return true;
-    if (nome && cognome && doc.includes(nome) && doc.includes(cognome)) return true;
-    return false;
-  });
-}
-function _renderLezioni(lezioni) {
-  const oggi=todayISO(), perData={};
-  lezioni.forEach(l => { const key=l.data||l.giornoFull; if(!perData[key]) perData[key]=[]; perData[key].push(l); });
-  if (!Object.keys(perData).length) return '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>';
-  return Object.keys(perData).sort().map(data => {
-    const isOggi=data===oggi, ls=perData[data];
+function _renderLezioni(lezioni){
+  const oggi=todayISO(),perData={};
+  lezioni.forEach(l=>{const key=l.data||l.giornoFull;if(!perData[key])perData[key]=[];perData[key].push(l);});
+  if(!Object.keys(perData).length)return'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>';
+  return Object.keys(perData).sort().map(data=>{
+    const isOggi=data===oggi,ls=perData[data];
     const label=ls[0]?`${ls[0].giorno} ${fmtData(data)}`:data;
-    return `<div class="schedule-day">
-      <div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI · </span>':''} ${esc(label)}</div>
-      ${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}">
-        <div class="lesson-time">⏰ ${esc(l.oraInizio)} – ${esc(l.oraFine)}</div>
-        <div class="lesson-uf">${esc(l.uf||"—")}</div>
-        <div class="lesson-meta">
-          ${l.docente?`<span>👤 ${esc(l.docente)}</span>`:''}
-          ${l.aula?`<span>📍 ${esc(l.aula)}</span>`:''}
-          ${l.luogo?`<span>🏢 ${esc(l.luogo)}</span>`:''}
-        </div>
-      </div>`).join("")}
-    </div>`;
+    return`<div class="schedule-day"><div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI &middot; </span>':''} ${esc(label)}</div>${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}"><div class="lesson-time">&#9200; ${esc(l.oraInizio)} &ndash; ${esc(l.oraFine)}</div><div class="lesson-uf">${esc(l.uf||"&mdash;")}</div><div class="lesson-meta">${l.docente?`<span>&#128100; ${esc(l.docente)}</span>`:''} ${l.aula?`<span>&#128205; ${esc(l.aula)}</span>`:''} ${l.luogo?`<span>&#127970; ${esc(l.luogo)}</span>`:''}</div></div>`).join("")}</div>`;
   }).join("");
 }
-async function renderOrario() {
+async function renderOrario(){
   const pane=$("pane-orario");
-  pane.innerHTML=`<div class="page-header"><h2>📅 Orario lezioni</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  try {
-    const r=_user.ruolo, isDocente=r==="DOCENTE";
+  pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario lezioni</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  try{
+    const r=_user.ruolo,isDocente=r==="DOCENTE";
     let tabsHtml="";
-    if (!isDocente && ["COORDINATORE","TUTOR"].includes(r)) {
-      tabsHtml=`<div class="tab-row" style="margin-bottom:1rem">
-        <button class="tab-btn active" onclick="cambiaOrario('1',this)">1° Anno</button>
-        <button class="tab-btn" onclick="cambiaOrario('2',this)">2° Anno</button>
-      </div>`;
-    }
+    if(!isDocente&&["COORDINATORE","TUTOR"].includes(r))tabsHtml=`<div class="tab-row" style="margin-bottom:1rem"><button class="tab-btn active" onclick="cambiaOrario('1',this)">1&#176; Anno</button><button class="tab-btn" onclick="cambiaOrario('2',this)">2&#176; Anno</button></div>`;
     let lezioni=[];
-    if (isDocente) {
-      const [r1,r2]=await Promise.all([api("getOrario",{annualita:"1"}),api("getOrario",{annualita:"2"})]);
-      lezioni=[...(r1.lezioni||[]),...(r2.lezioni||[])];
-      lezioni=_filtraLezioniDocente(lezioni);
-    } else {
-      const annualita=_user.annualita||"1";
-      const res=await api("getOrario",{annualita});
-      if (!res.success) { pane.innerHTML+=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-      lezioni=res.lezioni||[];
-    }
-    const titolo=isDocente?"📅 Il mio orario":"📅 Orario lezioni";
+    if(isDocente){const[r1,r2]=await Promise.all([api("getOrario",{annualita:"1"}),api("getOrario",{annualita:"2"})]);lezioni=[...(r1.lezioni||[]),...(r2.lezioni||[])];lezioni=_filtraLezioniDocente(lezioni);}
+    else{const annualita=_user.annualita||"1";const res=await api("getOrario",{annualita});if(!res.success){pane.innerHTML+=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}lezioni=res.lezioni||[];}
+    const titolo=isDocente?"&#128197; Il mio orario":"&#128197; Orario lezioni";
     pane.innerHTML=`<div class="page-header"><h2>${titolo}</h2><p class="text-muted">${lezioni.length} lezioni in programma</p></div>${tabsHtml}`+_renderLezioni(lezioni);
-  } catch(e) { pane.innerHTML=`<div class="page-header"><h2>📅 Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`; }
+  }catch(e){pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario lezioni</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
-async function cambiaOrario(ann, btn) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active");
-  const pane=$("pane-orario"), tabs=pane.querySelector(".tab-row");
-  const loader=document.createElement("div"); loader.style.textAlign="center"; loader.style.padding="2rem";
-  loader.innerHTML='<div class="spinner"></div>';
-  while(pane.lastChild!==tabs) pane.removeChild(pane.lastChild);
-  pane.appendChild(loader);
-  try {
-    const res=await api("getOrario",{annualita:ann});
-    if (!res.success) { loader.outerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-    loader.outerHTML=_renderLezioni(res.lezioni||[])||'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione.</div>';
-  } catch(e) {}
+async function cambiaOrario(ann,btn){
+  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
+  const pane=$("pane-orario"),tabs=pane.querySelector(".tab-row");
+  const loader=document.createElement("div");loader.style.textAlign="center";loader.style.padding="2rem";loader.innerHTML='<div class="spinner"></div>';
+  while(pane.lastChild!==tabs)pane.removeChild(pane.lastChild);pane.appendChild(loader);
+  try{const res=await api("getOrario",{annualita:ann});if(!res.success){loader.outerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}loader.outerHTML=_renderLezioni(res.lezioni||[])||'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione.</div>';}catch(e){}
 }
 
-/* ═══════════════════════════════════════════════════
-   VOTI
-═══════════════════════════════════════════════════ */
-let _votiData=null, _selectedStudenteVoti=null, _materieList=[];
-
-async function _assicuraStudenti() {
-  if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; }
+/* VOTI */
+let _votiData=null,_selectedStudenteVoti=null,_materieList=[];
+async function _assicuraStudenti(){if(!_studenti.length){const sr=await api("getStudenti",{});_studenti=sr.studenti||[];}}
+async function _assicuraMaterie(){
+  if(_materieList.length)return;
+  const dr=await api("getDocenti",{});const tuttiDoc=dr.docenti||[];
+  if(_user.ruolo==="DOCENTE"){_materieList=tuttiDoc.filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase()).map(d=>d.materia).filter(m=>m);}
+  if(!_materieList.length){_materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];}
 }
-async function _assicuraMaterie() {
-  if (_materieList.length) return;
-  const dr=await api("getDocenti",{}); const tuttiDoc=dr.docenti||[];
-  if (_user.ruolo==="DOCENTE") {
-    _materieList=tuttiDoc.filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase()).map(d=>d.materia).filter(m=>m);
+async function renderVoti(){
+  const pane=$("pane-voti"),r=_user.ruolo;
+  if(r==="STUDENTE"){pane.innerHTML=`<div class="page-header"><h2>&#128202; I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;await caricaVotiStudente();return;}
+  if(r==="COORDINATORE"||r==="TUTOR"){
+    pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">${r==="COORDINATORE"?`<button class="tab-btn active" id="tab-inserisci" onclick="switchVotiTab('inserisci',this)">&#128221; Inserisci voti</button>`:''}<button class="tab-btn ${r==="TUTOR"?"active":""}" id="tab-tabellone" onclick="switchVotiTab('tabellone',this)">&#128203; Tabellone</button>${r==="COORDINATORE"?`<button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">&#128269; Consulta studente</button>`:''}</div>${r==="COORDINATORE"?`<div id="voti-inserisci-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`:''}<div id="voti-tabellone-pane" class="${r==="COORDINATORE"?"hide":""}"><div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap"><div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel"><option value="tutti">Tutti gli anni</option><option value="1">1&#176; Anno</option><option value="2">2&#176; Anno</option></select></div><button class="btn btn-primary" onclick="aggiornaTabellone()">Aggiorna</button></div><div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div></div>${r==="COORDINATORE"?`<div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>`:''}`;
+    await _assicuraStudenti();await _assicuraMaterie();
+    if(r==="COORDINATORE")await renderRegistro();await renderTabellone();return;
   }
-  if (!_materieList.length) {
-    _materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];
-  }
+  pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap"><button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">&#128221; Inserisci voti</button><button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">&#128269; Consulta</button></div><div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>`;
+  await _assicuraStudenti();await _assicuraMaterie();await renderRegistro();
 }
-
-async function renderVoti() {
-  const pane=$("pane-voti"), r=_user.ruolo;
-
-  /* ── STUDENTE ── */
-  if (r==="STUDENTE") {
-    pane.innerHTML=`<div class="page-header"><h2>📊 I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-    await caricaVotiStudente();
-    return;
-  }
-
-  /* ── COORDINATORE e TUTOR: tabellone + (solo coord) inserimento ── */
-  if (r==="COORDINATORE" || r==="TUTOR") {
-    pane.innerHTML=`<div class="page-header"><h2>📊 Registro voti</h2></div>
-      <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
-        ${r==="COORDINATORE"?`<button class="tab-btn active" id="tab-inserisci" onclick="switchVotiTab('inserisci',this)">📝 Inserisci voti</button>`:''}
-        <button class="tab-btn ${r==="TUTOR"?"active":""}" id="tab-tabellone" onclick="switchVotiTab('tabellone',this)">📋 Tabellone</button>
-        ${r==="COORDINATORE"?`<button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">🔍 Consulta studente</button>`:''}
-      </div>
-      ${r==="COORDINATORE"?`<div id="voti-inserisci-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`:''}
-      <div id="voti-tabellone-pane" class="${r==="COORDINATORE"?"hide":""}">
-        <div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap">
-          <div style="flex:1;min-width:140px">
-            <label>Anno</label>
-            <select id="tab-anno-sel">
-              <option value="tutti">Tutti gli anni</option>
-              <option value="1">1° Anno</option>
-              <option value="2">2° Anno</option>
-            </select>
-          </div>
-          <button class="btn btn-primary" onclick="aggiornaTabellone()">Aggiorna</button>
-        </div>
-        <div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
-      </div>
-      ${r==="COORDINATORE"?`<div id="voti-consulta-pane" class="hide">
-        <div class="form-group"><label>Studente</label>
-          <select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select>
-        </div>
-        <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>
-      </div>`:''}`;
-
-    await _assicuraStudenti();
-    await _assicuraMaterie();
-    if (r==="COORDINATORE") await renderRegistro();
-    await renderTabellone();
-    return;
-  }
-
-  /* ── DOCENTE ── */
-  pane.innerHTML=`<div class="page-header"><h2>📊 Registro voti</h2></div>
-    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
-      <button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">📝 Inserisci voti</button>
-      <button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">🔍 Consulta</button>
-    </div>
-    <div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
-    <div id="voti-consulta-pane" class="hide">
-      <div class="form-group"><label>Studente</label>
-        <select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona studente --</option></select>
-      </div>
-      <div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div>
-    </div>`;
-  await _assicuraStudenti(); await _assicuraMaterie(); await renderRegistro();
+function switchVotiTab(tab,btn){
+  document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
+  ["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)hd("voti-"+p+"-pane");});
+  const target=$("voti-"+tab+"-pane");if(target)sh("voti-"+tab+"-pane");
+  if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"&#176; anno)";sel.appendChild(o);});}
 }
-
-function switchVotiTab(tab, btn) {
-  document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  const allPanes=["inserisci","tabellone","consulta","registro"];
-  allPanes.forEach(p=>{ const el=$("voti-"+p+"-pane"); if(el) hd("voti-"+p+"-pane"); });
-  const target=$("voti-"+tab+"-pane"); if(target) sh("voti-"+tab+"-pane");
-  if (tab==="consulta") {
-    const sel=$("sel-studente-consulta");
-    if (sel&&sel.options.length<=1) {
-      _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
-    }
-  }
-}
-
-/* ── Tabellone ── */
-async function aggiornaTabellone() { await renderTabellone(); }
-
-async function renderTabellone() {
-  const cont=$("tabellone-content");
-  if (!cont) return;
+async function aggiornaTabellone(){await renderTabellone();}
+async function renderTabellone(){
+  const cont=$("tabellone-content");if(!cont)return;
   cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-
   const annoSel=$("tab-anno-sel")?$("tab-anno-sel").value:"tutti";
-
   const res=await api("getVoti",{emailStudente:null});
-  if (!res.success) { cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+  if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
   const tuttiVoti=res.voti||[];
-
   let studenti=_studenti;
-  if (annoSel==="1") studenti=studenti.filter(s=>String(s.annualita)==="1");
-  else if (annoSel==="2") studenti=studenti.filter(s=>String(s.annualita)==="2");
-
-  if (!studenti.length) {
-    cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno studente trovato.</div>`;
-    return;
-  }
-
+  if(annoSel==="1")studenti=studenti.filter(s=>String(s.annualita)==="1");
+  else if(annoSel==="2")studenti=studenti.filter(s=>String(s.annualita)==="2");
+  if(!studenti.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno studente trovato.</div>`;return;}
   const emailSet=new Set(studenti.map(s=>s.email.toLowerCase()));
   const votiRel=tuttiVoti.filter(v=>emailSet.has(String(v.EMAIL_STUDENTE||"").toLowerCase()));
   const materieSet=new Set(votiRel.map(v=>v.MATERIA||"").filter(m=>m));
   const materie=[...materieSet].sort();
-
-  if (!materie.length) {
-    cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito per gli studenti selezionati.</div>`;
-    return;
-  }
-
-  // Indice voti per studente e materia
+  if(!materie.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`;return;}
   const votiPerStudente={};
-  votiRel.forEach(v=>{
-    const em=String(v.EMAIL_STUDENTE||"").toLowerCase();
-    const mat=v.MATERIA||"";
-    if (!votiPerStudente[em]) votiPerStudente[em]={};
-    if (!votiPerStudente[em][mat]) votiPerStudente[em][mat]=[];
-    votiPerStudente[em][mat].push({val:parseFloat(v.VOTO)||0, id:v.ID});
-  });
-
-  function colMedia(m) {
-    if (m>=28) return "var(--success)";
-    if (m>=24) return "var(--accent2)";
-    if (m>=18) return "var(--warning)";
-    return "var(--danger)";
-  }
-  function fmtV(v) { return v%1===0?String(v):v.toFixed(1); }
-
-  let html=`
-  <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--border)">
-  <table style="border-collapse:collapse;min-width:100%;font-size:.78rem">
-    <thead>
-      <tr style="background:var(--surface2)">
-        <th style="position:sticky;left:0;z-index:2;background:var(--surface2);padding:.65rem .85rem;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;min-width:160px;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">
-          Studente
-          ${annoSel==="tutti"?'<span style="font-size:.65rem;margin-left:4px;opacity:.6">/ Anno</span>':''}
-        </th>`;
-
-  materie.forEach(m=>{
-    const abbr=m.length>11?m.substring(0,10)+"…":m;
-    html+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;max-width:92px;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(m)}">${esc(abbr)}</th>`;
-  });
-  html+=`<th style="padding:.5rem .7rem;border-bottom:2px solid var(--border);border-left:2px solid rgba(59,130,246,.5);text-align:center;min-width:68px;font-size:.72rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.05em">Media</th>
-      </tr>
-    </thead>
-    <tbody>`;
-
+  votiRel.forEach(v=>{const em=String(v.EMAIL_STUDENTE||"").toLowerCase();const mat=v.MATERIA||"";if(!votiPerStudente[em])votiPerStudente[em]={};if(!votiPerStudente[em][mat])votiPerStudente[em][mat]=[];votiPerStudente[em][mat].push({val:parseFloat(v.VOTO)||0,id:v.ID});});
+  function colMedia(m){if(m>=28)return"var(--success)";if(m>=24)return"var(--accent2)";if(m>=18)return"var(--warning)";return"var(--danger)";}
+  function fmtV(v){return v%1===0?String(v):v.toFixed(1);}
+  let html=`<div style="overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1px solid var(--border)"><table style="border-collapse:collapse;min-width:100%;font-size:.78rem"><thead><tr style="background:var(--surface2)"><th style="position:sticky;left:0;z-index:2;background:var(--surface2);padding:.65rem .85rem;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;min-width:160px;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Studente${annoSel==="tutti"?'<span style="font-size:.65rem;margin-left:4px;opacity:.6">/ Anno</span>':''}</th>`;
+  materie.forEach(m=>{const abbr=m.length>11?m.substring(0,10)+"&#8230;":m;html+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;max-width:92px;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(m)}">${esc(abbr)}</th>`;});
+  html+=`<th style="padding:.5rem .7rem;border-bottom:2px solid var(--border);border-left:2px solid rgba(59,130,246,.5);text-align:center;min-width:68px;font-size:.72rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.05em">Media</th></tr></thead><tbody>`;
   studenti.forEach((s,idx)=>{
-    const em=s.email.toLowerCase();
-    const votiSt=votiPerStudente[em]||{};
+    const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};
     const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";
-
-    html+=`<tr class="tabellone-row">
-      <td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.55rem .85rem;border-bottom:1px solid var(--border);white-space:nowrap">
-        <div style="font-weight:600;font-size:.84rem">${esc(s.nome)}</div>
-        ${annoSel==="tutti"?`<div style="font-size:.68rem;color:var(--muted)">${s.annualita}° anno</div>`:''}
-      </td>`;
-
-    let sommaMediae=0, conteggioMaterie=0;
+    html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.55rem .85rem;border-bottom:1px solid var(--border);white-space:nowrap"><div style="font-weight:600;font-size:.84rem">${esc(s.nome)}</div>${annoSel==="tutti"?`<div style="font-size:.68rem;color:var(--muted)">${s.annualita}&#176; anno</div>`:''}</td>`;
+    let sommaMediae=0,conteggioMaterie=0;
     materie.forEach(m=>{
-      const voci=votiSt[m]||[];
-      const vals=voci.map(x=>x.val);
+      const voci=votiSt[m]||[];const vals=voci.map(x=>x.val);
       const media=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:null;
-      if (media!==null) { sommaMediae+=media; conteggioMaterie++; }
-
+      if(media!==null){sommaMediae+=media;conteggioMaterie++;}
       html+=`<td style="background:${bgRow};padding:.4rem .3rem;border-bottom:1px solid var(--border);border-left:1px solid var(--border);text-align:center;vertical-align:middle">`;
-      if (vals.length) {
-        const pillsHtml=vals.map(v=>`<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:.12rem .3rem;margin:1px;font-family:var(--font-head);font-weight:700;font-size:.76rem;color:${colMedia(v)}">${fmtV(v)}</span>`).join("");
-        html+=`<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-          <div>${pillsHtml}</div>
-          ${vals.length>1?`<div style="font-family:var(--font-head);font-size:.68rem;font-weight:700;color:${colMedia(media)};border-top:1px dashed rgba(255,255,255,.08);padding-top:2px;width:100%;text-align:center">⌀${fmtV(media)}</div>`:''}
-        </div>`;
-      } else {
-        html+=`<span style="color:rgba(255,255,255,.12);font-size:.75rem">—</span>`;
-      }
+      if(vals.length){const pillsHtml=vals.map(v=>`<span style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:.12rem .3rem;margin:1px;font-family:var(--font-head);font-weight:700;font-size:.76rem;color:${colMedia(v)}">${fmtV(v)}</span>`).join("");html+=`<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div>${pillsHtml}</div>${vals.length>1?`<div style="font-family:var(--font-head);font-size:.68rem;font-weight:700;color:${colMedia(media)};border-top:1px dashed rgba(255,255,255,.08);padding-top:2px;width:100%;text-align:center">&#8960;${fmtV(media)}</div>`:''}</div>`;}
+      else html+=`<span style="color:rgba(255,255,255,.12);font-size:.75rem">&mdash;</span>`;
       html+=`</td>`;
     });
-
     const mediaGen=conteggioMaterie?Math.round((sommaMediae/conteggioMaterie)*100)/100:null;
-    html+=`<td style="background:${bgRow};padding:.5rem .6rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center;vertical-align:middle">
-      ${mediaGen!==null
-        ?`<div style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:${colMedia(mediaGen)}">${fmtV(mediaGen)}</div><div style="font-size:.62rem;color:var(--muted);margin-top:1px">/ 30</div>`
-        :`<span style="color:rgba(255,255,255,.18);font-size:.8rem">—</span>`}
-    </td></tr>`;
+    html+=`<td style="background:${bgRow};padding:.5rem .6rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center;vertical-align:middle">${mediaGen!==null?`<div style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:${colMedia(mediaGen)}">${fmtV(mediaGen)}</div><div style="font-size:.62rem;color:var(--muted);margin-top:1px">/ 30</div>`:`<span style="color:rgba(255,255,255,.18);font-size:.8rem">&mdash;</span>`}</td></tr>`;
   });
-
-  /* Riga medie classe */
-  html+=`<tr style="background:var(--surface2)">
-    <td style="position:sticky;left:0;z-index:1;background:var(--surface2);padding:.6rem .85rem;border-top:2px solid rgba(59,130,246,.3);font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Media classe</td>`;
-  let sommaMedieClasse=0, materieConVotiClasse=0;
+  html+=`<tr style="background:var(--surface2)"><td style="position:sticky;left:0;z-index:1;background:var(--surface2);padding:.6rem .85rem;border-top:2px solid rgba(59,130,246,.3);font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Media classe</td>`;
+  let sommaMedieClasse=0,materieConVotiClasse=0;
   materie.forEach(m=>{
-    const vsMateria=studenti.map(s=>{
-      const voci=(votiPerStudente[s.email.toLowerCase()]||{})[m]||[];
-      const vals=voci.map(x=>x.val);
-      return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
-    }).filter(v=>v!==null);
+    const vsMateria=studenti.map(s=>{const voci=(votiPerStudente[s.email.toLowerCase()]||{})[m]||[];const vals=voci.map(x=>x.val);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;}).filter(v=>v!==null);
     const mc=vsMateria.length?Math.round((vsMateria.reduce((a,b)=>a+b,0)/vsMateria.length)*10)/10:null;
-    if (mc!==null) { sommaMedieClasse+=mc; materieConVotiClasse++; }
-    html+=`<td style="padding:.5rem .3rem;border-left:1px solid var(--border);border-top:2px solid rgba(59,130,246,.3);text-align:center">
-      ${mc!==null?`<div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:${colMedia(mc)}">${fmtV(mc)}</div>`:'<span style="color:rgba(255,255,255,.12)">—</span>'}
-    </td>`;
+    if(mc!==null){sommaMedieClasse+=mc;materieConVotiClasse++;}
+    html+=`<td style="padding:.5rem .3rem;border-left:1px solid var(--border);border-top:2px solid rgba(59,130,246,.3);text-align:center">${mc!==null?`<div style="font-family:var(--font-head);font-size:.88rem;font-weight:800;color:${colMedia(mc)}">${fmtV(mc)}</div>`:'<span style="color:rgba(255,255,255,.12)">&mdash;</span>'}</td>`;
   });
   const mcGen=materieConVotiClasse?Math.round((sommaMedieClasse/materieConVotiClasse)*100)/100:null;
-  html+=`<td style="padding:.5rem .6rem;border-left:2px solid rgba(59,130,246,.5);border-top:2px solid rgba(59,130,246,.3);text-align:center">
-    ${mcGen!==null?`<div style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:${colMedia(mcGen)}">${fmtV(mcGen)}</div>`:'<span style="color:rgba(255,255,255,.18)">—</span>'}
-  </td>`;
-  html+=`</tr></tbody></table></div>`;
-
-  // Legenda e contatore
-  html+=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-top:.75rem">
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap;font-size:.72rem;color:var(--muted)">
-      <span style="color:var(--success)">● ≥28</span>
-      <span style="color:var(--accent2)">● 24–27</span>
-      <span style="color:var(--warning)">● 18–23</span>
-      <span style="color:var(--danger)">● &lt;18</span>
-    </div>
-    <div style="font-size:.72rem;color:var(--muted)">${studenti.length} studenti · ${materie.length} materie</div>
-  </div>`;
-
+  html+=`<td style="padding:.5rem .6rem;border-left:2px solid rgba(59,130,246,.5);border-top:2px solid rgba(59,130,246,.3);text-align:center">${mcGen!==null?`<div style="font-family:var(--font-head);font-size:1.05rem;font-weight:800;color:${colMedia(mcGen)}">${fmtV(mcGen)}</div>`:'<span style="color:rgba(255,255,255,.18)">&mdash;</span>'}</td></tr></tbody></table></div>`;
+  html+=`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-top:.75rem"><div style="display:flex;gap:.75rem;flex-wrap:wrap;font-size:.72rem;color:var(--muted)"><span style="color:var(--success)">&#9679; &ge;28</span><span style="color:var(--accent2)">&#9679; 24&ndash;27</span><span style="color:var(--warning)">&#9679; 18&ndash;23</span><span style="color:var(--danger)">&#9679; &lt;18</span></div><div style="font-size:.72rem;color:var(--muted)">${studenti.length} studenti &middot; ${materie.length} materie</div></div>`;
   cont.innerHTML=html;
 }
-
-/* ── Registro inserimento (Coordinatore / Docente) ── */
-async function renderRegistro() {
-  const pane=$("voti-inserisci-pane")||$("voti-registro-pane");
-  if (!pane) return;
-  if (!_materieList.length) { pane.innerHTML=`<div class="alert alert-danger">Nessuna materia trovata.</div>`; return; }
+async function renderRegistro(){
+  const pane=$("voti-inserisci-pane")||$("voti-registro-pane");if(!pane)return;
+  if(!_materieList.length){pane.innerHTML=`<div class="alert alert-danger">Nessuna materia trovata.</div>`;return;}
   const materiaOpts=_materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
   const preselectMateria=(_user.ruolo==="DOCENTE"&&_materieList.length===1)?_materieList[0]:"";
-  pane.innerHTML=`<div class="card" style="margin-bottom:1rem">
-    <div class="grid-2" style="gap:.75rem">
-      <div class="form-group" style="margin-bottom:0"><label>Materia</label><select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select></div>
-      <div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="reg-anno"><option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option></select></div>
-    </div>
-    <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button>
-  </div><div id="registro-table"></div>`;
-  if (preselectMateria) { $("reg-materia").value=preselectMateria; $("reg-anno").value="1"; await apriRegistro(); }
+  pane.innerHTML=`<div class="card" style="margin-bottom:1rem"><div class="grid-2" style="gap:.75rem"><div class="form-group" style="margin-bottom:0"><label>Materia</label><select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="reg-anno"><option value="">Tutti</option><option value="1">1&#176; Anno</option><option value="2">2&#176; Anno</option></select></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button></div><div id="registro-table"></div>`;
+  if(preselectMateria){$("reg-materia").value=preselectMateria;$("reg-anno").value="1";await apriRegistro();}
 }
-async function apriRegistro() {
-  const materia=$("reg-materia").value, anno=$("reg-anno").value;
-  if (!materia) { alert("Seleziona una materia."); return; }
+async function apriRegistro(){
+  const materia=$("reg-materia").value,anno=$("reg-anno").value;
+  if(!materia){alert("Seleziona una materia.");return;}
   await _assicuraStudenti();
-  let studenti=_studenti;
-  if (anno) studenti=studenti.filter(s=>String(s.annualita)===anno);
-  if (!studenti.length) { $("registro-table").innerHTML=`<div class="alert alert-danger">Nessuno studente trovato.</div>`; return; }
+  let studenti=_studenti;if(anno)studenti=studenti.filter(s=>String(s.annualita)===anno);
+  if(!studenti.length){$("registro-table").innerHTML=`<div class="alert alert-danger">Nessuno studente trovato.</div>`;return;}
   $("registro-table").innerHTML=`<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
   const res=await api("getVoti",{emailStudente:null});
   const tuttiVoti=res.success?(res.voti||[]):[];
   const votiMateria={};
-  tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{ const em=String(v.EMAIL_STUDENTE||"").toLowerCase(); if(!votiMateria[em]) votiMateria[em]=[]; votiMateria[em].push(v); });
-  let html=`<div class="section-title">${esc(materia)}${anno?" — "+anno+"° anno":""} · ${studenti.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
+  tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{const em=String(v.EMAIL_STUDENTE||"").toLowerCase();if(!votiMateria[em])votiMateria[em]=[];votiMateria[em].push(v);});
+  let html=`<div class="section-title">${esc(materia)}${anno?" &mdash; "+anno+"&#176; anno":""} &middot; ${studenti.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
   studenti.forEach(s=>{
-    const email=s.email.toLowerCase(), votiSt=votiMateria[email]||[];
+    const email=s.email.toLowerCase(),votiSt=votiMateria[email]||[];
     const media=votiSt.length?Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10:null;
-    // Pill compatte: solo numero + eventuale cestino, data in tooltip
-    const pillsHtml=votiSt.map(v=>{
-      const num=parseFloat(v.VOTO); const cls=votoClass(num);
-      const dataStr=_fmtDataIT(v.DATA);
-      return `<span title="${dataStr}" style="display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.18rem .38rem;font-family:var(--font-head);font-weight:700;font-size:.8rem" class="${cls}">${v.VOTO}${_user.ruolo==="COORDINATORE"?`<span style="font-size:.6rem;cursor:pointer;opacity:.6;margin-left:1px" onclick="eliminaVotoById('${v.ID}')" title="Elimina">✕</span>`:''}</span>`;
-    }).join("");
-    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)">
-      <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem">
-        <div style="flex:1;min-width:0">
-          <span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span>
-          <span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${s.annualita}° anno</span>
-        </div>
-        ${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)};white-space:nowrap">⌀ ${media}</span>`:''}
-        <input type="number" min="0" max="30" step="0.5" placeholder="—" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}"
-          style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0">
-      </div>
-      ${pillsHtml?`<div style="display:flex;flex-wrap:wrap;gap:4px">${pillsHtml}</div>`:'<div style="font-size:.72rem;color:var(--muted);font-style:italic">Nessun voto</div>'}
-    </div>`;
+    const pillsHtml=votiSt.map(v=>{const num=parseFloat(v.VOTO);const cls=votoClass(num);const dataStr=_fmtDataIT(v.DATA);return`<span title="${dataStr}" style="display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.18rem .38rem;font-family:var(--font-head);font-weight:700;font-size:.8rem" class="${cls}">${v.VOTO}${_user.ruolo==="COORDINATORE"?`<span style="font-size:.6rem;cursor:pointer;opacity:.6;margin-left:1px" onclick="eliminaVotoById('${v.ID}')" title="Elimina">&#10005;</span>`:''}</span>`;}).join("");
+    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="flex:1;min-width:0"><span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span><span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${s.annualita}&#176; anno</span></div>${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)};white-space:nowrap">&#8960; ${media}</span>`:''}<input type="number" min="0" max="30" step="0.5" placeholder="&mdash;" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}" style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0"></div>${pillsHtml?`<div style="display:flex;flex-wrap:wrap;gap:4px">${pillsHtml}</div>`:'<div style="font-size:.72rem;color:var(--muted);font-style:italic">Nessun voto</div>'}</div>`;
   });
-  html+=`</div><div style="margin-top:1rem">
-    <div class="form-group" style="margin-bottom:0"><label>Note (per tutti i nuovi voti)</label><input type="text" id="reg-note-globale" placeholder="Opzionale"></div>
-  </div>
-  <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">💾 Salva tutti i voti inseriti</button>
-  <div id="reg-save-msg" style="margin-top:.5rem"></div>`;
+  html+=`</div><div style="margin-top:1rem"><div class="form-group" style="margin-bottom:0"><label>Note (per tutti i nuovi voti)</label><input type="text" id="reg-note-globale" placeholder="Opzionale"></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">&#128190; Salva tutti i voti inseriti</button><div id="reg-save-msg" style="margin-top:.5rem"></div>`;
   $("registro-table").innerHTML=html;
 }
-function mediaColor(m) { if(m>=28) return "#10b981"; if(m>=24) return "#60a5fa"; if(m>=18) return "#f59e0b"; return "#ef4444"; }
-function _fmtDataIT(v) {
-  if (!v) return "";
-  const s=v instanceof Date?v.toISOString().split("T")[0]:String(v);
-  if (s.includes("-")&&s.length>=10) { const [y,m,d]=s.split("-"); return d+"/"+m+"/"+y; }
-  return s;
-}
-async function salvaRegistro(materia) {
+function mediaColor(m){if(m>=28)return"#10b981";if(m>=24)return"#60a5fa";if(m>=18)return"#f59e0b";return"#ef4444";}
+function _fmtDataIT(v){if(!v)return"";const s=v instanceof Date?v.toISOString().split("T")[0]:String(v);if(s.includes("-")&&s.length>=10){const[y,m,d]=s.split("-");return d+"/"+m+"/"+y;}return s;}
+async function salvaRegistro(materia){
   const note=$("reg-note-globale").value.trim();
   const inputs=document.querySelectorAll("#registro-table input[data-email]");
   const daInserire=[];
-  inputs.forEach(inp=>{ const v=inp.value.trim(); if(!v) return; const num=parseFloat(v); if(isNaN(num)||num<0||num>30) return; daInserire.push({emailStudente:inp.getAttribute("data-email"),materia,voto:num,note}); });
-  if (!daInserire.length) { $("reg-save-msg").innerHTML=`<div class="alert alert-danger">Nessun voto da salvare.</div>`; return; }
+  inputs.forEach(inp=>{const v=inp.value.trim();if(!v)return;const num=parseFloat(v);if(isNaN(num)||num<0||num>30)return;daInserire.push({emailStudente:inp.getAttribute("data-email"),materia,voto:num,note});});
+  if(!daInserire.length){$("reg-save-msg").innerHTML=`<div class="alert alert-danger">Nessun voto da salvare.</div>`;return;}
   $("reg-save-msg").innerHTML=`<div style="text-align:center"><div class="spinner"></div> Salvataggio ${daInserire.length} voti...</div>`;
   let ok=0,err=0;
-  for (const d of daInserire) { const res=await api("inserisciVoto",d); if(res.success) ok++; else err++; }
-  $("reg-save-msg").innerHTML=ok>0?`<div class="alert alert-success">✅ ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`:`<div class="alert alert-danger">Errore nel salvataggio.</div>`;
-  if (ok>0) { inputs.forEach(inp=>{ if(inp.value.trim()) inp.value=""; }); }
+  for(const d of daInserire){const res=await api("inserisciVoto",d);if(res.success)ok++;else err++;}
+  $("reg-save-msg").innerHTML=ok>0?`<div class="alert alert-success">&#10003; ${ok} voti salvati${err>0?" ("+err+" errori)":""}.</div>`:`<div class="alert alert-danger">Errore nel salvataggio.</div>`;
+  if(ok>0)inputs.forEach(inp=>{if(inp.value.trim())inp.value="";});
   setTimeout(()=>apriRegistro(),1500);
 }
-async function caricaVotiStudente() {
+async function caricaVotiStudente(){
   $("voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   const res=await api("getVoti",{});
-  if (!res.success) { $("voti-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+  if(!res.success){$("voti-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
   const perMateria=res.perMateria||[];
-  if (!perMateria.length) { $("voti-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
+  if(!perMateria.length){$("voti-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`;return;}
   let html="";
-  perMateria.forEach(m=>{
-    html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div>
-    <div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;
-  });
+  perMateria.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;});
   $("voti-content").innerHTML=html;
 }
-async function cambiaStudenteVoti(email) {
-  _selectedStudenteVoti=email||null;
-  const cont=$("voti-content");
-  if (!email) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
-  if(cont) cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+async function cambiaStudenteVoti(email){
+  _selectedStudenteVoti=email||null;const cont=$("voti-content");
+  if(!email){if(cont)cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`;return;}
+  if(cont)cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   const res=await api("getVoti",{emailStudente:email});
-  if (!res.success) { if(cont) cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
+  if(!res.success){if(cont)cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
   const perMateria=res.perMateria||[];
-  if (!perMateria.length) { if(cont) cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`; return; }
+  if(!perMateria.length){if(cont)cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto inserito.</div>`;return;}
   let html="";
-  perMateria.forEach(m=>{
-    html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div>
-    <div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''
-    }${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id||v.ID}')">🗑</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;
-  });
-  if(cont) cont.innerHTML=html;
+  perMateria.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span>${v.note?`<span class="v-date">${esc(v.note)}</span>`:''} ${_user.ruolo==="COORDINATORE"?`<span class="v-del" onclick="eliminaVotoById('${v.id||v.ID}')">&#128465;</span>`:''}</div>`).join("")}</div><div class="divider"></div></div>`;});
+  if(cont)cont.innerHTML=html;
 }
-async function caricaVoti(e) { await cambiaStudenteVoti(e); }
-async function apriInserisciVoto() { switchPane("voti"); }
-async function eliminaVotoById(id) {
-  if (!confirm("Eliminare questo voto?")) return;
+async function apriInserisciVoto(){switchPane("voti");}
+async function eliminaVotoById(id){
+  if(!confirm("Eliminare questo voto?"))return;
   const res=await api("eliminaVoto",{id});
-  if (res.success) {
-    const inserisciPane=$("voti-inserisci-pane")||$("voti-registro-pane");
-    if (inserisciPane && !inserisciPane.classList.contains("hide")) apriRegistro();
-    else if (_currentPane==="voti") cambiaStudenteVoti(_selectedStudenteVoti);
-  } else alert(res.message);
+  if(res.success){const ip=$("voti-inserisci-pane")||$("voti-registro-pane");if(ip&&!ip.classList.contains("hide"))apriRegistro();else if(_currentPane==="voti")cambiaStudenteVoti(_selectedStudenteVoti);}
+  else alert(res.message);
 }
 
-/* ═══════════════════════════════════════════════════
-   PRESENZE
-═══════════════════════════════════════════════════ */
+/* PRESENZE */
 let _selectedStudentePresenze=null;
-async function renderPresenze() {
-  const pane=$("pane-presenze"), r=_user.ruolo;
-  let actions="";
-  if (["COORDINATORE","TUTOR"].includes(r)) actions=`<button class="btn btn-primary btn-sm" onclick="apriInserisciPresenza()" style="margin-bottom:1rem">➕ Registra</button>`;
-  let selectorHtml="";
-  if (r!=="STUDENTE") selectorHtml=`<div class="form-group" style="margin-bottom:1rem"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona studente --</option></select></div>`;
-  pane.innerHTML=`<div class="page-header"><h2>✅ Presenze</h2></div>${actions}${selectorHtml}<div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
-  if (r!=="STUDENTE") {
-    if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; }
-    const sel=$("sel-studente-pres");
-    _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome+" ("+s.annualita+"° anno)"; sel.appendChild(o); });
+const ORE_TOTALI_JS={"1":500,"2":500};
+async function renderPresenze(){
+  const pane=$("pane-presenze"),r=_user.ruolo;
+  let actions=["COORDINATORE","TUTOR"].includes(r)?`<button class="btn btn-primary btn-sm" onclick="apriInserisciPresenza()" style="margin-bottom:1rem">&#10133; Registra</button>`:"";
+  let selectorHtml=r!=="STUDENTE"?`<div class="form-group" style="margin-bottom:1rem"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona studente --</option></select></div>`:"";
+  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div>${actions}${selectorHtml}<div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  if(r!=="STUDENTE"){
+    if(!_studenti.length){const sr=await api("getStudenti",{});_studenti=sr.studenti||[];}
+    const sel=$("sel-studente-pres");_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"&#176; anno)";sel.appendChild(o);});
     $("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`;
-  } else { await caricaPresenze(null); }
+  }else{await caricaPresenze(null);}
 }
-async function cambiaStudentePresenze(email) {
-  _selectedStudentePresenze=email||null;
-  if (!email) { $("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`; return; }
-  await caricaPresenze(email);
-}
-async function caricaPresenze(emailStudente) {
+async function cambiaStudentePresenze(email){_selectedStudentePresenze=email||null;if(!email){$("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`;return;}await caricaPresenze(email);}
+async function caricaPresenze(emailStudente){
   $("presenze-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   const res=await api("getPresenze",{emailStudente});
-  if (!res.success) { $("presenze-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  const presenze=res.presenze||[], s=res.stats||{};
+  if(!res.success){$("presenze-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  const presenze=res.presenze||[],s=res.stats||{};
   const oreTot=ORE_TOTALI_JS[_user.annualita||"1"]||500;
   const perc=Math.min(100,Math.round((s.orePresenti/oreTot)*100*10)/10)||0;
-  let html=`<div class="grid-3" style="margin-bottom:1rem">
-    <div class="stat-card card-sm"><div class="stat-val text-success" style="font-size:1.3rem">${s.orePresenti||0}</div><div class="stat-lbl">Presenti</div></div>
-    <div class="stat-card card-sm"><div class="stat-val text-danger" style="font-size:1.3rem">${s.oreAssenza||0}</div><div class="stat-lbl">Assente</div></div>
-    <div class="stat-card card-sm"><div class="stat-val text-warning" style="font-size:1.3rem">${s.oreRitardo||0}</div><div class="stat-lbl">Ritardi</div></div>
-  </div>
-  <div class="card" style="margin-bottom:1rem;padding:.9rem">
-    <div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}% · ${s.orePresenti||0}/${oreTot}h</span></div>
-    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${perc}%"></div></div>
-  </div>`;
-  if (!presenze.length) { html+=`<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuna registrazione.</div>`; }
-  else {
-    html+=`<div class="card">`;
-    presenze.slice().reverse().forEach(p=>{
-      html+=`<div class="presence-row"><span class="tipo-badge tipo-${p.TIPO}">${p.TIPO}</span>
-        <div style="flex:1"><div style="font-size:.88rem;font-weight:500">${esc(p.dataIT||fmtData(p.DATA))}</div>
-        <div style="font-size:.72rem;color:var(--muted)">${p.ORA_INIZIO?p.ORA_INIZIO+' – '+p.ORA_FINE:''} · ${p.ORE}h</div></div>
-        ${["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.8rem" onclick="eliminaPresenzaById('${p.ID}')">🗑</button>`:''}
-      </div>`;
-    });
-    html+=`</div>`;
-  }
+  let html=`<div class="grid-3" style="margin-bottom:1rem"><div class="stat-card card-sm"><div class="stat-val text-success" style="font-size:1.3rem">${s.orePresenti||0}</div><div class="stat-lbl">Presenti</div></div><div class="stat-card card-sm"><div class="stat-val text-danger" style="font-size:1.3rem">${s.oreAssenza||0}</div><div class="stat-lbl">Assente</div></div><div class="stat-card card-sm"><div class="stat-val text-warning" style="font-size:1.3rem">${s.oreRitardo||0}</div><div class="stat-lbl">Ritardi</div></div></div><div class="card" style="margin-bottom:1rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}% &middot; ${s.orePresenti||0}/${oreTot}h</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${perc}%"></div></div></div>`;
+  if(!presenze.length){html+=`<div class="text-muted" style="text-align:center;padding:1.5rem">Nessuna registrazione.</div>`;}
+  else{html+=`<div class="card">`;presenze.slice().reverse().forEach(p=>{html+=`<div class="presence-row"><span class="tipo-badge tipo-${p.TIPO}">${p.TIPO}</span><div style="flex:1"><div style="font-size:.88rem;font-weight:500">${esc(p.dataIT||fmtData(p.DATA))}</div><div style="font-size:.72rem;color:var(--muted)">${p.ORA_INIZIO?p.ORA_INIZIO+' &ndash; '+p.ORA_FINE:''} &middot; ${p.ORE}h</div></div>${["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.8rem" onclick="eliminaPresenzaById('${p.ID}')">&#128465;</button>`:''}</div>`;});html+=`</div>`;}
   $("presenze-content").innerHTML=html;
 }
-const ORE_TOTALI_JS={"1":500,"2":500};
-async function apriInserisciPresenza() {
-  if (!_studenti.length) { const sr=await api("getStudenti",{}); _studenti=sr.studenti||[]; }
-  const sel=$("pres-studente"); sel.innerHTML='<option value="">-- Studente --</option>';
-  _studenti.forEach(s=>{ const o=document.createElement("option"); o.value=s.email; o.textContent=s.nome; sel.appendChild(o); });
-  if (_selectedStudentePresenze) sel.value=_selectedStudentePresenze;
-  $("pres-data").value=todayISO(); $("pres-tipo").value="PRESENZA";
+async function apriInserisciPresenza(){
+  if(!_studenti.length){const sr=await api("getStudenti",{});_studenti=sr.studenti||[];}
+  const sel=$("pres-studente");sel.innerHTML='<option value="">-- Studente --</option>';
+  _studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome;sel.appendChild(o);});
+  if(_selectedStudentePresenze)sel.value=_selectedStudentePresenze;
+  $("pres-data").value=todayISO();$("pres-tipo").value="PRESENZA";
   document.querySelectorAll("#modal-presenza .chip").forEach((c,i)=>c.classList.toggle("selected",i===0));
-  hideErr("pres-err"); openModal("modal-presenza");
+  hideErr("pres-err");openModal("modal-presenza");
 }
-function selTipoPresenza(el,tipo) { document.querySelectorAll("#modal-presenza .chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); $("pres-tipo").value=tipo; }
-async function salvaPresenza() {
+function selTipoPresenza(el,tipo){document.querySelectorAll("#modal-presenza .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");$("pres-tipo").value=tipo;}
+async function salvaPresenza(){
   hideErr("pres-err");
-  const emailStudente=$("pres-studente").value, data=$("pres-data").value, tipo=$("pres-tipo").value, ini=$("pres-ini").value, fin=$("pres-fin").value;
-  if (!emailStudente) return showErr("pres-err","Seleziona studente.");
-  if (!data) return showErr("pres-err","Inserisci data.");
+  const emailStudente=$("pres-studente").value,data=$("pres-data").value,tipo=$("pres-tipo").value,ini=$("pres-ini").value,fin=$("pres-fin").value;
+  if(!emailStudente)return showErr("pres-err","Seleziona studente.");if(!data)return showErr("pres-err","Inserisci data.");
   const res=await api("inserisciPresenza",{emailStudente,data,oraInizio:ini,oraFine:fin,tipo});
-  if (!res.success) return showErr("pres-err",res.message);
-  chiudiModal("modal-presenza");
-  if (_currentPane==="presenze") await caricaPresenze(_selectedStudentePresenze||null);
+  if(!res.success)return showErr("pres-err",res.message);
+  chiudiModal("modal-presenza");if(_currentPane==="presenze")await caricaPresenze(_selectedStudentePresenze||null);
 }
-async function eliminaPresenzaById(id) {
-  if (!confirm("Eliminare questa registrazione?")) return;
-  const res=await api("eliminaPresenza",{id});
-  if (res.success) await caricaPresenze(_selectedStudentePresenze||null); else alert(res.message);
-}
+async function eliminaPresenzaById(id){if(!confirm("Eliminare questa registrazione?"))return;const res=await api("eliminaPresenza",{id});if(res.success)await caricaPresenze(_selectedStudentePresenze||null);else alert(res.message);}
 
-/* ═══════════════════════════════════════════════════
-   COMUNICAZIONI
-═══════════════════════════════════════════════════ */
+/* COMUNICAZIONI */
 let _comunicazioni=[];
-async function renderComunicazioni() {
-  const pane=$("pane-comunicazioni"), r=_user.ruolo;
-  let actions=r==="COORDINATORE"?`<button class="btn btn-primary btn-sm" onclick="apriNuovaComunicazione()" style="margin-bottom:1rem">✏️ Nuova comunicazione</button>`:"";
-  pane.innerHTML=`<div class="page-header"><h2>📢 Bacheca comunicazioni</h2></div>${actions}<div id="comm-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+async function renderComunicazioni(){
+  const pane=$("pane-comunicazioni"),r=_user.ruolo;
+  let actions=r==="COORDINATORE"?`<button class="btn btn-primary btn-sm" onclick="apriNuovaComunicazione()" style="margin-bottom:1rem">&#9998; Nuova comunicazione</button>`:"";
+  pane.innerHTML=`<div class="page-header"><h2>&#128226; Bacheca comunicazioni</h2></div>${actions}<div id="comm-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
   const res=await api("getComunicazioni",{});
-  if (!res.success) { $("comm-list").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`; return; }
-  _comunicazioni=res.comunicazioni||[];
-  renderListaComunicazioni(); aggiornaNotifiche(0);
+  if(!res.success){$("comm-list").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  _comunicazioni=res.comunicazioni||[];renderListaComunicazioni();aggiornaNotifiche(0);
 }
-function renderListaComunicazioni() {
-  const cont=$("comm-list");
-  if (!_comunicazioni.length) { cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>`; return; }
-  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team",coordinatore:"Coordinatore"};
-  cont.innerHTML=_comunicazioni.map(c=>`
-    <div class="comm-card ${c.letta?'':'unread'}" onclick="apriComunicazione('${esc(c.ID)}')">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
-        <div class="comm-title">${esc(c.TITOLO)}${!c.letta?` <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>`:''}</div>
-        ${_user.ruolo==="COORDINATORE"?`<button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);flex-shrink:0" onclick="event.stopPropagation();eliminaComm('${esc(c.ID)}')">🗑</button>`:''}
-      </div>
-      <div class="comm-meta"><span>📅 ${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DEST_LABELS[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div>
-      <div class="comm-preview">${esc(c.TESTO)}</div>
-    </div>`).join("");
+function renderListaComunicazioni(){
+  const cont=$("comm-list");if(!_comunicazioni.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>`;return;}
+  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1&#176; Anno","2anno":"2&#176; Anno",docenti:"Docenti",team:"Team",coordinatore:"Coordinatore"};
+  cont.innerHTML=_comunicazioni.map(c=>`<div class="comm-card ${c.letta?'':'unread'}" onclick="apriComunicazione('${esc(c.ID)}')"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem"><div class="comm-title">${esc(c.TITOLO)}${!c.letta?` <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>`:''}</div>${_user.ruolo==="COORDINATORE"?`<button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);flex-shrink:0" onclick="event.stopPropagation();eliminaComm('${esc(c.ID)}')">&#128465;</button>`:''}</div><div class="comm-meta"><span>&#128197; ${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DEST_LABELS[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div><div class="comm-preview">${esc(c.TESTO)}</div></div>`).join("");
 }
-function apriComunicazione(id) {
-  const c=_comunicazioni.find(x=>x.ID===id); if (!c) return;
-  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team"};
-  $("comm-detail-title").textContent=c.TITOLO;
-  $("comm-detail-meta").textContent=`${fmtData(c.DATA_CREAZIONE)} · Destinatari: ${DEST_LABELS[c.DESTINATARI]||c.DESTINATARI}`;
-  $("comm-detail-testo").textContent=c.TESTO;
-  $("comm-detail-actions").innerHTML="";
-  openModal("modal-comm-detail");
-  if (!c.letta) { api("segnaComunicazioneLetta",{id}).then(()=>{ c.letta=true; renderListaComunicazioni(); checkNotifiche(); }); }
+function apriComunicazione(id){
+  const c=_comunicazioni.find(x=>x.ID===id);if(!c)return;
+  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1&#176; Anno","2anno":"2&#176; Anno",docenti:"Docenti",team:"Team"};
+  $("comm-detail-title").textContent=c.TITOLO;$("comm-detail-meta").textContent=`${fmtData(c.DATA_CREAZIONE)} - Destinatari: ${DEST_LABELS[c.DESTINATARI]||c.DESTINATARI}`;
+  $("comm-detail-testo").textContent=c.TESTO;$("comm-detail-actions").innerHTML="";openModal("modal-comm-detail");
+  if(!c.letta){api("segnaComunicazioneLetta",{id}).then(()=>{c.letta=true;renderListaComunicazioni();checkNotifiche();});}
 }
-async function eliminaComm(id) {
-  if (!confirm("Eliminare questa comunicazione?")) return;
-  const res=await api("eliminaComunicazione",{id}); if(res.success) renderComunicazioni(); else alert(res.message);
+async function eliminaComm(id){if(!confirm("Eliminare questa comunicazione?"))return;const res=await api("eliminaComunicazione",{id});if(res.success)renderComunicazioni();else alert(res.message);}
+function apriNuovaComunicazione(){
+  $("comm-titolo").value=$("comm-testo").value="";document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
+  hideErr("comm-err");openModal("modal-nuova-comm");if(_currentPane!=="comunicazioni")switchPane("comunicazioni");
 }
-function apriNuovaComunicazione() {
-  $("comm-titolo").value=$("comm-testo").value="";
-  document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
-  hideErr("comm-err"); openModal("modal-nuova-comm");
-  if (_currentPane!=="comunicazioni") switchPane("comunicazioni");
-}
-function toggleChip(el,val) { document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected")); el.classList.add("selected"); }
-async function inviaComunicazione() {
+function toggleChip(el,val){document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
+async function inviaComunicazione(){
   hideErr("comm-err");
-  const titolo=$("comm-titolo").value.trim(), testo=$("comm-testo").value.trim();
+  const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();
   const destEl=document.querySelector("#chip-dest .chip.selected");
-  const destMap={"Tutti":"tutti","Studenti (tutti)":"studenti","Studenti 1° anno":"1anno","Studenti 2° anno":"2anno","Docenti":"docenti","Team":"team"};
+  const destMap={"Tutti":"tutti","Studenti (tutti)":"studenti","Studenti 1&#176; anno":"1anno","Studenti 2&#176; anno":"2anno","Docenti":"docenti","Team":"team"};
   const destFinal=destMap[destEl?.textContent]||"";
-  if (!titolo) return showErr("comm-err","Inserisci il titolo.");
-  if (!testo) return showErr("comm-err","Inserisci il testo.");
-  if (!destFinal) return showErr("comm-err","Seleziona i destinatari.");
-  const res=await api("creaComunicazione",{titolo,testo,destinatari:destFinal});
-  if (!res.success) return showErr("comm-err",res.message);
-  chiudiModal("modal-nuova-comm"); renderComunicazioni();
+  if(!titolo)return showErr("comm-err","Inserisci il titolo.");if(!testo)return showErr("comm-err","Inserisci il testo.");if(!destFinal)return showErr("comm-err","Seleziona i destinatari.");
+  const res=await api("creaComunicazione",{titolo,testo,destinatari:destFinal});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();
 }
 
-/* ═══════════════════════════════════════════════════
-   DISPONIBILITÀ — CALENDARIO SETTIMANALE
-═══════════════════════════════════════════════════ */
-
-// Colori tutor: assegnati dinamicamente per email
-const TUTOR_COLORS = [
-  {bg:"rgba(59,130,246,.85)",  border:"#3b82f6",  text:"#fff"},  // blu
-  {bg:"rgba(239,68,68,.85)",   border:"#ef4444",  text:"#fff"},  // rosso
-  {bg:"rgba(16,185,129,.85)",  border:"#10b981",  text:"#fff"},  // verde
-  {bg:"rgba(245,158,11,.85)",  border:"#f59e0b",  text:"#000"},  // giallo
-  {bg:"rgba(139,92,246,.85)",  border:"#8b5cf6",  text:"#fff"},  // viola
-  {bg:"rgba(236,72,153,.85)",  border:"#ec4899",  text:"#fff"},  // rosa
-];
-let _dispColorMap = {};  // email -> indice colore
-let _dispLista = [];     // cache disponibilità
-let _calWeekOffset = 0;  // 0 = settimana corrente
-
-// Estrae cognome dall'email: fbarbarossa -> Barbarossa, g.vitellaro -> Vitellaro
-function _getTutorName(email) {
-  if (!email) return "";
-  const local = email.split("@")[0].toLowerCase();
-  // Formato iniziale+cognome (es. fbarbarossa, dbrancati)
-  // oppure iniziale.cognome (es. g.vitellaro) o nome.cognome
-  let cleaned = local;
-  // Rimuovi suffissi .docenti .studenti ecc.
-  cleaned = cleaned.replace(/\.(docenti|studenti|tutor)$/i, "");
-  // Se contiene un punto: prendi la seconda parte (nome.cognome -> cognome)
-  if (cleaned.includes(".")) {
-    const parts = cleaned.split(".");
-    cleaned = parts[parts.length - 1];
-  } else {
-    // inizialeCognome: rimuovi primo carattere se è una sola lettera iniziale
-    // es. fbarbarossa -> barbarossa, ma "barbarossa" da solo rimane
-    if (cleaned.length > 1 && /^[a-z]/.test(cleaned)) {
-      // Euristica: se il primo char è seguito da almeno 4 char, è probabile sia iniziale+cognome
-      cleaned = cleaned.slice(1);
-    }
-  }
-  // Capitalizza
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-}
-
-function _getTutorColor(email) {
-  if (!email) return TUTOR_COLORS[0];
-  if (_dispColorMap[email] === undefined) {
-    const idx = Object.keys(_dispColorMap).length % TUTOR_COLORS.length;
-    _dispColorMap[email] = idx;
-  }
-  return TUTOR_COLORS[_dispColorMap[email]];
-}
-
-function _getMondayOf(weekOffset) {
-  const now = new Date();
-  const day = now.getDay(); // 0=dom
-  const diffToMon = (day === 0) ? -6 : 1 - day;
-  const mon = new Date(now);
-  mon.setDate(now.getDate() + diffToMon + weekOffset * 7);
-  mon.setHours(0,0,0,0);
-  return mon;
-}
-
-function _isoDate(d) {
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-
-function _parseMinutes(hhmm) {
-  if (!hhmm) return null;
-  const [h,m] = String(hhmm).split(":").map(Number);
-  return h*60 + (m||0);
-}
-
-function _fmtHM(min) {
-  return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0");
-}
-
-// Controlla sovrapposizione tra due slot [ini1,fin1) e [ini2,fin2) in minuti
-function _overlap(ini1,fin1,ini2,fin2) {
-  return ini1 < fin2 && ini2 < fin1;
-}
-
-async function renderDisponibilita() {
-  const pane=$("pane-disponibilita"), r=_user.ruolo;
-  const title = r==="COORDINATORE" ? "📆 Disponibilità tutor" : "📆 Le mie disponibilità";
-  pane.innerHTML=`<div class="page-header"><h2>${title}</h2></div>
-    <div id="disp-toolbar" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
-      ${r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="apriModalDisp()">➕ Aggiungi</button>`:""}
-      <div style="display:flex;align-items:center;gap:.25rem;margin-left:auto">
-        <button class="btn btn-outline btn-sm" onclick="cambiaSettimana(-1)">‹</button>
-        <span id="disp-week-label" style="font-size:.8rem;font-weight:600;min-width:120px;text-align:center"></span>
-        <button class="btn btn-outline btn-sm" onclick="cambiaSettimana(1)">›</button>
-        <button class="btn btn-outline btn-sm" onclick="tornaOggi()">Oggi</button>
-      </div>
-    </div>
-    <div id="disp-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
-    <div id="disp-legenda" style="margin-top:.75rem"></div>`;
+/* DISPONIBILITA' TUTOR - CALENDARIO */
+const TUTOR_COLORS=[{bg:"rgba(59,130,246,.85)",border:"#3b82f6",text:"#fff"},{bg:"rgba(239,68,68,.85)",border:"#ef4444",text:"#fff"},{bg:"rgba(16,185,129,.85)",border:"#10b981",text:"#fff"},{bg:"rgba(245,158,11,.85)",border:"#f59e0b",text:"#000"},{bg:"rgba(139,92,246,.85)",border:"#8b5cf6",text:"#fff"},{bg:"rgba(236,72,153,.85)",border:"#ec4899",text:"#fff"}];
+let _dispColorMap={},_dispLista=[],_calWeekOffset=0;
+function _getTutorName(email){if(!email)return"";let local=email.split("@")[0].toLowerCase();local=local.replace(/\.(docenti|studenti|tutor)$/i,"");if(local.includes(".")){const parts=local.split(".");local=parts[parts.length-1];}else if(local.length>1){local=local.slice(1);}return local.charAt(0).toUpperCase()+local.slice(1);}
+function _getTutorColor(email){if(!email)return TUTOR_COLORS[0];if(_dispColorMap[email]===undefined){const idx=Object.keys(_dispColorMap).length%TUTOR_COLORS.length;_dispColorMap[email]=idx;}return TUTOR_COLORS[_dispColorMap[email]];}
+function _getMondayOf(weekOffset){const now=new Date();const day=now.getDay();const diffToMon=day===0?-6:1-day;const mon=new Date(now);mon.setDate(now.getDate()+diffToMon+weekOffset*7);mon.setHours(0,0,0,0);return mon;}
+function _isoDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function _parseMinutes(hhmm){if(!hhmm)return null;const[h,m]=String(hhmm).split(":").map(Number);return h*60+(m||0);}
+function _fmtHM(min){return String(Math.floor(min/60)).padStart(2,"0")+":"+String(min%60).padStart(2,"0");}
+function _overlap(i1,f1,i2,f2){return i1<f2&&i2<f1;}
+async function renderDisponibilita(){
+  const pane=$("pane-disponibilita"),r=_user.ruolo;
+  const title=r==="COORDINATORE"?"&#128198; Disponibilita' tutor":"&#128198; Le mie disponibilita'";
+  pane.innerHTML=`<div class="page-header"><h2>${title}</h2></div><div id="disp-toolbar" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">${r==="TUTOR"?`<button class="btn btn-primary btn-sm" onclick="apriModalDisp()">&#10133; Aggiungi</button>`:""}<div style="display:flex;align-items:center;gap:.25rem;margin-left:auto"><button class="btn btn-outline btn-sm" onclick="cambiaSettimana(-1)">&#8249;</button><span id="disp-week-label" style="font-size:.8rem;font-weight:600;min-width:120px;text-align:center"></span><button class="btn btn-outline btn-sm" onclick="cambiaSettimana(1)">&#8250;</button><button class="btn btn-outline btn-sm" onclick="tornaOggi()">Oggi</button></div></div><div id="disp-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div id="disp-legenda" style="margin-top:.75rem"></div>`;
   await _caricaERenderCalendario();
 }
-
-async function _caricaERenderCalendario() {
-  const cont=$("disp-content");
-  cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res=await api("getDisponibilita",{});
-  if (!res.success) { cont.innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`; return; }
-  _dispLista = res.disponibilita||[];
-  _dispColorMap = {};
-  _renderCalendario();
+async function _caricaERenderCalendario(){
+  const cont=$("disp-content");cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res=await api("getDisponibilita",{});if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}
+  _dispLista=res.disponibilita||[];_dispColorMap={};_renderCalendario();
 }
-
-function _renderCalendario() {
-  const cont=$("disp-content"), r=_user.ruolo;
-  const lbl=$("disp-week-label");
-
-  const monday = _getMondayOf(_calWeekOffset);
-  const giorni = [];
-  const GIORNI_SHORT = ["Lun","Mar","Mer","Gio","Ven","Sab","Dom"];
-  const MESI_SHORT = ["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
-  for (let i=0;i<7;i++) {
-    const d = new Date(monday); d.setDate(monday.getDate()+i);
-    giorni.push(d);
-  }
-  const sunday = giorni[6];
-
-  // Label settimana
-  if (lbl) {
-    const s=monday, e=sunday;
-    lbl.textContent = `${s.getDate()} ${MESI_SHORT[s.getMonth()]} – ${e.getDate()} ${MESI_SHORT[e.getMonth()]} ${e.getFullYear()}`;
-  }
-
-  // Filtro disponibilità della settimana
-  const isoStart=_isoDate(monday), isoEnd=_isoDate(sunday);
-  const dispSettimana=_dispLista.filter(d=>{
-    const iso=String(d.DATA||"").split("T")[0];
-    return iso>=isoStart && iso<=isoEnd;
-  });
-
-  // Calcola range ore da mostrare (min 8:00–20:00, espandi se necessario)
-  let minOra=8*60, maxOra=20*60;
-  dispSettimana.forEach(d=>{
-    const ini=_parseMinutes(d.ORA_INIZIO), fin=_parseMinutes(d.ORA_FINE);
-    if (ini!==null && ini<minOra) minOra=Math.floor(ini/60)*60;
-    if (fin!==null && fin>maxOra) maxOra=Math.ceil(fin/60)*60;
-  });
-  const totalMin = maxOra - minOra;
-  const PX_PER_MIN = 1.2; // px per minuto
-  const totalH = Math.round(totalMin * PX_PER_MIN);
-
-  // Oggi
-  const todayIso = _isoDate(new Date());
-
-  // Build colore tutor
-  dispSettimana.forEach(d=>{ if(d.EMAIL_TUTOR) _getTutorColor(d.EMAIL_TUTOR); });
-
-  // Riga etichette ore (sx)
+function _renderCalendario(){
+  const cont=$("disp-content"),r=_user.ruolo,lbl=$("disp-week-label");
+  const monday=_getMondayOf(_calWeekOffset);
+  const giorni=[],GIORNI_SHORT=["Lun","Mar","Mer","Gio","Ven","Sab","Dom"],MESI_SHORT=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+  for(let i=0;i<7;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);giorni.push(d);}
+  const sunday=giorni[6];
+  if(lbl){const s=monday,e=sunday;lbl.textContent=`${s.getDate()} ${MESI_SHORT[s.getMonth()]} - ${e.getDate()} ${MESI_SHORT[e.getMonth()]} ${e.getFullYear()}`;}
+  const isoStart=_isoDate(monday),isoEnd=_isoDate(sunday);
+  const dispSettimana=_dispLista.filter(d=>{const iso=String(d.DATA||"").split("T")[0];return iso>=isoStart&&iso<=isoEnd;});
+  let minOra=8*60,maxOra=20*60;
+  dispSettimana.forEach(d=>{const ini=_parseMinutes(d.ORA_INIZIO),fin=_parseMinutes(d.ORA_FINE);if(ini!==null&&ini<minOra)minOra=Math.floor(ini/60)*60;if(fin!==null&&fin>maxOra)maxOra=Math.ceil(fin/60)*60;});
+  const totalMin=maxOra-minOra,PX_PER_MIN=1.2,totalH=Math.round(totalMin*PX_PER_MIN);
+  const todayIso=_isoDate(new Date());
+  dispSettimana.forEach(d=>{if(d.EMAIL_TUTOR)_getTutorColor(d.EMAIL_TUTOR);});
   let oreHtml='';
-  for (let m=minOra; m<=maxOra; m+=60) {
-    const top = Math.round((m-minOra)*PX_PER_MIN);
-    oreHtml+=`<div style="position:absolute;top:${top}px;left:0;right:0;font-size:.62rem;color:var(--muted);line-height:1;padding-right:2px;text-align:right">${_fmtHM(m)}</div>`;
-  }
-
-  // Colonne giorni
+  for(let m=minOra;m<=maxOra;m+=60){const top=Math.round((m-minOra)*PX_PER_MIN);oreHtml+=`<div style="position:absolute;top:${top}px;left:0;right:0;font-size:.62rem;color:var(--muted);line-height:1;padding-right:2px;text-align:right">${_fmtHM(m)}</div>`;}
   let colsHtml='';
   giorni.forEach((giorno,gi)=>{
-    const isoG=_isoDate(giorno);
-    const isOggi=isoG===todayIso;
-    const dispGiorno=dispSettimana.filter(d=>String(d.DATA||"").split("T")[0]===isoG);
-
-    // Header giorno
-    const hdr=`<div style="text-align:center;padding:.2rem 0;font-size:.7rem;font-weight:700;color:${isOggi?'var(--accent)':'var(--muted)'};border-bottom:1px solid var(--border);background:var(--surface2);border-radius:6px 6px 0 0;white-space:nowrap">
-      ${GIORNI_SHORT[gi]}<br><span style="font-size:.78rem;color:${isOggi?'var(--accent)':'var(--text)'};font-weight:${isOggi?'800':'600'}">${giorno.getDate()}</span>
-    </div>`;
-
-    // Linee ore di sfondo
-    let bgLines='';
-    for (let m=minOra; m<=maxOra; m+=60) {
-      const top=Math.round((m-minOra)*PX_PER_MIN);
-      bgLines+=`<div style="position:absolute;top:${top}px;left:0;right:0;height:1px;background:var(--border)"></div>`;
-    }
-
-    // Slot disponibilità
+    const isoG=_isoDate(giorno),isOggi=isoG===todayIso,dispGiorno=dispSettimana.filter(d=>String(d.DATA||"").split("T")[0]===isoG);
+    const hdr=`<div style="text-align:center;padding:.2rem 0;font-size:.7rem;font-weight:700;color:${isOggi?'var(--accent)':'var(--muted)'};border-bottom:1px solid var(--border);background:var(--surface2);border-radius:6px 6px 0 0;white-space:nowrap">${GIORNI_SHORT[gi]}<br><span style="font-size:.78rem;color:${isOggi?'var(--accent)':'var(--text)'};font-weight:${isOggi?'800':'600'}">${giorno.getDate()}</span></div>`;
+    let bgLines='';for(let m=minOra;m<=maxOra;m+=60){const top=Math.round((m-minOra)*PX_PER_MIN);bgLines+=`<div style="position:absolute;top:${top}px;left:0;right:0;height:1px;background:var(--border)"></div>`;}
     let slotsHtml='';
     dispGiorno.forEach(d=>{
-      const ini=_parseMinutes(d.ORA_INIZIO), fin=_parseMinutes(d.ORA_FINE);
-      if (ini===null||fin===null) return;
-      const top=Math.round((ini-minOra)*PX_PER_MIN);
-      const h=Math.max(18, Math.round((fin-ini)*PX_PER_MIN));
-      const emailT=String(d.EMAIL_TUTOR||_user.email||"");
-      const col=_getTutorColor(emailT);
-      // Nome breve tutor
-      const nomeTutor = _getTutorName(emailT);
-      const mostraElimina = (r==="COORDINATORE") || (r==="TUTOR" && emailT.toLowerCase()===(_user.email||"").toLowerCase());
-      slotsHtml+=`<div style="position:absolute;top:${top}px;left:1px;right:1px;height:${h}px;background:${col.bg};border-left:3px solid ${col.border};border-radius:4px;padding:2px 4px;overflow:hidden;cursor:default;z-index:2"
-        title="${esc(emailT)}: ${d.ORA_INIZIO}–${d.ORA_FINE}${d.NOTE?' ('+d.NOTE+')':''}">
-        <div style="font-size:.6rem;font-weight:700;color:${col.text};line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.ORA_INIZIO)}–${esc(d.ORA_FINE)}</div>
-        ${h>28?`<div style="font-size:.58rem;color:${col.text};opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(nomeTutor)}</div>`:''}
-        ${mostraElimina&&h>22?`<div style="position:absolute;bottom:1px;right:2px;font-size:.58rem;cursor:pointer;opacity:.8;color:${col.text}" onclick="rimuoviDisp('${d.ID}')">✕</div>`:''}
-      </div>`;
+      const ini=_parseMinutes(d.ORA_INIZIO),fin=_parseMinutes(d.ORA_FINE);if(ini===null||fin===null)return;
+      const top=Math.round((ini-minOra)*PX_PER_MIN),h=Math.max(18,Math.round((fin-ini)*PX_PER_MIN));
+      const emailT=String(d.EMAIL_TUTOR||_user.email||""),col=_getTutorColor(emailT),nomeTutor=_getTutorName(emailT);
+      const mostraElimina=(r==="COORDINATORE")||(r==="TUTOR"&&emailT.toLowerCase()===(_user.email||"").toLowerCase());
+      slotsHtml+=`<div style="position:absolute;top:${top}px;left:1px;right:1px;height:${h}px;background:${col.bg};border-left:3px solid ${col.border};border-radius:4px;padding:2px 4px;overflow:hidden;cursor:default;z-index:2" title="${esc(emailT)}: ${d.ORA_INIZIO}-${d.ORA_FINE}${d.NOTE?' ('+d.NOTE+')':''}"><div style="font-size:.6rem;font-weight:700;color:${col.text};line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(d.ORA_INIZIO)}-${esc(d.ORA_FINE)}</div>${h>28?`<div style="font-size:.6rem;color:${col.text};opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(nomeTutor)}</div>`:''} ${mostraElimina&&h>22?`<div style="position:absolute;bottom:1px;right:2px;font-size:.58rem;cursor:pointer;opacity:.8;color:${col.text}" onclick="rimuoviDisp('${d.ID}')">&#10005;</div>`:''}</div>`;
     });
-
-    colsHtml+=`<div style="flex:1;min-width:0">
-      ${hdr}
-      <div style="position:relative;height:${totalH}px;background:${isOggi?'rgba(59,130,246,.04)':'transparent'}">
-        ${bgLines}${slotsHtml}
-      </div>
-    </div>`;
+    colsHtml+=`<div style="flex:1;min-width:0">${hdr}<div style="position:relative;height:${totalH}px;background:${isOggi?'rgba(59,130,246,.04)':'transparent'}">${bgLines}${slotsHtml}</div></div>`;
   });
-
-  // Legenda tutor (solo coordinatore o se ci sono più tutor)
   let legendaHtml='';
   const tutorList=Object.keys(_dispColorMap);
-  if (tutorList.length>0 && (r==="COORDINATORE" || tutorList.length>1)) {
-    legendaHtml=`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem">`;
-    tutorList.forEach(email=>{
-      const col=_getTutorColor(email);
-      const nome=_getTutorName(email);
-      legendaHtml+=`<div style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;background:var(--surface2);border-radius:6px;padding:.2rem .5rem;border:1px solid var(--border)">
-        <span style="width:8px;height:8px;border-radius:50%;background:${col.border};display:inline-block;flex-shrink:0"></span>
-        <span style="color:var(--text)">${esc(nome)}</span>
-      </div>`;
-    });
-    legendaHtml+=`</div>`;
-  }
-
-  if ($("disp-legenda")) $("disp-legenda").innerHTML=legendaHtml;
-
-  if (!dispSettimana.length) {
-    cont.innerHTML=`<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
-      <div style="display:flex">
-        <div style="width:30px;flex-shrink:0"></div>
-        ${colsHtml}
-      </div>
-      <div class="text-muted" style="text-align:center;padding:1.5rem;font-size:.85rem">Nessuna disponibilità questa settimana</div>
-    </div>`;
-    return;
-  }
-
-  cont.innerHTML=`<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto">
-    <div style="display:flex;min-width:280px">
-      <div style="width:30px;flex-shrink:0;position:relative;padding-top:32px">${oreHtml}</div>
-      ${colsHtml}
-    </div>
-  </div>`;
+  if(tutorList.length>0&&(r==="COORDINATORE"||tutorList.length>1)){legendaHtml=`<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem">`;tutorList.forEach(email=>{const col=_getTutorColor(email);const nome=_getTutorName(email);legendaHtml+=`<div style="display:inline-flex;align-items:center;gap:4px;font-size:.72rem;background:var(--surface2);border-radius:6px;padding:.2rem .5rem;border:1px solid var(--border)"><span style="width:8px;height:8px;border-radius:50%;background:${col.border};display:inline-block;flex-shrink:0"></span><span style="color:var(--text)">${esc(nome)}</span></div>`;});legendaHtml+=`</div>`;}
+  if($("disp-legenda"))$("disp-legenda").innerHTML=legendaHtml;
+  cont.innerHTML=`<div style="border:1px solid var(--border);border-radius:12px;overflow:hidden;overflow-x:auto"><div style="display:flex;min-width:280px"><div style="width:30px;flex-shrink:0;position:relative;padding-top:32px">${oreHtml}</div>${colsHtml}</div></div>`;
+  if(!dispSettimana.length)cont.innerHTML+=`<div class="text-muted" style="text-align:center;padding:1.5rem;font-size:.85rem">Nessuna disponibilita' questa settimana</div>`;
 }
-
-function cambiaSettimana(delta) {
-  _calWeekOffset += delta;
-  _renderCalendario();
-}
-function tornaOggi() {
-  _calWeekOffset = 0;
-  _renderCalendario();
-}
-
-function aggiornaSlotOccupati() {
-  const data=$("disp-data")&&$("disp-data").value;
-  const cont=$("disp-slot-occupati"); if(!cont) return;
-  if (!data || !_dispLista.length) { cont.style.display="none"; return; }
+function cambiaSettimana(delta){_calWeekOffset+=delta;_renderCalendario();}
+function tornaOggi(){_calWeekOffset=0;_renderCalendario();}
+function aggiornaSlotOccupati(){
+  const data=$("disp-data")&&$("disp-data").value;const cont=$("disp-slot-occupati");if(!cont)return;
+  if(!data||!_dispLista.length){cont.style.display="none";return;}
   const myEmail=(_user.email||"").toLowerCase();
-  const altriSlot=_dispLista.filter(d=>{
-    const iso=String(d.DATA||"").split("T")[0];
-    return iso===data && String(d.EMAIL_TUTOR||"").toLowerCase()!==myEmail;
-  });
-  if (!altriSlot.length) { cont.style.display="none"; return; }
-  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot già occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
-  altriSlot.forEach(d=>{
-    const col=_getTutorColor(d.EMAIL_TUTOR||"");
-    const nome=_getTutorName(d.EMAIL_TUTOR||"");
-    html+=`<span style="background:${col.bg};border-radius:5px;padding:.15rem .4rem;font-size:.72rem;font-weight:600;color:${col.text}">${esc(d.ORA_INIZIO)}–${esc(d.ORA_FINE)} (${esc(nome)})</span>`;
-  });
-  html+=`</div>`;
-  cont.innerHTML=html; cont.style.display="block";
-  verificaConflittoLive();
+  const altriSlot=_dispLista.filter(d=>{const iso=String(d.DATA||"").split("T")[0];return iso===data&&String(d.EMAIL_TUTOR||"").toLowerCase()!==myEmail;});
+  if(!altriSlot.length){cont.style.display="none";return;}
+  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot gia' occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
+  altriSlot.forEach(d=>{const col=_getTutorColor(d.EMAIL_TUTOR||"");const nome=_getTutorName(d.EMAIL_TUTOR||"");html+=`<span style="background:${col.bg};border-radius:5px;padding:.15rem .4rem;font-size:.72rem;font-weight:600;color:${col.text}">${esc(d.ORA_INIZIO)}-${esc(d.ORA_FINE)} (${esc(nome)})</span>`;});
+  html+=`</div>`;cont.innerHTML=html;cont.style.display="block";verificaConflittoLive();
 }
-function verificaConflittoLive() {
-  const data=$("disp-data")&&$("disp-data").value;
-  const ini=$("disp-ini")&&$("disp-ini").value;
-  const fin=$("disp-fin")&&$("disp-fin").value;
-  const conflDiv=$("disp-conflict"); if(!conflDiv) return;
-  if (!data||!ini||!fin||ini>=fin) { conflDiv.style.display="none"; return; }
-  const iniMin=_parseMinutes(ini), finMin=_parseMinutes(fin);
-  const myEmail=(_user.email||"").toLowerCase();
-  const conflitto=_dispLista.find(d=>{
-    const iso=String(d.DATA||"").split("T")[0];
-    if (iso!==data) return false;
-    if (String(d.EMAIL_TUTOR||"").toLowerCase()===myEmail) return false;
-    return _overlap(iniMin,finMin,_parseMinutes(d.ORA_INIZIO),_parseMinutes(d.ORA_FINE));
-  });
-  if (conflitto) {
-    const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");
-    conflDiv.textContent=`⚠️ Conflitto con ${nome} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE})`;
-    conflDiv.style.display="block";
-  } else {
-    conflDiv.style.display="none";
-  }
+function verificaConflittoLive(){
+  const data=$("disp-data")&&$("disp-data").value,ini=$("disp-ini")&&$("disp-ini").value,fin=$("disp-fin")&&$("disp-fin").value;
+  const conflDiv=$("disp-conflict");if(!conflDiv)return;
+  if(!data||!ini||!fin||ini>=fin){conflDiv.style.display="none";return;}
+  const iniMin=_parseMinutes(ini),finMin=_parseMinutes(fin);const myEmail=(_user.email||"").toLowerCase();
+  const conflitto=_dispLista.find(d=>{const iso=String(d.DATA||"").split("T")[0];if(iso!==data)return false;if(String(d.EMAIL_TUTOR||"").toLowerCase()===myEmail)return false;return _overlap(iniMin,finMin,_parseMinutes(d.ORA_INIZIO),_parseMinutes(d.ORA_FINE));});
+  if(conflitto){const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");conflDiv.textContent=`Conflitto con ${nome} (${conflitto.ORA_INIZIO}-${conflitto.ORA_FINE})`;conflDiv.style.display="block";}
+  else conflDiv.style.display="none";
 }
-
-function apriModalDisp() {
-  // Controlla se lo slot richiesto si sovrappone a uno già esistente di un altro tutor
-  $("disp-data").value=todayISO();
-  $("disp-ini").value=""; $("disp-fin").value=""; $("disp-note").value="";
-  hideErr("disp-err"); openModal("modal-disp");
+function apriModalDisp(){
+  $("disp-data").value=todayISO();$("disp-ini").value="";$("disp-fin").value="";$("disp-note").value="";
+  hideErr("disp-err");openModal("modal-disp");
 }
-
-async function salvaDisponibilita() {
+async function salvaDisponibilita(){
   hideErr("disp-err");
-  const data=$("disp-data").value, ini=$("disp-ini").value, fin=$("disp-fin").value, note=$("disp-note").value;
-  if (!data) return showErr("disp-err","Inserisci la data.");
-  if (!ini||!fin) return showErr("disp-err","Inserisci l'orario.");
-  if (ini>=fin) return showErr("disp-err","L'ora fine deve essere dopo l'ora inizio.");
-
-  // Controllo sovrapposizione lato client: lo slot non può sovrapporsi a uno già occupato da un ALTRO tutor
-  const iniMin=_parseMinutes(ini), finMin=_parseMinutes(fin);
-  const myEmail=(_user.email||"").toLowerCase();
-  const conflitto=_dispLista.find(d=>{
-    const isoD=String(d.DATA||"").split("T")[0];
-    if (isoD!==data) return false;
-    const emailT=String(d.EMAIL_TUTOR||"").toLowerCase();
-    if (emailT===myEmail) return false; // stesso tutor: sovrapposizione permessa (modifica)
-    const dIni=_parseMinutes(d.ORA_INIZIO), dFin=_parseMinutes(d.ORA_FINE);
-    if (dIni===null||dFin===null) return false;
-    return _overlap(iniMin,finMin,dIni,dFin);
-  });
-  if (conflitto) {
-    const emailC=conflitto.EMAIL_TUTOR||"altro tutor";
-    return showErr("disp-err",`Slot già occupato da ${_getTutorName(emailC)} (${conflitto.ORA_INIZIO}–${conflitto.ORA_FINE}). Scegli un orario diverso.`);
-  }
-
-  const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});
-  if (!res.success) return showErr("disp-err",res.message);
-  chiudiModal("modal-disp");
-  // Aggiorna cache e ri-renderizza senza rifare la chiamata API
-  await _caricaERenderCalendario();
+  const data=$("disp-data").value,ini=$("disp-ini").value,fin=$("disp-fin").value,note=$("disp-note").value;
+  if(!data)return showErr("disp-err","Inserisci la data.");if(!ini||!fin)return showErr("disp-err","Inserisci l'orario.");if(ini>=fin)return showErr("disp-err","L'ora fine deve essere dopo l'ora inizio.");
+  const iniMin=_parseMinutes(ini),finMin=_parseMinutes(fin),myEmail=(_user.email||"").toLowerCase();
+  const conflitto=_dispLista.find(d=>{const isoD=String(d.DATA||"").split("T")[0];if(isoD!==data)return false;if(String(d.EMAIL_TUTOR||"").toLowerCase()===myEmail)return false;const dIni=_parseMinutes(d.ORA_INIZIO),dFin=_parseMinutes(d.ORA_FINE);if(dIni===null||dFin===null)return false;return _overlap(iniMin,finMin,dIni,dFin);});
+  if(conflitto){const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");return showErr("disp-err",`Slot gia' occupato da ${nome} (${conflitto.ORA_INIZIO}-${conflitto.ORA_FINE}).`);}
+  const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});if(!res.success)return showErr("disp-err",res.message);
+  chiudiModal("modal-disp");await _caricaERenderCalendario();
 }
+async function rimuoviDisp(id){if(!confirm("Rimuovere questa disponibilita'?"))return;const res=await api("rimuoviDisponibilita",{id});if(res.success)await _caricaERenderCalendario();else alert(res.message);}
 
-async function rimuoviDisp(id) {
-  if (!confirm("Rimuovere questa disponibilità?")) return;
-  const res=await api("rimuoviDisponibilita",{id});
-  if (res.success) await _caricaERenderCalendario(); else alert(res.message);
+/* DISPONIBILITA' DOCENTI */
+const PERIODI_INFO={"1":{label:"1\u00b0 Periodo",mesi:"Settembre \u2013 Novembre",color:"rgba(59,130,246,.85)",border:"#3b82f6"},"2":{label:"2\u00b0 Periodo",mesi:"Dicembre \u2013 Febbraio",color:"rgba(16,185,129,.85)",border:"#10b981"},"3":{label:"3\u00b0 Periodo",mesi:"Marzo \u2013 Maggio",color:"rgba(245,158,11,.85)",border:"#f59e0b"}};
+const GIORNI_INFO={"LUN":"Luned\u00ec","MAR":"Marted\u00ec","MER":"Mercoled\u00ec","GIO":"Gioved\u00ec","VEN":"Venerd\u00ec"};
+const GIORNI_ORDER=["LUN","MAR","MER","GIO","VEN"];
+function _buildSlotOptions(selectId,defaultVal){
+  const sel=$(selectId);if(!sel)return;sel.innerHTML='<option value="">-- Seleziona --</option>';
+  for(let m=14*60+30;m<=19*60+30;m+=30){const hh=String(Math.floor(m/60)).padStart(2,"0"),mm=String(m%60).padStart(2,"0"),val=hh+":"+mm;const opt=document.createElement("option");opt.value=val;opt.textContent=val;if(val===defaultVal)opt.selected=true;sel.appendChild(opt);}
 }
-
-/* ═══════════════════════════════════════════════════
-   NOTIFICHE — SW UNIFICATO
-═══════════════════════════════════════════════════ */
-async function avviaNotifiche() {
-  checkNotifiche();
-  _notifInterval = setInterval(checkNotifiche, 60000);
-  if (!("Notification" in window) || !("serviceWorker" in navigator)) return;
-  let perm = Notification.permission;
-  if (perm === "default") perm = await Notification.requestPermission();
-  if (perm !== "granted") return;
-  try {
-    _fcmMessaging = firebase.messaging();
-    const swReg = await navigator.serviceWorker.ready;
-    const fcmToken = await _fcmMessaging.getToken({
-      vapidKey: VAPID_PUBLIC_KEY,
-      serviceWorkerRegistration: swReg
-    });
-    if (fcmToken) {
-      await api("registraDevice", { subscription: JSON.stringify({ fcmToken: fcmToken }), email: _user.email });
+function selChipSingle(el,group,val){document.querySelectorAll(`#chips-${group} .chip`).forEach(c=>c.classList.remove("selected"));el.classList.add("selected");$("dd-"+group).value=val;}
+async function renderDisponibilitaDocente(){
+  const pane=$("pane-disponibilita-docente");
+  pane.innerHTML=`<div class="page-header"><h2>&#128198; La mia disponibilita'</h2><p class="text-muted">Indica i tuoi slot disponibili per colloqui e recuperi</p></div><button class="btn btn-primary btn-sm" style="margin-bottom:1rem" onclick="apriModalDispDocente(null)">&#10133; Aggiungi slot</button><div id="dd-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  await _caricaDispDocente();
+}
+async function _caricaDispDocente(){
+  const cont=$("dd-content");if(!cont)return;
+  cont.innerHTML=`<div style="text-align:center;padding:1rem"><div class="spinner"></div></div>`;
+  const res=await api("getDispDocente",{});
+  if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  _renderGridDispDocente(res.disponibilita||[],cont);
+}
+function _renderGridDispDocente(lista,cont){
+  if(!lista.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilita' inserita.<br><span style="font-size:.8rem">Usa il tasto + per aggiungere i tuoi slot.</span></div>`;return;}
+  const perPeriodo={"1":[],"2":[],"3":[]};lista.forEach(d=>{const p=String(d.PERIODO||"1");if(perPeriodo[p])perPeriodo[p].push(d);});
+  let html="";
+  ["1","2","3"].forEach(p=>{
+    const slots=perPeriodo[p],info=PERIODI_INFO[p],periodoColor=info.border;
+    html+=`<div style="margin-bottom:1.25rem"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem"><div style="width:4px;height:20px;background:${periodoColor};border-radius:2px"></div><div><div style="font-family:var(--font-head);font-size:.85rem;font-weight:700">${info.label}</div><div style="font-size:.7rem;color:var(--muted)">${info.mesi}</div></div><button class="btn btn-outline btn-sm" style="margin-left:auto;font-size:.72rem" onclick="apriModalDispDocente(null,'${p}')">+ Slot</button></div>`;
+    if(!slots.length){html+=`<div style="font-size:.8rem;color:var(--muted);padding:.5rem .75rem;background:var(--surface2);border-radius:8px;border:1px dashed var(--border)">Nessuna disponibilita' per questo periodo</div>`;}
+    else{
+      slots.sort((a,b)=>GIORNI_ORDER.indexOf(a.GIORNO)-GIORNI_ORDER.indexOf(b.GIORNO));
+      html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden">`;
+      slots.forEach((d,idx)=>{
+        const nomGiorno=GIORNI_INFO[d.GIORNO]||d.GIORNO;
+        const bg=idx%2===0?"var(--surface)":"var(--surface2)";
+        html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;background:${bg};border-bottom:1px solid var(--border)">
+          <div style="width:3px;height:32px;background:${periodoColor};border-radius:2px;flex-shrink:0"></div>
+          <div style="flex:1"><div style="font-weight:600;font-size:.85rem">${nomGiorno}</div><div style="font-family:var(--font-head);font-size:.9rem;font-weight:700;color:${periodoColor}">${esc(d.ORA_INIZIO)} &ndash; ${esc(d.ORA_FINE)}</div>${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic">${esc(d.NOTE)}</div>`:''}</div>
+          <button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);width:28px;height:28px;flex-shrink:0" onclick="eliminaDispDocente('${d.ID}')">&#10005;</button>
+        </div>`;
+      });
+      html+=`</div>`;
     }
-    _fcmMessaging.onMessage(function(payload) {
-      const n = payload.notification || {};
-      if (Notification.permission === "granted") {
-        new Notification(n.title || "ITSApp", { body: n.body || "", icon: "https://slammix1559.github.io/ITS/logoITS.png" });
-      }
-      checkNotifiche();
-    });
-  } catch(e) { console.error("Errore FCM:", e.message); }
-}
-
-async function checkNotifiche() {
-  try { const res=await api("getNuoveComunicazioni",{}); aggiornaNotifiche(res.count||0); } catch(e) {}
-}
-function aggiornaNotifiche(count) {
-  const dot=$("notif-dot"); if(dot) { count>0?sh("notif-dot"):hd("notif-dot"); }
-  const bdot=$("bnav-dot-comunicazioni"); if(bdot) { count>0?sh("bnav-dot-comunicazioni"):hd("bnav-dot-comunicazioni"); }
-}
-
-/* ═══════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════ */
-document.addEventListener("DOMContentLoaded", function() {
-  [$("in-email"),$("in-pwd")].forEach(function(el) { if(el) el.addEventListener("keydown", function(e) { if(e.key==="Enter") doLogin(); }); });
-  document.querySelectorAll(".modal-overlay").forEach(function(m) { m.addEventListener("click", function(e) { if(e.target===m) m.classList.add("hide"); }); });
-  if (_token && _user) { api("checkSession",{}).then(function(res) { if(res&&res.success) avviaDashboard(); }).catch(function(){}); }
-});
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function() {
-    navigator.serviceWorker.register("./sw.js").then(function(reg) {
-      console.log("SW unificato registrato:", reg.scope);
-    }).catch(function(e) {
-      console.warn("SW non registrato:", e.message);
-    });
+    html+=`</div>`;
   });
+  cont.innerHTML=html;
 }
+function apriModalDispDocente(id,preselPeriodo){
+  document.querySelectorAll("#chips-periodo .chip").forEach(c=>c.classList.remove("selected"));
+  document.querySelectorAll("#chips-giorno .chip").forEach(c=>c.classList.remove("selected"));
+  $("dd-periodo").value="";$("dd-giorno").value="";$("dd-note").value="";
+  $("dd-edit-id").dataset.id=id||"";hideErr("dd-err");
+  if(preselPeriodo){const idx=parseInt(preselPeriodo)-1;const chips=document.querySelectorAll("#chips-periodo .chip");if(chips[idx]){chips[idx].classList.add("selected");$("dd-periodo").value=preselPeriodo;}}
+  _buildSlotOptions("dd-ini","14:30");_buildSlotOptions("dd-fin","19:30");
+  $("dd-save-btn").textContent=id?"Aggiorna disponibilita'":"Salva disponibilita'";
+  openModal("modal-disp-docente");
+}
+async function salvaDispDocente(){
+  hideErr("dd-err");
+  const periodo=$("dd-periodo").value,giorno=$("dd-giorno").value,ini=$("dd-ini").value,fin=$("dd-fin").value,note=$("dd-note").value.trim(),editId=$("dd-edit-id").dataset.id||"";
+  if(!periodo)return showErr("dd-err","Seleziona il periodo.");if(!giorno)return showErr("dd-err","Seleziona il giorno.");
+  if(!ini)return showErr("dd-err","Seleziona l'ora di inizio.");if(!fin)return showErr("dd-err","Seleziona l'ora di fine.");if(ini>=fin)return showErr("dd-err","L'ora di fine deve essere successiva all'inizio.");
+  const action=editId?"modificaDispDocente":"inserisciDispDocente";
+  const payload={periodo,giorno,oraInizio:ini,oraFine:fin,note};if(editId)payload.id=editId;
+  const res=await api(action,payload);if(!res.success)return showErr("dd-err",res.message||"Errore nel salvataggio.");
+  chiudiModal("modal-disp-docente");await _caricaDispDocente();
+}
+async function eliminaDispDocente(id){if(!confirm("Eliminare questa disponibilita'?"))return;const res=await api("eliminaDispDocente",{id});if(res.success)await _caricaDispDocente();else alert(res.message);}
+
+/* NOTIFICHE */
+async function avviaNotifiche(){
+  checkNotifiche();_notifInterval=setInterval(checkNotifiche,60000);
+  if(!("Notification" in window)||!("serviceWorker" in navigator))return;
+  let perm=Notification.permission;if(perm==="default")perm=await Notification.requestPermission();if(perm!=="granted")return;
+  try{
+    _fcmMessaging=firebase.messaging();const swReg=await navigator.serviceWorker.ready;
+    const fcmToken=await _fcmMessaging.getToken({vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:swReg});
+    if(fcmToken){await api("registraDevice",{subscription:JSON.stringify({fcmToken:fcmToken}),email:_user.email});}
+    _fcmMessaging.onMessage(function(payload){const n=payload.notification||{};if(Notification.permission==="granted"){new Notification(n.title||"ITSApp",{body:n.body||"",icon:"https://slammix1559.github.io/ITS/logoITS.png"});}checkNotifiche();});
+  }catch(e){console.error("Errore FCM:",e.message);}
+}
+async function checkNotifiche(){try{const res=await api("getNuoveComunicazioni",{});aggiornaNotifiche(res.count||0);}catch(e){}}
+function aggiornaNotifiche(count){const dot=$("notif-dot");if(dot){count>0?sh("notif-dot"):hd("notif-dot");}const bdot=$("bnav-dot-comunicazioni");if(bdot){count>0?sh("bnav-dot-comunicazioni"):hd("bnav-dot-comunicazioni");}}
+
+/* INIT */
+document.addEventListener("DOMContentLoaded",function(){
+  [$("in-email"),$("in-pwd")].forEach(function(el){if(el)el.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});});
+  document.querySelectorAll(".modal-overlay").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.add("hide");});});
+  if(_token&&_user){api("checkSession",{}).then(function(res){if(res&&res.success)avviaDashboard();}).catch(function(){});}
+});
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){console.log("SW registrato:",reg.scope);}).catch(function(e){console.warn("SW non registrato:",e.message);});});}
 </script>
 </body>
 </html>
