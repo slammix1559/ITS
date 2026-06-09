@@ -195,6 +195,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <div id="pane-comunicazioni" class="fade-in hide"></div>
     <div id="pane-disponibilita" class="fade-in hide"></div>
     <div id="pane-disponibilita-docente" class="fade-in hide"></div>
+    <div id="pane-disponibilita-coord" class="fade-in hide"></div>
   </div>
 </div>
 
@@ -388,14 +389,14 @@ function buildBottomNav(){
   const r=_user.ruolo;
   const items=[{id:"home",icon:"&#127968;",label:"Home"}];
   if(r==="STUDENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
-  else if(r==="COORDINATORE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Disponib."});
+  else if(r==="COORDINATORE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-coord",icon:"&#128198;",label:"Disponib."});
   else if(r==="TUTOR")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Mia Disp."});
   else if(r==="DOCENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."});
   $("bottom-nav").innerHTML=items.map(it=>`<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}"><span class="bicon">${it.icon}</span>${esc(it.label)}${it.notif?`<span class="bnav-dot hide" id="bnav-dot-${it.id}"></span>`:""}</button>`).join("");
 }
 
 function switchPane(name){
-  ["home","orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente"].forEach(p=>{hd("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
+  ["home","orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente","disponibilita-coord"].forEach(p=>{hd("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
   sh("pane-"+name);const b=$("bnav-"+name);if(b)b.classList.add("active");
   _currentPane=name;
   if(name==="home")renderHome();
@@ -405,6 +406,7 @@ function switchPane(name){
   else if(name==="comunicazioni")renderComunicazioni();
   else if(name==="disponibilita")renderDisponibilita();
   else if(name==="disponibilita-docente")renderDisponibilitaDocente();
+  else if(name==="disponibilita-coord")renderDisponibilitaCoord();
 }
 
 /* HOME */
@@ -416,7 +418,7 @@ async function renderHome(){
     if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
     if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Ritardi: ${s.oreRitardo||0}h</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni non lette</div></div></div>`;}
-    if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilita' tutor</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Gestisci voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Gestisci presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Scrivi comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita')">&#128198; Calendario tutor</button></div>`;}
+    if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita-coord')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Gestisci voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Gestisci presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Scrivi comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita-coord')">&#128198; Disponibilita'</button></div>`;}
     if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Mie disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilita'</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Visualizza voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button></div>`;}
     if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="apriInserisciVoto()">&#10133; Inserisci voto</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponibilita'</button></div>`;}
     pane.innerHTML=html;
@@ -698,6 +700,135 @@ async function inviaComunicazione(){
   const destFinal=destMap[destEl?.textContent]||"";
   if(!titolo)return showErr("comm-err","Inserisci il titolo.");if(!testo)return showErr("comm-err","Inserisci il testo.");if(!destFinal)return showErr("comm-err","Seleziona i destinatari.");
   const res=await api("creaComunicazione",{titolo,testo,destinatari:destFinal});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();
+}
+
+/* DISPONIBILITA' COORDINATORE - SCELTA */
+function renderDisponibilitaCoord(){
+  const pane=$("pane-disponibilita-coord");
+  pane.innerHTML=`<div class="page-header"><h2>&#128198; Disponibilita'</h2><p class="text-muted">Seleziona la sezione da visualizzare</p></div>
+    <div class="grid-2" style="gap:1rem;margin-top:.5rem">
+      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="switchPane('disponibilita')"
+           onmouseenter="this.style.borderColor='#3b82f6'" onmouseleave="this.style.borderColor=''">
+        <div style="font-size:2rem;margin-bottom:.6rem">&#128197;</div>
+        <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.3rem">Tutor</div>
+        <div style="font-size:.8rem;color:var(--muted)">Calendario settimanale con gli slot di disponibilita' dei tutor</div>
+        <div style="margin-top:.85rem"><span class="badge badge-green">Calendario</span></div>
+      </div>
+      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="apriDispDocentiCoord()"
+           onmouseenter="this.style.borderColor='#f59e0b'" onmouseleave="this.style.borderColor=''">
+        <div style="font-size:2rem;margin-bottom:.6rem">&#127979;</div>
+        <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.3rem">Docenti</div>
+        <div style="font-size:.8rem;color:var(--muted)">Disponibilita' periodiche per colloqui e recuperi di tutti i docenti</div>
+        <div style="margin-top:.85rem"><span class="badge badge-yellow">Periodi</span></div>
+      </div>
+    </div>`;
+}
+
+async function apriDispDocentiCoord(){
+  // Il coordinatore vede le disponibilita' di TUTTI i docenti
+  const pane=$("pane-disponibilita-coord");
+  pane.innerHTML=`<div class="page-header">
+    <div style="display:flex;align-items:center;gap:.75rem">
+      <button class="btn btn-outline btn-sm" onclick="renderDisponibilitaCoord()">&#8592; Indietro</button>
+      <h2 style="margin-bottom:0">&#127979; Disponibilita' docenti</h2>
+    </div>
+  </div>
+  <div id="dd-coord-filter" style="margin-bottom:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
+    <select id="dd-coord-periodo" style="flex:1;min-width:140px" onchange="filtraDispDocentiCoord()">
+      <option value="">Tutti i periodi</option>
+      <option value="1">1&#176; Periodo (Set&#8211;Nov)</option>
+      <option value="2">2&#176; Periodo (Dic&#8211;Feb)</option>
+      <option value="3">3&#176; Periodo (Mar&#8211;Mag)</option>
+    </select>
+    <select id="dd-coord-giorno" style="flex:1;min-width:120px" onchange="filtraDispDocentiCoord()">
+      <option value="">Tutti i giorni</option>
+      <option value="LUN">Luned&#236;</option>
+      <option value="MAR">Marted&#236;</option>
+      <option value="MER">Mercoled&#236;</option>
+      <option value="GIO">Gioved&#236;</option>
+      <option value="VEN">Venerd&#236;</option>
+    </select>
+  </div>
+  <div id="dd-coord-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  await _caricaDispDocentiCoord();
+}
+
+let _dispDocentiAll = [];
+
+async function _caricaDispDocentiCoord(){
+  const cont=$("dd-coord-content"); if(!cont) return;
+  cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res = await api("getDispDocentiAll",{});
+  if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  _dispDocentiAll = res.disponibilita||[];
+  filtraDispDocentiCoord();
+}
+
+function filtraDispDocentiCoord(){
+  const cont=$("dd-coord-content"); if(!cont) return;
+  const filtPeriodo=$("dd-coord-periodo")&&$("dd-coord-periodo").value;
+  const filtGiorno =$("dd-coord-giorno")&&$("dd-coord-giorno").value;
+  let lista = _dispDocentiAll;
+  if(filtPeriodo) lista=lista.filter(d=>String(d.PERIODO)===filtPeriodo);
+  if(filtGiorno)  lista=lista.filter(d=>d.GIORNO===filtGiorno);
+  if(!lista.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilita' trovata.</div>`;return;}
+
+  // Raggruppa per docente
+  const perDocente={};
+  lista.forEach(d=>{
+    const em=String(d.EMAIL_DOCENTE||"").toLowerCase();
+    if(!perDocente[em])perDocente[em]=[];
+    perDocente[em].push(d);
+  });
+
+  const PERIODI_LABEL={"1":"1&#176; (Set&#8211;Nov)","2":"2&#176; (Dic&#8211;Feb)","3":"3&#176; (Mar&#8211;Mag)"};
+  const PERIODI_COLOR={"1":"#3b82f6","2":"#10b981","3":"#f59e0b"};
+  const GIORNI_LABEL={"LUN":"Luned&#236;","MAR":"Marted&#236;","MER":"Mercoled&#236;","GIO":"Gioved&#236;","VEN":"Venerd&#236;"};
+
+  let html="";
+  Object.keys(perDocente).sort().forEach(email=>{
+    const slots=perDocente[email];
+    const nomeDocente=_getTutorName(email); // riusa la stessa logica di estrazione cognome
+    slots.sort((a,b)=>{
+      if(a.PERIODO!==b.PERIODO)return String(a.PERIODO).localeCompare(String(b.PERIODO));
+      return GIORNI_ORDER.indexOf(a.GIORNO)-GIORNI_ORDER.indexOf(b.GIORNO);
+    });
+    html+=`<div style="margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
+      <div style="padding:.65rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0">${esc(nomeDocente.charAt(0))}</div>
+        <div>
+          <div style="font-family:var(--font-head);font-weight:700;font-size:.9rem">${esc(nomeDocente)}</div>
+          <div style="font-size:.7rem;color:var(--muted)">${esc(email)}</div>
+        </div>
+        <div style="margin-left:auto;font-size:.75rem;color:var(--muted)">${slots.length} slot</div>
+      </div>`;
+    slots.forEach((d,idx)=>{
+      const pc=PERIODI_COLOR[d.PERIODO]||"var(--accent)";
+      const bg=idx%2===0?"var(--surface)":"rgba(18,32,64,.4)";
+      html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 1rem;background:${bg};border-bottom:1px solid var(--border)">
+        <div style="width:3px;height:28px;background:${pc};border-radius:2px;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <span style="font-weight:600;font-size:.82rem">${GIORNI_LABEL[d.GIORNO]||esc(d.GIORNO)}</span>
+            <span style="font-size:.72rem;color:var(--muted)">&#8212;</span>
+            <span style="font-family:var(--font-head);font-weight:700;font-size:.85rem;color:${pc}">${esc(d.ORA_INIZIO)} &ndash; ${esc(d.ORA_FINE)}</span>
+            <span style="font-size:.68rem;background:rgba(255,255,255,.07);border-radius:4px;padding:.1rem .35rem;color:var(--muted)">${PERIODI_LABEL[d.PERIODO]||esc(d.PERIODO)}</span>
+          </div>
+          ${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic;margin-top:2px">${esc(d.NOTE)}</div>`:''}
+        </div>
+        <button class="btn btn-icon" style="font-size:.72rem;color:var(--muted);width:26px;height:26px;flex-shrink:0" onclick="eliminaDispDocenteCoord('${d.ID}')" title="Rimuovi">&#10005;</button>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  cont.innerHTML=html;
+}
+
+async function eliminaDispDocenteCoord(id){
+  if(!confirm("Rimuovere questa disponibilita'?"))return;
+  const res=await api("eliminaDispDocenteCoord",{id});
+  if(res.success){_dispDocentiAll=_dispDocentiAll.filter(d=>d.ID!==id);filtraDispDocentiCoord();}
+  else alert(res.message);
 }
 
 /* DISPONIBILITA' TUTOR - CALENDARIO */
