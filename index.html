@@ -702,14 +702,14 @@ function _renderContattiStudenti(){
   const cont=$("contatti-studenti"),lista=_contattiCache.studenti||[];
   if(!lista.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessuno studente.</div>';return;}
   let html='<div class="form-group" style="margin-bottom:.75rem"><input type="text" id="cont-search-s" placeholder="Cerca studente..." oninput="_filtraContatti(\'s\')"></div><div id="cont-list-s" class="card" style="padding:.3rem .6rem">';
-  lista.forEach((s,i)=>{html+=`<div class="contatto-row" data-search-s="${esc((s.nome+' '+s.email).toLowerCase())}"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.86rem">${esc(s.nome)}</div><div style="font-size:.7rem;color:var(--muted)">${esc(s.email)} &middot; ${s.annualita}&deg; anno</div></div>${s.telefono?`<button class="btn btn-outline btn-sm" style="flex-shrink:0" onclick="apriTelefono('${esc(s.nome)}','${esc(s.telefono)}')">&#128222;</button>`:''}</div>`;});
+  lista.forEach((s,i)=>{html+=`<div class="contatto-row" data-search-s="${esc((s.nome+' '+s.email+' '+(s.telefono||'')).toLowerCase())}"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.86rem">${esc(s.nome)}</div><div style="font-size:.7rem;color:var(--muted)">${esc(s.email)} &middot; ${s.annualita}&deg; anno</div></div>${s.telefono?`<span style="font-family:var(--font-head);font-size:.88rem;font-weight:700;color:var(--accent2);cursor:pointer;white-space:nowrap" onclick="apriTelefono('${esc(s.nome)}','${esc(s.telefono)}')">${esc(s.telefono)} &#128222;</span>`:''}</div>`;});
   html+='</div>';cont.innerHTML=html;
 }
 function _renderContattiDocenti(){
   const cont=$("contatti-docenti"),lista=_contattiCache.docenti||[];
   if(!lista.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun docente.</div>';return;}
   let html='<div class="form-group" style="margin-bottom:.75rem"><input type="text" id="cont-search-d" placeholder="Cerca docente..." oninput="_filtraContatti(\'d\')"></div><div id="cont-list-d" class="card" style="padding:.3rem .6rem">';
-  lista.forEach(d=>{html+=`<div class="contatto-row" data-search-d="${esc((d.nome+' '+d.email+' '+(d.materia||'')).toLowerCase())}"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.86rem">${esc(d.nome)}</div><div style="font-size:.7rem;color:var(--muted)">${esc(d.materia||"")} &middot; ${esc(d.email)}</div></div>${d.telefono?`<button class="btn btn-outline btn-sm" style="flex-shrink:0" onclick="apriTelefono('${esc(d.nome)}','${esc(d.telefono)}')">&#128222;</button>`:''}</div>`;});
+  lista.forEach(d=>{html+=`<div class="contatto-row" data-search-d="${esc((d.nome+' '+d.email+' '+(d.materia||'')+' '+(d.telefono||'')).toLowerCase())}"><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.86rem">${esc(d.nome)}</div><div style="font-size:.7rem;color:var(--muted)">${esc(d.materia||"")} &middot; ${esc(d.email)}</div></div>${d.telefono?`<span style="font-family:var(--font-head);font-size:.88rem;font-weight:700;color:var(--accent2);cursor:pointer;white-space:nowrap" onclick="apriTelefono('${esc(d.nome)}','${esc(d.telefono)}')">${esc(d.telefono)} &#128222;</span>`:''}</div>`;});
   html+='</div>';cont.innerHTML=html;
 }
 function _filtraContatti(tipo){
