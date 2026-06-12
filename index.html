@@ -30,7 +30,7 @@ body::after{content:'';position:fixed;bottom:-150px;left:-150px;width:400px;heig
 .badge{display:inline-flex;align-items:center;font-size:.72rem;font-weight:600;padding:.25rem .6rem;border-radius:6px}
 .badge-blue{background:rgba(59,130,246,.18);color:var(--accent2)}.badge-green{background:rgba(16,185,129,.18);color:#34d399}
 .badge-yellow{background:rgba(245,158,11,.18);color:#fbbf24}.badge-red{background:rgba(239,68,68,.18);color:#f87171}
-.badge-gray{background:rgba(100,116,139,.18);color:var(--muted)}
+.badge-gray{background:rgba(100,116,139,.18);color:var(--muted)}.badge-purple{background:rgba(139,92,246,.18);color:#a78bfa}
 input,select,textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font-body);font-size:.9rem;padding:.65rem .9rem;outline:none;transition:border-color .18s}
 input::placeholder,textarea::placeholder{color:var(--muted)}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
@@ -71,6 +71,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .notif-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;background:var(--danger);border-radius:50%;border:2px solid var(--bg)}
 .role-COORDINATORE{background:rgba(245,158,11,.2);color:#fbbf24}.role-TUTOR{background:rgba(16,185,129,.2);color:#34d399}
 .role-DOCENTE{background:rgba(139,92,246,.2);color:#a78bfa}.role-STUDENTE{background:rgba(59,130,246,.2);color:var(--accent2)}
+.role-ORIENTATRICE{background:rgba(236,72,153,.2);color:#f472b6}
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;z-index:1}
 .login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:420px;padding:2rem 2rem 2.5rem;width:100%}
 .login-logo{text-align:center;margin-bottom:1.5rem}
@@ -115,6 +116,29 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .disp-time{font-size:.82rem;color:var(--muted)}
 .tabellone-row:hover td{background:rgba(59,130,246,.06)!important}
 .tabellone-row:hover td:first-child{background:rgba(59,130,246,.1)!important}
+/* EVENTI */
+.evento-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:.75rem;cursor:pointer;transition:border-color .18s}
+.evento-card:hover{border-color:rgba(59,130,246,.4)}
+.evento-card.oggi{border-left:3px solid var(--gold)}
+.evento-card.futuro{border-left:3px solid var(--success)}
+.evento-card.passato{opacity:.65}
+.evento-data{font-family:var(--font-head);font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.evento-titolo{font-weight:700;font-size:.95rem;margin:.2rem 0 .3rem}
+.evento-ora{font-size:.78rem;color:var(--muted)}
+.personale-chip{display:inline-flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.15rem .5rem;font-size:.72rem;margin:2px}
+/* CONTATTI */
+.contatto-row{display:flex;align-items:center;gap:.75rem;padding:.65rem .85rem;border-bottom:1px solid var(--border)}
+.contatto-row:last-child{border-bottom:none}
+.contatto-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.9rem;flex-shrink:0}
+.contatto-info{flex:1;min-width:0}
+.contatto-nome{font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.contatto-dettaglio{font-size:.72rem;color:var(--muted)}
+.tel-actions{display:flex;gap:.35rem;flex-shrink:0}
+.tel-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;text-decoration:none;transition:all .15s}
+.tel-btn-call{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.4);color:#34d399}
+.tel-btn-call:hover{background:rgba(16,185,129,.3)}
+.tel-btn-wa{background:rgba(37,211,102,.15);border-color:rgba(37,211,102,.4);color:#25d366}
+.tel-btn-wa:hover{background:rgba(37,211,102,.3)}
 @media(max-width:420px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.stat-val{font-size:1.5rem}.navbar-brand span{display:none}.main{padding:1rem .875rem 5.5rem}}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -196,12 +220,14 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <div id="pane-disponibilita" class="fade-in hide"></div>
     <div id="pane-disponibilita-docente" class="fade-in hide"></div>
     <div id="pane-disponibilita-coord" class="fade-in hide"></div>
+    <div id="pane-eventi" class="fade-in hide"></div>
+    <div id="pane-contatti" class="fade-in hide"></div>
   </div>
 </div>
 
 <nav id="bottom-nav" class="bottom-nav hide"></nav>
 
-<!-- MODALI -->
+<!-- ===== MODALI ===== -->
 <div id="modal-pwd" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Cambia password</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-pwd')">&#10005;</button></div>
   <div class="form-group"><label>Password attuale</label><input type="password" id="pwd-old" placeholder="Attuale"></div>
@@ -223,6 +249,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
       <div class="chip" onclick="toggleChip(this,'2anno')">Studenti 2&#176; anno</div>
       <div class="chip" onclick="toggleChip(this,'docenti')">Docenti</div>
       <div class="chip" onclick="toggleChip(this,'team')">Team</div>
+      <div class="chip" onclick="toggleChip(this,'orientatrici')">Orientatrici</div>
     </div>
   </div>
   <div class="form-group"><label>Testo</label><textarea id="comm-testo" rows="5" placeholder="Scrivi qui il messaggio..." style="resize:vertical"></textarea></div>
@@ -280,6 +307,67 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="comm-detail-actions" style="margin-top:1rem"></div>
 </div></div>
 
+<!-- MODALE CREA/MODIFICA EVENTO -->
+<div id="modal-evento" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h4 id="modal-evento-title">Nuovo evento</h4>
+    <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-evento')">&#10005;</button>
+  </div>
+  <input type="hidden" id="ev-edit-id">
+  <div class="form-group"><label>Titolo evento</label><input type="text" id="ev-titolo" placeholder="Es. Open Day, Visita aziendale..."></div>
+  <div class="form-group"><label>Descrizione (opzionale)</label><textarea id="ev-desc" rows="2" placeholder="Note aggiuntive..." style="resize:vertical"></textarea></div>
+  <div class="form-group"><label>Data</label><input type="date" id="ev-data"></div>
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
+    <input type="checkbox" id="ev-tutto-giorno" style="width:auto;margin:0" onchange="toggleTuttoGiorno()">
+    <label for="ev-tutto-giorno" style="margin:0;text-transform:none;font-size:.9rem;letter-spacing:0;cursor:pointer">Tutto il giorno</label>
+  </div>
+  <div id="ev-orario-fields" class="grid-2" style="gap:.75rem;margin-bottom:1rem">
+    <div class="form-group" style="margin-bottom:0"><label>Ora inizio</label><input type="time" id="ev-ini"></div>
+    <div class="form-group" style="margin-bottom:0"><label>Ora fine</label><input type="time" id="ev-fin"></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+    <input type="checkbox" id="ev-richiede-pers" style="width:auto;margin:0" onchange="toggleRichiedePersonale()">
+    <label for="ev-richiede-pers" style="margin:0;text-transform:none;font-size:.9rem;letter-spacing:0;cursor:pointer">L&rsquo;evento richiede personale</label>
+  </div>
+  <div id="ev-personale-section" class="hide">
+    <div class="divider"></div>
+    <div class="section-title">Aggiungi figure coinvolte</div>
+    <div class="form-group">
+      <label>Tipo figura</label>
+      <div class="chip-group">
+        <div class="chip" onclick="selTipoFigura(this,'TUTOR')">Tutor</div>
+        <div class="chip" onclick="selTipoFigura(this,'STUDENTE')">Studente</div>
+        <div class="chip" onclick="selTipoFigura(this,'DOCENTE')">Docente</div>
+        <div class="chip" onclick="selTipoFigura(this,'ALTRO')">Altro</div>
+      </div>
+      <input type="hidden" id="ev-fig-tipo">
+    </div>
+    <div id="ev-fig-lista-wrap" class="form-group hide"><label>Seleziona persona</label><select id="ev-fig-lista"><option value="">-- Seleziona --</option></select></div>
+    <div id="ev-fig-nome-wrap" class="form-group hide"><label>Nome (libero)</label><input type="text" id="ev-fig-nome" placeholder="Nome della persona"></div>
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+      <input type="checkbox" id="ev-fig-tutto" style="width:auto;margin:0" checked onchange="toggleFigTuttoEvento()">
+      <label for="ev-fig-tutto" style="margin:0;text-transform:none;font-size:.9rem;letter-spacing:0;cursor:pointer">Per tutto l&rsquo;evento</label>
+    </div>
+    <div id="ev-fig-orario" class="grid-2 hide" style="gap:.75rem;margin-bottom:.75rem">
+      <div class="form-group" style="margin-bottom:0"><label>Dalle</label><input type="time" id="ev-fig-ini"></div>
+      <div class="form-group" style="margin-bottom:0"><label>Alle</label><input type="time" id="ev-fig-fin"></div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="aggiungiFiguraLocale()" style="margin-bottom:.75rem">&#10133; Aggiungi figura</button>
+    <div id="ev-figure-list" style="margin-bottom:.5rem"></div>
+  </div>
+  <div id="ev-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="salvaEvento()">Salva evento</button>
+</div></div>
+
+<!-- MODALE DETTAGLIO EVENTO (con gestione personale) -->
+<div id="modal-evento-detail" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h4 id="ev-detail-title" style="flex:1;padding-right:1rem"></h4>
+    <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-evento-detail')">&#10005;</button>
+  </div>
+  <div id="ev-detail-body"></div>
+</div></div>
+
 <script>
 const API_URL="https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
 const VAPID_PUBLIC_KEY="BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
@@ -287,6 +375,8 @@ let _token=localStorage.getItem("its_token")||null;
 let _user=null;
 try{_user=JSON.parse(localStorage.getItem("its_user"));}catch(e){}
 let _studenti=[],_materieDocente=[],_notifInterval=null,_currentPane="home",_fcmMessaging=null;
+let _eventiCache=[],_personaleListe={tutor:[],docenti:[],studenti:[]};
+let _evFigureLocali=[]; // figure aggiunte localmente nel form evento (prima del salvataggio)
 
 async function api(action,payload){
   let r;
@@ -309,7 +399,7 @@ function chiudiModal(id){hd(id);}
 function fmtData(iso){if(!iso)return"";if(iso instanceof Date)iso=iso.toISOString().split("T")[0];const[y,m,d]=String(iso).split("-");return`${d}/${m}/${y}`;}
 function todayISO(){return new Date().toISOString().split("T")[0];}
 function votoClass(v){if(v===30)return"voto-30";if(v>=27)return"voto-high";if(v>=21)return"voto-mid";return"voto-low";}
-function ruoloLabel(r){return{COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente"}[r]||r;}
+function ruoloLabel(r){return{COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:"Docente",STUDENTE:"Studente",ORIENTATRICE:"Orientatrice"}[r]||r;}
 function showLogin(){hd("form-reset1");hd("form-reset2");sh("form-login");}
 function showReset(){hd("form-login");hd("form-reset2");sh("form-reset1");$("reset-email").value=$("in-email").value||"";}
 
@@ -370,16 +460,20 @@ async function avviaDashboard(){
 function buildBottomNav(){
   const r=_user.ruolo;
   const items=[{id:"home",icon:"&#127968;",label:"Home"}];
-  if(r==="STUDENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
-  else if(r==="COORDINATORE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-coord",icon:"&#128198;",label:"Disponib."});
-  else if(r==="TUTOR")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Mia Disp."});
-  else if(r==="DOCENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."});
+  if(r==="STUDENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"eventi",icon:"&#128197;",label:"Calendario"});
+  else if(r==="COORDINATORE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-coord",icon:"&#128198;",label:"Disponib."},{id:"eventi",icon:"&#128197;",label:"Calendario"});
+  else if(r==="TUTOR")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita",icon:"&#128198;",label:"Mia Disp."},{id:"eventi",icon:"&#128197;",label:"Calendario"});
+  else if(r==="DOCENTE")items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."},{id:"eventi",icon:"&#128197;",label:"Calendario"});
+  else if(r==="ORIENTATRICE")items.push({id:"eventi",icon:"&#128197;",label:"Calendario"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"contatti",icon:"&#128101;",label:"Contatti"});
   $("bottom-nav").innerHTML=items.map(it=>`<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}"><span class="bicon">${it.icon}</span>${esc(it.label)}${it.notif?`<span class="bnav-dot hide" id="bnav-dot-${it.id}"></span>`:""}</button>`).join("");
 }
 
+const ALL_PANES=["home","orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente","disponibilita-coord","eventi","contatti"];
+
 function switchPane(name){
-  ["home","orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente","disponibilita-coord"].forEach(p=>{hd("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
-  sh("pane-"+name);const b=$("bnav-"+name);if(b)b.classList.add("active");
+  ALL_PANES.forEach(p=>{const el=$("pane-"+p);if(el)hd("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
+  const pane=$("pane-"+name);if(pane)sh("pane-"+name);
+  const b=$("bnav-"+name);if(b)b.classList.add("active");
   _currentPane=name;
   if(name==="home")renderHome();
   else if(name==="orario")renderOrario();
@@ -389,9 +483,11 @@ function switchPane(name){
   else if(name==="disponibilita")renderDisponibilita();
   else if(name==="disponibilita-docente")renderDisponibilitaDocente();
   else if(name==="disponibilita-coord")renderDisponibilitaCoord();
+  else if(name==="eventi")renderEventi();
+  else if(name==="contatti")renderContatti();
 }
 
-/* HOME */
+/* ===== HOME ===== */
 async function renderHome(){
   const pane=$("pane-home");
   pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
@@ -400,14 +496,15 @@ async function renderHome(){
     if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
     if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">Ritardi: ${s.oreRitardo||0}h</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni non lette</div></div></div>`;}
-    if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita-coord')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Gestisci voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Gestisci presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Scrivi comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('disponibilita-coord')">&#128198; Disponibilita'</button></div>`;}
+    if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti inseriti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('disponibilita-coord')"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Gestisci voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Gestisci presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Scrivi comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128197; Calendario eventi</button></div>`;}
     if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Mie disponibilita'</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilita'</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Visualizza voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button></div>`;}
-    if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="apriInserisciVoto()">&#10133; Inserisci voto</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponibilita'</button></div>`;}
+    if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1.25rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia trovata.</div>'}</div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="apriInserisciVoto()">&#10133; Inserisci voto</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponibilita'</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128197; Calendario</button></div>`;}
+    if(r==="ORIENTATRICE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-3" style="margin-bottom:1.25rem"><div class="stat-card" style="cursor:pointer" onclick="switchPane('contatti')"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('eventi')"><div class="stat-val text-success">${s.eventiTotali||0}</div><div class="stat-lbl">Tot. eventi</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('eventi')"><div class="stat-val" style="color:var(--gold)">${s.eventiFuturi||0}</div><div class="stat-lbl">Prossimi</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" onclick="apriNuovoEvento()">&#10133; Nuovo evento</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('contatti')">&#128101; Contatti studenti</button><button class="btn btn-outline" onclick="switchPaneContatti('docenti')">&#127979; Contatti docenti</button></div>`;}
     pane.innerHTML=html;
   }catch(e){pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
 
-/* ORARIO */
+/* ===== ORARIO ===== */
 function _filtraLezioniDocente(lezioni){
   if(_user.ruolo!=="DOCENTE")return lezioni;
   const cognome=(_user.cognome||"").toLowerCase().trim(),nome=(_user.nome||"").toLowerCase().trim();
@@ -445,14 +542,14 @@ async function cambiaOrario(ann,btn){
   try{const res=await api("getOrario",{annualita:ann});if(!res.success){loader.outerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}loader.outerHTML=_renderLezioni(res.lezioni||[])||'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione.</div>';}catch(e){}
 }
 
-/* VOTI */
+/* ===== VOTI ===== */
 let _votiData=null,_selectedStudenteVoti=null,_materieList=[];
 async function _assicuraStudenti(){if(!_studenti.length){const sr=await api("getStudenti",{});_studenti=sr.studenti||[];}}
 async function _assicuraMaterie(){
   if(_materieList.length)return;
   const dr=await api("getDocenti",{});const tuttiDoc=dr.docenti||[];
   if(_user.ruolo==="DOCENTE"){_materieList=tuttiDoc.filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase()).map(d=>d.materia).filter(m=>m);}
-  if(!_materieList.length){_materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor"].includes(m.toLowerCase())))];}
+  if(!_materieList.length){_materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor","orientatrice"].includes(m.toLowerCase())))];}
 }
 async function renderVoti(){
   const pane=$("pane-voti"),r=_user.ruolo;
@@ -469,7 +566,7 @@ function switchVotiTab(tab,btn){
   document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
   ["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)hd("voti-"+p+"-pane");});
   const target=$("voti-"+tab+"-pane");if(target)sh("voti-"+tab+"-pane");
-  if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"&#176; anno)";sel.appendChild(o);});}
+  if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"° anno)";sel.appendChild(o);});}
 }
 async function aggiornaTabellone(){await renderTabellone();}
 async function renderTabellone(){
@@ -498,7 +595,7 @@ async function renderTabellone(){
   studenti.forEach((s,idx)=>{
     const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};
     const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";
-    html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.55rem .85rem;border-bottom:1px solid var(--border);white-space:nowrap"><div style="font-weight:600;font-size:.84rem">${esc(s.nome)}</div>${annoSel==="tutti"?`<div style="font-size:.68rem;color:var(--muted)">${s.annualita}&#176; anno</div>`:''}</td>`;
+    html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.55rem .85rem;border-bottom:1px solid var(--border);white-space:nowrap"><div style="font-weight:600;font-size:.84rem">${esc(s.nome)}</div>${annoSel==="tutti"?`<div style="font-size:.68rem;color:var(--muted)">${s.annualita}° anno</div>`:''}</td>`;
     let sommaMediae=0,conteggioMaterie=0;
     materie.forEach(m=>{
       const voci=votiSt[m]||[];const vals=voci.map(x=>x.val);
@@ -530,7 +627,7 @@ async function renderRegistro(){
   if(!_materieList.length){pane.innerHTML=`<div class="alert alert-danger">Nessuna materia trovata.</div>`;return;}
   const materiaOpts=_materieList.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
   const preselectMateria=(_user.ruolo==="DOCENTE"&&_materieList.length===1)?_materieList[0]:"";
-  pane.innerHTML=`<div class="card" style="margin-bottom:1rem"><div class="grid-2" style="gap:.75rem"><div class="form-group" style="margin-bottom:0"><label>Materia</label><select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="reg-anno"><option value="">Tutti</option><option value="1">1&#176; Anno</option><option value="2">2&#176; Anno</option></select></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button></div><div id="registro-table"></div>`;
+  pane.innerHTML=`<div class="card" style="margin-bottom:1rem"><div class="grid-2" style="gap:.75rem"><div class="form-group" style="margin-bottom:0"><label>Materia</label><select id="reg-materia"><option value="">-- Seleziona materia --</option>${materiaOpts}</select></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="reg-anno"><option value="">Tutti</option><option value="1">1° Anno</option><option value="2">2° Anno</option></select></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="apriRegistro()">Apri registro</button></div><div id="registro-table"></div>`;
   if(preselectMateria){$("reg-materia").value=preselectMateria;$("reg-anno").value="1";await apriRegistro();}
 }
 async function apriRegistro(){
@@ -544,12 +641,12 @@ async function apriRegistro(){
   const tuttiVoti=res.success?(res.voti||[]):[];
   const votiMateria={};
   tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{const em=String(v.EMAIL_STUDENTE||"").toLowerCase();if(!votiMateria[em])votiMateria[em]=[];votiMateria[em].push(v);});
-  let html=`<div class="section-title">${esc(materia)}${anno?" &mdash; "+anno+"&#176; anno":""} &middot; ${studenti.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
+  let html=`<div class="section-title">${esc(materia)}${anno?" &mdash; "+anno+"° anno":""} &middot; ${studenti.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
   studenti.forEach(s=>{
     const email=s.email.toLowerCase(),votiSt=votiMateria[email]||[];
     const media=votiSt.length?Math.round((votiSt.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/votiSt.length)*10)/10:null;
     const pillsHtml=votiSt.map(v=>{const num=parseFloat(v.VOTO);const cls=votoClass(num);const dataStr=_fmtDataIT(v.DATA);return`<span title="${dataStr}" style="display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:.18rem .38rem;font-family:var(--font-head);font-weight:700;font-size:.8rem" class="${cls}">${v.VOTO}${_user.ruolo==="COORDINATORE"?`<span style="font-size:.6rem;cursor:pointer;opacity:.6;margin-left:1px" onclick="eliminaVotoById('${v.ID}')" title="Elimina">&#10005;</span>`:''}</span>`;}).join("");
-    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="flex:1;min-width:0"><span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span><span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${s.annualita}&#176; anno</span></div>${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)};white-space:nowrap">&#8960; ${media}</span>`:''}<input type="number" min="0" max="30" step="0.5" placeholder="&mdash;" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}" style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0"></div>${pillsHtml?`<div style="display:flex;flex-wrap:wrap;gap:4px">${pillsHtml}</div>`:'<div style="font-size:.72rem;color:var(--muted);font-style:italic">Nessun voto</div>'}</div>`;
+    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem"><div style="flex:1;min-width:0"><span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span><span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${s.annualita}° anno</span></div>${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)};white-space:nowrap">&#8960; ${media}</span>`:''}<input type="number" min="0" max="30" step="0.5" placeholder="&mdash;" id="inp-${btoa(email).replace(/=/g,'')}" data-email="${esc(email)}" style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0"></div>${pillsHtml?`<div style="display:flex;flex-wrap:wrap;gap:4px">${pillsHtml}</div>`:'<div style="font-size:.72rem;color:var(--muted);font-style:italic">Nessun voto</div>'}</div>`;
   });
   html+=`</div><div style="margin-top:1rem"><div class="form-group" style="margin-bottom:0"><label>Note (per tutti i nuovi voti)</label><input type="text" id="reg-note-globale" placeholder="Opzionale"></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">&#128190; Salva tutti i voti inseriti</button><div id="reg-save-msg" style="margin-top:.5rem"></div>`;
   $("registro-table").innerHTML=html;
@@ -599,16 +696,14 @@ async function eliminaVotoById(id){
   else alert(res.message);
 }
 
-/* PRESENZE */
+/* ===== PRESENZE ===== */
 let _selectedStudentePresenze=null;
-let _presenzeAll=[];      // cache tutte le presenze (coord/tutor)
-let _appelloStato={};     // email -> {tipo, ora}
-let _filtroPresTipo=null; // filtro lista studente
+let _presenzeAll=[];
+let _appelloStato={};
+let _filtroPresTipo=null;
 const ORE_TOTALI_JS={"1":500,"2":500};
-
 function _minuti(hhmm){if(!hhmm)return null;const[h,m]=String(hhmm).split(":").map(Number);return h*60+(m||0);}
 function _oreDiff(ini,fin){const a=_minuti(ini),b=_minuti(fin);if(a===null||b===null||b<=a)return 0;return Math.round((b-a)/60*10)/10;}
-
 async function renderPresenze(){
   const r=_user.ruolo;
   if(r==="STUDENTE"){await renderPresenzeStudente();return;}
@@ -625,7 +720,7 @@ async function renderPresenze(){
     </div>`;
   await _assicuraStudenti();
   const sel=$("sel-studente-pres");
-  _studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"\u00b0 anno)";sel.appendChild(o);});
+  _studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"° anno)";sel.appendChild(o);});
   await renderAppello();
 }
 function switchPresTab(tab,btn){
@@ -633,14 +728,12 @@ function switchPresTab(tab,btn){
   if(tab==="appello"){sh("pres-appello-pane");hd("pres-consulta-pane");}
   else{hd("pres-appello-pane");sh("pres-consulta-pane");}
 }
-
-/* ---- APPELLO ---- */
 async function renderAppello(){
   const pane=$("pres-appello-pane");if(!pane)return;
   pane.innerHTML=`<div class="card" style="margin-bottom:1rem;padding:1rem">
       <div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
         <div class="form-group" style="margin-bottom:0"><label>Data</label><input type="date" id="app-data" value="${todayISO()}"></div>
-        <div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1&#176; Anno</option><option value="2">2&#176; Anno</option></select></div>
+        <div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1° Anno</option><option value="2">2° Anno</option></select></div>
       </div>
       <div class="grid-2" style="gap:.6rem">
         <div class="form-group" style="margin-bottom:0"><label>Inizio lezioni</label><input type="time" id="app-ini" value="14:30" onchange="aggiornaOreAppello()"></div>
@@ -650,7 +743,6 @@ async function renderAppello(){
     <div id="appello-lista"><div style="text-align:center;padding:1.5rem"><div class="spinner"></div></div></div>
     <button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="confermaAppello()" id="btn-conferma-appello">Conferma appello</button>
     <div id="appello-msg" style="margin-top:.5rem"></div>`;
-  // carica tutte le presenze per le statistiche per riga
   const res=await api("getPresenze",{emailStudente:null});
   _presenzeAll=res.success?(res.presenze||[]):[];
   buildAppelloList();
@@ -695,14 +787,12 @@ function buildAppelloList(){
 function selAppello(email,i,tipo,btn){
   const stato=_appelloStato[email];if(!stato)return;
   stato.tipo=tipo;stato.ora="";
-  // aggiorna stile bottoni
   const COLORS={P:"var(--success)",A:"var(--danger)",R:"var(--warning)",U:"#a78bfa"};
   document.querySelectorAll(`#app-btns-${i} .app-btn`).forEach(b=>{
     const t=b.getAttribute("data-tipo");
     if(t===tipo){b.style.background=COLORS[t];b.style.color=t==="R"?"#000":"#fff";b.classList.add("sel");}
     else{b.style.background="transparent";b.style.color=COLORS[t];b.classList.remove("sel");}
   });
-  // campo orario condizionale
   const extra=$("app-extra-"+i);
   if(tipo==="R"){
     extra.style.display="block";
@@ -714,13 +804,12 @@ function selAppello(email,i,tipo,btn){
     extra.style.display="none";extra.innerHTML="";
   }
 }
-function aggiornaOreAppello(){/* placeholder per estensioni future */}
+function aggiornaOreAppello(){}
 async function confermaAppello(){
   const msg=$("appello-msg");
   const data=$("app-data").value,ini=$("app-ini").value,fin=$("app-fin").value;
   if(!data){msg.innerHTML=`<div class="alert alert-danger">Inserisci la data.</div>`;return;}
   if(!ini||!fin||ini>=fin){msg.innerHTML=`<div class="alert alert-danger">Orario lezioni non valido.</div>`;return;}
-  // valida orari R/U
   const registrazioni=[];
   for(const email in _appelloStato){
     const st=_appelloStato[email];
@@ -735,13 +824,10 @@ async function confermaAppello(){
   $("btn-conferma-appello").disabled=false;
   if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
   msg.innerHTML=`<div class="alert alert-success">&#10003; Appello salvato: ${res.salvate} registrazioni.</div>`;
-  // ricarica le stats per riga
   const r2=await api("getPresenze",{emailStudente:null});
   _presenzeAll=r2.success?(r2.presenze||[]):[];
   setTimeout(()=>buildAppelloList(),1200);
 }
-
-/* ---- CONSULTA SINGOLO (coord/tutor) ---- */
 async function cambiaStudentePresenze(email){
   _selectedStudentePresenze=email||null;
   if(!email){$("presenze-content").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div>`;return;}
@@ -753,8 +839,6 @@ async function caricaPresenze(emailStudente){
   if(!res.success){$("presenze-content").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
   $("presenze-content").innerHTML=_htmlStatistichePresenze(res,false)+_htmlListaPresenze(res.presenze||[],null,true);
 }
-
-/* ---- VISTA STUDENTE ---- */
 async function renderPresenzeStudente(){
   const pane=$("pane-presenze");
   pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
@@ -768,10 +852,7 @@ function _renderPresenzeStudenteContent(){
   const res=window._presStudenteCache;if(!res)return;
   $("presenze-content").innerHTML=_htmlStatistichePresenze(res,true)+_htmlListaPresenze(res.presenze||[],_filtroPresTipo,false);
 }
-function filtraPresStudente(tipo){
-  _filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo; // toggle
-  _renderPresenzeStudenteContent();
-}
+function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo;_renderPresenzeStudenteContent();}
 function _htmlStatistichePresenze(res,clickable){
   const s=res.stats||{};
   const oreTot=ORE_TOTALI_JS[_user.annualita||"1"]||500;
@@ -779,18 +860,9 @@ function _htmlStatistichePresenze(res,clickable){
   const click=t=>clickable?`cursor:pointer" onclick="filtraPresStudente('${t}')`:`"`;
   const att=t=>(clickable&&_filtroPresTipo===t)?"box-shadow:0 0 0 2px var(--accent);":"";
   return `<div class="grid-3" style="margin-bottom:1rem">
-    <div class="stat-card card-sm" style="${att('ASSENZA')}${click('ASSENZA')}>
-      <div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div>
-      <div style="font-size:.68rem;color:var(--muted)">${s.oreAssenza||0}h perse</div>
-    </div>
-    <div class="stat-card card-sm" style="${att('RITARDO')}${click('RITARDO')}>
-      <div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div>
-      <div style="font-size:.68rem;color:var(--muted)">${s.oreRitardo||0}h perse</div>
-    </div>
-    <div class="stat-card card-sm" style="${att('USCITA')}${click('USCITA')}>
-      <div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div>
-      <div style="font-size:.68rem;color:var(--muted)">${s.oreUscita||0}h perse</div>
-    </div>
+    <div class="stat-card card-sm" style="${att('ASSENZA')}${click('ASSENZA')}><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div><div style="font-size:.68rem;color:var(--muted)">${s.oreAssenza||0}h perse</div></div>
+    <div class="stat-card card-sm" style="${att('RITARDO')}${click('RITARDO')}><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div><div style="font-size:.68rem;color:var(--muted)">${s.oreRitardo||0}h perse</div></div>
+    <div class="stat-card card-sm" style="${att('USCITA')}${click('USCITA')}><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div><div style="font-size:.68rem;color:var(--muted)">${s.oreUscita||0}h perse</div></div>
   </div>
   <div class="card" style="margin-bottom:1rem;padding:.9rem">
     <div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}% &middot; ${s.orePresenti||0}/${oreTot}h</span></div>
@@ -815,14 +887,8 @@ function _htmlListaPresenze(presenze,filtroTipo,conElimina){
     const perse=parseFloat(p.ORE_PERSE)||0;
     html+=`<div style="display:flex;align-items:center;gap:.6rem;padding:.45rem .2rem;border-bottom:1px solid var(--border)">
       <span style="width:26px;height:26px;border-radius:6px;background:${col};color:${p.TIPO==='RITARDO'?'#000':'#fff'};display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.8rem;flex-shrink:0">${lbl}</span>
-      <div style="flex:1;min-width:0">
-        <span style="font-size:.82rem;font-weight:500">${esc(p.dataIT||fmtData(p.DATA))}</span>
-        <span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${dettaglio}</span>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>
-        ${perse>0?`<div style="font-size:.62rem;color:var(--muted)">-${perse}h</div>`:''}
-      </div>
+      <div style="flex:1;min-width:0"><span style="font-size:.82rem;font-weight:500">${esc(p.dataIT||fmtData(p.DATA))}</span><span style="font-size:.7rem;color:var(--muted);margin-left:.4rem">${dettaglio}</span></div>
+      <div style="text-align:right;flex-shrink:0"><div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>${perse>0?`<div style="font-size:.62rem;color:var(--muted)">-${perse}h</div>`:''}</div>
       ${conElimina&&["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.72rem;width:26px;height:26px;flex-shrink:0" onclick="eliminaPresenzaById('${p.ID}')">&#10005;</button>`:''}
     </div>`;
   });
@@ -831,7 +897,7 @@ function _htmlListaPresenze(presenze,filtroTipo,conElimina){
 }
 async function eliminaPresenzaById(id){if(!confirm("Eliminare questa registrazione?"))return;const res=await api("eliminaPresenza",{id});if(res.success)await caricaPresenze(_selectedStudentePresenze||null);else alert(res.message);}
 
-/* COMUNICAZIONI */
+/* ===== COMUNICAZIONI ===== */
 let _comunicazioni=[];
 async function renderComunicazioni(){
   const pane=$("pane-comunicazioni"),r=_user.ruolo;
@@ -843,12 +909,12 @@ async function renderComunicazioni(){
 }
 function renderListaComunicazioni(){
   const cont=$("comm-list");if(!_comunicazioni.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>`;return;}
-  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1&#176; Anno","2anno":"2&#176; Anno",docenti:"Docenti",team:"Team",coordinatore:"Coordinatore"};
+  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team",orientatrici:"Orientatrici",coordinatore:"Coordinatore"};
   cont.innerHTML=_comunicazioni.map(c=>`<div class="comm-card ${c.letta?'':'unread'}" onclick="apriComunicazione('${esc(c.ID)}')"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem"><div class="comm-title">${esc(c.TITOLO)}${!c.letta?` <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>`:''}</div>${_user.ruolo==="COORDINATORE"?`<button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);flex-shrink:0" onclick="event.stopPropagation();eliminaComm('${esc(c.ID)}')">&#128465;</button>`:''}</div><div class="comm-meta"><span>&#128197; ${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DEST_LABELS[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div><div class="comm-preview">${esc(c.TESTO)}</div></div>`).join("");
 }
 function apriComunicazione(id){
   const c=_comunicazioni.find(x=>x.ID===id);if(!c)return;
-  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1&#176; Anno","2anno":"2&#176; Anno",docenti:"Docenti",team:"Team"};
+  const DEST_LABELS={tutti:"Tutti",studenti:"Studenti","1anno":"1° Anno","2anno":"2° Anno",docenti:"Docenti",team:"Team",orientatrici:"Orientatrici"};
   $("comm-detail-title").textContent=c.TITOLO;$("comm-detail-meta").textContent=`${fmtData(c.DATA_CREAZIONE)} - Destinatari: ${DEST_LABELS[c.DESTINATARI]||c.DESTINATARI}`;
   $("comm-detail-testo").textContent=c.TESTO;$("comm-detail-actions").innerHTML="";openModal("modal-comm-detail");
   if(!c.letta){api("segnaComunicazioneLetta",{id}).then(()=>{c.letta=true;renderListaComunicazioni();checkNotifiche();});}
@@ -863,26 +929,24 @@ async function inviaComunicazione(){
   hideErr("comm-err");
   const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();
   const destEl=document.querySelector("#chip-dest .chip.selected");
-  const destMap={"Tutti":"tutti","Studenti (tutti)":"studenti","Studenti 1&#176; anno":"1anno","Studenti 2&#176; anno":"2anno","Docenti":"docenti","Team":"team"};
-  const destFinal=destMap[destEl?.textContent]||"";
+  const DEST_MAP={"Tutti":"tutti","Studenti (tutti)":"studenti","Studenti 1° anno":"1anno","Studenti 2° anno":"2anno","Docenti":"docenti","Team":"team","Orientatrici":"orientatrici"};
+  const destFinal=destEl?DEST_MAP[destEl.textContent]||"":"";
   if(!titolo)return showErr("comm-err","Inserisci il titolo.");if(!testo)return showErr("comm-err","Inserisci il testo.");if(!destFinal)return showErr("comm-err","Seleziona i destinatari.");
   const res=await api("creaComunicazione",{titolo,testo,destinatari:destFinal});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();
 }
 
-/* DISPONIBILITA' COORDINATORE - SCELTA */
+/* ===== DISPONIBILITA' COORDINATORE ===== */
 function renderDisponibilitaCoord(){
   const pane=$("pane-disponibilita-coord");
   pane.innerHTML=`<div class="page-header"><h2>&#128198; Disponibilita'</h2><p class="text-muted">Seleziona la sezione da visualizzare</p></div>
     <div class="grid-2" style="gap:1rem;margin-top:.5rem">
-      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="switchPane('disponibilita')"
-           onmouseenter="this.style.borderColor='#3b82f6'" onmouseleave="this.style.borderColor=''">
+      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="switchPane('disponibilita')" onmouseenter="this.style.borderColor='#3b82f6'" onmouseleave="this.style.borderColor=''">
         <div style="font-size:2rem;margin-bottom:.6rem">&#128197;</div>
         <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.3rem">Tutor</div>
         <div style="font-size:.8rem;color:var(--muted)">Calendario settimanale con gli slot di disponibilita' dei tutor</div>
         <div style="margin-top:.85rem"><span class="badge badge-green">Calendario</span></div>
       </div>
-      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="apriDispDocentiCoord()"
-           onmouseenter="this.style.borderColor='#f59e0b'" onmouseleave="this.style.borderColor=''">
+      <div class="card" style="cursor:pointer;transition:border-color .2s" onclick="apriDispDocentiCoord()" onmouseenter="this.style.borderColor='#f59e0b'" onmouseleave="this.style.borderColor=''">
         <div style="font-size:2rem;margin-bottom:.6rem">&#127979;</div>
         <div style="font-family:var(--font-head);font-size:1rem;font-weight:700;margin-bottom:.3rem">Docenti</div>
         <div style="font-size:.8rem;color:var(--muted)">Disponibilita' periodiche per colloqui e recuperi di tutti i docenti</div>
@@ -890,107 +954,65 @@ function renderDisponibilitaCoord(){
       </div>
     </div>`;
 }
-
 async function apriDispDocentiCoord(){
-  // Il coordinatore vede le disponibilita' di TUTTI i docenti
   const pane=$("pane-disponibilita-coord");
-  pane.innerHTML=`<div class="page-header">
-    <div style="display:flex;align-items:center;gap:.75rem">
-      <button class="btn btn-outline btn-sm" onclick="renderDisponibilitaCoord()">&#8592; Indietro</button>
-      <h2 style="margin-bottom:0">&#127979; Disponibilita' docenti</h2>
-    </div>
-  </div>
+  pane.innerHTML=`<div class="page-header"><div style="display:flex;align-items:center;gap:.75rem"><button class="btn btn-outline btn-sm" onclick="renderDisponibilitaCoord()">&#8592; Indietro</button><h2 style="margin-bottom:0">&#127979; Disponibilita' docenti</h2></div></div>
   <div id="dd-coord-filter" style="margin-bottom:1rem;display:flex;gap:.5rem;flex-wrap:wrap">
     <select id="dd-coord-periodo" style="flex:1;min-width:140px" onchange="filtraDispDocentiCoord()">
       <option value="">Tutti i periodi</option>
-      <option value="1">1&#176; Periodo (Set&#8211;Nov)</option>
-      <option value="2">2&#176; Periodo (Dic&#8211;Feb)</option>
-      <option value="3">3&#176; Periodo (Mar&#8211;Mag)</option>
+      <option value="1">1° Periodo (Set–Nov)</option>
+      <option value="2">2° Periodo (Dic–Feb)</option>
+      <option value="3">3° Periodo (Mar–Mag)</option>
     </select>
     <select id="dd-coord-giorno" style="flex:1;min-width:120px" onchange="filtraDispDocentiCoord()">
       <option value="">Tutti i giorni</option>
-      <option value="LUN">Luned&#236;</option>
-      <option value="MAR">Marted&#236;</option>
-      <option value="MER">Mercoled&#236;</option>
-      <option value="GIO">Gioved&#236;</option>
-      <option value="VEN">Venerd&#236;</option>
+      <option value="LUN">Lunedì</option>
+      <option value="MAR">Martedì</option>
+      <option value="MER">Mercoledì</option>
+      <option value="GIO">Giovedì</option>
+      <option value="VEN">Venerdì</option>
     </select>
   </div>
   <div id="dd-coord-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
   await _caricaDispDocentiCoord();
 }
-
-let _dispDocentiAll = [];
-
+let _dispDocentiAll=[];
 async function _caricaDispDocentiCoord(){
-  const cont=$("dd-coord-content"); if(!cont) return;
+  const cont=$("dd-coord-content");if(!cont)return;
   cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const res = await api("getDispDocentiAll",{});
+  const res=await api("getDispDocentiAll",{});
   if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
-  _dispDocentiAll = res.disponibilita||[];
+  _dispDocentiAll=res.disponibilita||[];
   filtraDispDocentiCoord();
 }
-
 function filtraDispDocentiCoord(){
-  const cont=$("dd-coord-content"); if(!cont) return;
+  const cont=$("dd-coord-content");if(!cont)return;
   const filtPeriodo=$("dd-coord-periodo")&&$("dd-coord-periodo").value;
-  const filtGiorno =$("dd-coord-giorno")&&$("dd-coord-giorno").value;
-  let lista = _dispDocentiAll;
-  if(filtPeriodo) lista=lista.filter(d=>String(d.PERIODO)===filtPeriodo);
-  if(filtGiorno)  lista=lista.filter(d=>d.GIORNO===filtGiorno);
+  const filtGiorno=$("dd-coord-giorno")&&$("dd-coord-giorno").value;
+  let lista=_dispDocentiAll;
+  if(filtPeriodo)lista=lista.filter(d=>String(d.PERIODO)===filtPeriodo);
+  if(filtGiorno)lista=lista.filter(d=>d.GIORNO===filtGiorno);
   if(!lista.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna disponibilita' trovata.</div>`;return;}
-
-  // Raggruppa per docente
   const perDocente={};
-  lista.forEach(d=>{
-    const em=String(d.EMAIL_DOCENTE||"").toLowerCase();
-    if(!perDocente[em])perDocente[em]=[];
-    perDocente[em].push(d);
-  });
-
-  const PERIODI_LABEL={"1":"1&#176; (Set&#8211;Nov)","2":"2&#176; (Dic&#8211;Feb)","3":"3&#176; (Mar&#8211;Mag)"};
+  lista.forEach(d=>{const em=String(d.EMAIL_DOCENTE||"").toLowerCase();if(!perDocente[em])perDocente[em]=[];perDocente[em].push(d);});
+  const PERIODI_LABEL={"1":"1° (Set–Nov)","2":"2° (Dic–Feb)","3":"3° (Mar–Mag)"};
   const PERIODI_COLOR={"1":"#3b82f6","2":"#10b981","3":"#f59e0b"};
-  const GIORNI_LABEL={"LUN":"Luned&#236;","MAR":"Marted&#236;","MER":"Mercoled&#236;","GIO":"Gioved&#236;","VEN":"Venerd&#236;"};
-
+  const GIORNI_LABEL={"LUN":"Lunedì","MAR":"Martedì","MER":"Mercoledì","GIO":"Giovedì","VEN":"Venerdì"};
   let html="";
   Object.keys(perDocente).sort().forEach(email=>{
     const slots=perDocente[email];
-    const nomeDocente=_getTutorName(email); // riusa la stessa logica di estrazione cognome
-    slots.sort((a,b)=>{
-      if(a.PERIODO!==b.PERIODO)return String(a.PERIODO).localeCompare(String(b.PERIODO));
-      return GIORNI_ORDER.indexOf(a.GIORNO)-GIORNI_ORDER.indexOf(b.GIORNO);
-    });
-    html+=`<div style="margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden">
-      <div style="padding:.65rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0">${esc(nomeDocente.charAt(0))}</div>
-        <div>
-          <div style="font-family:var(--font-head);font-weight:700;font-size:.9rem">${esc(nomeDocente)}</div>
-          <div style="font-size:.7rem;color:var(--muted)">${esc(email)}</div>
-        </div>
-        <div style="margin-left:auto;font-size:.75rem;color:var(--muted)">${slots.length} slot</div>
-      </div>`;
+    const nomeDocente=_getTutorName(email);
+    slots.sort((a,b)=>{if(a.PERIODO!==b.PERIODO)return String(a.PERIODO).localeCompare(String(b.PERIODO));return GIORNI_ORDER.indexOf(a.GIORNO)-GIORNI_ORDER.indexOf(b.GIORNO);});
+    html+=`<div style="margin-bottom:1rem;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden"><div style="padding:.65rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem"><div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.85rem;color:#fff;flex-shrink:0">${esc(nomeDocente.charAt(0))}</div><div><div style="font-family:var(--font-head);font-weight:700;font-size:.9rem">${esc(nomeDocente)}</div><div style="font-size:.7rem;color:var(--muted)">${esc(email)}</div></div><div style="margin-left:auto;font-size:.75rem;color:var(--muted)">${slots.length} slot</div></div>`;
     slots.forEach((d,idx)=>{
       const pc=PERIODI_COLOR[d.PERIODO]||"var(--accent)";
       const bg=idx%2===0?"var(--surface)":"rgba(18,32,64,.4)";
-      html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 1rem;background:${bg};border-bottom:1px solid var(--border)">
-        <div style="width:3px;height:28px;background:${pc};border-radius:2px;flex-shrink:0"></div>
-        <div style="flex:1">
-          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-            <span style="font-weight:600;font-size:.82rem">${GIORNI_LABEL[d.GIORNO]||esc(d.GIORNO)}</span>
-            <span style="font-size:.72rem;color:var(--muted)">&#8212;</span>
-            <span style="font-family:var(--font-head);font-weight:700;font-size:.85rem;color:${pc}">${esc(d.ORA_INIZIO)} &ndash; ${esc(d.ORA_FINE)}</span>
-            <span style="font-size:.68rem;background:rgba(255,255,255,.07);border-radius:4px;padding:.1rem .35rem;color:var(--muted)">${PERIODI_LABEL[d.PERIODO]||esc(d.PERIODO)}</span>
-          </div>
-          ${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic;margin-top:2px">${esc(d.NOTE)}</div>`:''}
-        </div>
-        <button class="btn btn-icon" style="font-size:.72rem;color:var(--muted);width:26px;height:26px;flex-shrink:0" onclick="eliminaDispDocenteCoord('${d.ID}')" title="Rimuovi">&#10005;</button>
-      </div>`;
+      html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.55rem 1rem;background:${bg};border-bottom:1px solid var(--border)"><div style="width:3px;height:28px;background:${pc};border-radius:2px;flex-shrink:0"></div><div style="flex:1"><div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap"><span style="font-weight:600;font-size:.82rem">${GIORNI_LABEL[d.GIORNO]||esc(d.GIORNO)}</span><span style="font-family:var(--font-head);font-weight:700;font-size:.85rem;color:${pc}">${esc(d.ORA_INIZIO)} – ${esc(d.ORA_FINE)}</span><span style="font-size:.68rem;background:rgba(255,255,255,.07);border-radius:4px;padding:.1rem .35rem;color:var(--muted)">${PERIODI_LABEL[d.PERIODO]||esc(d.PERIODO)}</span></div>${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic;margin-top:2px">${esc(d.NOTE)}</div>`:''}</div><button class="btn btn-icon" style="font-size:.72rem;color:var(--muted);width:26px;height:26px;flex-shrink:0" onclick="eliminaDispDocenteCoord('${d.ID}')" title="Rimuovi">&#10005;</button></div>`;
     });
     html+=`</div>`;
   });
   cont.innerHTML=html;
 }
-
 async function eliminaDispDocenteCoord(id){
   if(!confirm("Rimuovere questa disponibilita'?"))return;
   const res=await api("eliminaDispDocenteCoord",{id});
@@ -998,7 +1020,7 @@ async function eliminaDispDocenteCoord(id){
   else alert(res.message);
 }
 
-/* DISPONIBILITA' TUTOR - CALENDARIO */
+/* ===== DISPONIBILITA' TUTOR CALENDARIO ===== */
 const TUTOR_COLORS=[{bg:"rgba(59,130,246,.85)",border:"#3b82f6",text:"#fff"},{bg:"rgba(239,68,68,.85)",border:"#ef4444",text:"#fff"},{bg:"rgba(16,185,129,.85)",border:"#10b981",text:"#fff"},{bg:"rgba(245,158,11,.85)",border:"#f59e0b",text:"#000"},{bg:"rgba(139,92,246,.85)",border:"#8b5cf6",text:"#fff"},{bg:"rgba(236,72,153,.85)",border:"#ec4899",text:"#fff"}];
 let _dispColorMap={},_dispLista=[],_calWeekOffset=0;
 function _getTutorName(email){if(!email)return"";let local=email.split("@")[0].toLowerCase();local=local.replace(/\.(docenti|studenti|tutor)$/i,"");if(local.includes(".")){const parts=local.split(".");local=parts[parts.length-1];}else if(local.length>1){local=local.slice(1);}return local.charAt(0).toUpperCase()+local.slice(1);}
@@ -1065,7 +1087,7 @@ function aggiornaSlotOccupati(){
   const myEmail=(_user.email||"").toLowerCase();
   const altriSlot=_dispLista.filter(d=>{const iso=String(d.DATA||"").split("T")[0];return iso===data&&String(d.EMAIL_TUTOR||"").toLowerCase()!==myEmail;});
   if(!altriSlot.length){cont.style.display="none";return;}
-  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot gia' occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
+  let html=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.3rem;font-weight:600">Slot già occupati:</div><div style="display:flex;flex-wrap:wrap;gap:4px">`;
   altriSlot.forEach(d=>{const col=_getTutorColor(d.EMAIL_TUTOR||"");const nome=_getTutorName(d.EMAIL_TUTOR||"");html+=`<span style="background:${col.bg};border-radius:5px;padding:.15rem .4rem;font-size:.72rem;font-weight:600;color:${col.text}">${esc(d.ORA_INIZIO)}-${esc(d.ORA_FINE)} (${esc(nome)})</span>`;});
   html+=`</div>`;cont.innerHTML=html;cont.style.display="block";verificaConflittoLive();
 }
@@ -1088,15 +1110,15 @@ async function salvaDisponibilita(){
   if(!data)return showErr("disp-err","Inserisci la data.");if(!ini||!fin)return showErr("disp-err","Inserisci l'orario.");if(ini>=fin)return showErr("disp-err","L'ora fine deve essere dopo l'ora inizio.");
   const iniMin=_parseMinutes(ini),finMin=_parseMinutes(fin),myEmail=(_user.email||"").toLowerCase();
   const conflitto=_dispLista.find(d=>{const isoD=String(d.DATA||"").split("T")[0];if(isoD!==data)return false;if(String(d.EMAIL_TUTOR||"").toLowerCase()===myEmail)return false;const dIni=_parseMinutes(d.ORA_INIZIO),dFin=_parseMinutes(d.ORA_FINE);if(dIni===null||dFin===null)return false;return _overlap(iniMin,finMin,dIni,dFin);});
-  if(conflitto){const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");return showErr("disp-err",`Slot gia' occupato da ${nome} (${conflitto.ORA_INIZIO}-${conflitto.ORA_FINE}).`);}
+  if(conflitto){const nome=_getTutorName(conflitto.EMAIL_TUTOR||"");return showErr("disp-err",`Slot già occupato da ${nome} (${conflitto.ORA_INIZIO}-${conflitto.ORA_FINE}).`);}
   const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});if(!res.success)return showErr("disp-err",res.message);
   chiudiModal("modal-disp");await _caricaERenderCalendario();
 }
 async function rimuoviDisp(id){if(!confirm("Rimuovere questa disponibilita'?"))return;const res=await api("rimuoviDisponibilita",{id});if(res.success)await _caricaERenderCalendario();else alert(res.message);}
 
-/* DISPONIBILITA' DOCENTI */
-const PERIODI_INFO={"1":{label:"1\u00b0 Periodo",mesi:"Settembre \u2013 Novembre",color:"rgba(59,130,246,.85)",border:"#3b82f6"},"2":{label:"2\u00b0 Periodo",mesi:"Dicembre \u2013 Febbraio",color:"rgba(16,185,129,.85)",border:"#10b981"},"3":{label:"3\u00b0 Periodo",mesi:"Marzo \u2013 Maggio",color:"rgba(245,158,11,.85)",border:"#f59e0b"}};
-const GIORNI_INFO={"LUN":"Luned\u00ec","MAR":"Marted\u00ec","MER":"Mercoled\u00ec","GIO":"Gioved\u00ec","VEN":"Venerd\u00ec"};
+/* ===== DISPONIBILITA' DOCENTI ===== */
+const PERIODI_INFO={"1":{label:"1° Periodo",mesi:"Settembre – Novembre",color:"rgba(59,130,246,.85)",border:"#3b82f6"},"2":{label:"2° Periodo",mesi:"Dicembre – Febbraio",color:"rgba(16,185,129,.85)",border:"#10b981"},"3":{label:"3° Periodo",mesi:"Marzo – Maggio",color:"rgba(245,158,11,.85)",border:"#f59e0b"}};
+const GIORNI_INFO={"LUN":"Lunedì","MAR":"Martedì","MER":"Mercoledì","GIO":"Giovedì","VEN":"Venerdì"};
 const GIORNI_ORDER=["LUN","MAR","MER","GIO","VEN"];
 function _buildSlotOptions(selectId,defaultVal){
   const sel=$(selectId);if(!sel)return;sel.innerHTML='<option value="">-- Seleziona --</option>';
@@ -1129,11 +1151,7 @@ function _renderGridDispDocente(lista,cont){
       slots.forEach((d,idx)=>{
         const nomGiorno=GIORNI_INFO[d.GIORNO]||d.GIORNO;
         const bg=idx%2===0?"var(--surface)":"var(--surface2)";
-        html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;background:${bg};border-bottom:1px solid var(--border)">
-          <div style="width:3px;height:32px;background:${periodoColor};border-radius:2px;flex-shrink:0"></div>
-          <div style="flex:1"><div style="font-weight:600;font-size:.85rem">${nomGiorno}</div><div style="font-family:var(--font-head);font-size:.9rem;font-weight:700;color:${periodoColor}">${esc(d.ORA_INIZIO)} &ndash; ${esc(d.ORA_FINE)}</div>${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic">${esc(d.NOTE)}</div>`:''}</div>
-          <button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);width:28px;height:28px;flex-shrink:0" onclick="eliminaDispDocente('${d.ID}')">&#10005;</button>
-        </div>`;
+        html+=`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .85rem;background:${bg};border-bottom:1px solid var(--border)"><div style="width:3px;height:32px;background:${periodoColor};border-radius:2px;flex-shrink:0"></div><div style="flex:1"><div style="font-weight:600;font-size:.85rem">${nomGiorno}</div><div style="font-family:var(--font-head);font-size:.9rem;font-weight:700;color:${periodoColor}">${esc(d.ORA_INIZIO)} – ${esc(d.ORA_FINE)}</div>${d.NOTE?`<div style="font-size:.72rem;color:var(--muted);font-style:italic">${esc(d.NOTE)}</div>`:''}</div><button class="btn btn-icon" style="font-size:.75rem;color:var(--muted);width:28px;height:28px;flex-shrink:0" onclick="eliminaDispDocente('${d.ID}')">&#10005;</button></div>`;
       });
       html+=`</div>`;
     }
@@ -1163,7 +1181,419 @@ async function salvaDispDocente(){
 }
 async function eliminaDispDocente(id){if(!confirm("Eliminare questa disponibilita'?"))return;const res=await api("eliminaDispDocente",{id});if(res.success)await _caricaDispDocente();else alert(res.message);}
 
-/* NOTIFICHE */
+/* ============================
+   CALENDARIO EVENTI
+   ============================ */
+const MESI_IT=["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+const MESI_SHORT_IT=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+const TIPO_COLORS={TUTOR:"#34d399",STUDENTE:"#60a5fa",DOCENTE:"#a78bfa",ALTRO:"#fbbf24"};
+let _evFiltro="tutti"; // tutti / futuri / passati / mese
+
+async function renderEventi(){
+  const r=_user.ruolo;
+  const pane=$("pane-eventi");
+  const canEdit=["COORDINATORE","ORIENTATRICE"].includes(r);
+  pane.innerHTML=`<div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+    <div><h2>&#128197; Calendario eventi</h2></div>
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+      ${canEdit?`<button class="btn btn-primary btn-sm" onclick="apriNuovoEvento()">&#10133; Nuovo</button>`:''}
+      <button class="btn btn-outline btn-sm" onclick="esportaEventiExcel()">&#128229; Esporta</button>
+    </div>
+  </div>
+  <div class="tab-row" style="margin-bottom:1rem">
+    <button class="tab-btn active" id="evtab-tutti" onclick="filtraEventi('tutti',this)">Tutti</button>
+    <button class="tab-btn" id="evtab-futuri" onclick="filtraEventi('futuri',this)">Prossimi</button>
+    <button class="tab-btn" id="evtab-passati" onclick="filtraEventi('passati',this)">Passati</button>
+  </div>
+  <div id="ev-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  _evFiltro="tutti";
+  await _caricaEventi();
+}
+
+async function _caricaEventi(){
+  const cont=$("ev-list");if(!cont)return;
+  cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res=await api("getEventi",{});
+  if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  _eventiCache=res.eventi||[];
+  _renderListaEventi();
+}
+
+function filtraEventi(filtro,btn){
+  _evFiltro=filtro;
+  document.querySelectorAll("#pane-eventi .tab-btn").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  _renderListaEventi();
+}
+
+function _renderListaEventi(){
+  const cont=$("ev-list");if(!cont)return;
+  const oggi=todayISO();
+  let lista=_eventiCache.slice();
+  if(_evFiltro==="futuri")lista=lista.filter(e=>e.data>=oggi);
+  else if(_evFiltro==="passati")lista=lista.filter(e=>e.data<oggi);
+  if(!lista.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun evento trovato.</div>`;return;}
+
+  // Raggruppa per mese
+  const perMese={};
+  lista.forEach(e=>{const d=e.data||"";const key=d.substring(0,7);if(!perMese[key])perMese[key]=[];perMese[key].push(e);});
+  const canEdit=["COORDINATORE","ORIENTATRICE"].includes(_user.ruolo);
+  let html="";
+  Object.keys(perMese).sort().forEach(meseKey=>{
+    const parts=meseKey.split("-");
+    const mLabel=parts.length===2?`${MESI_IT[parseInt(parts[1])-1]||parts[1]} ${parts[0]}`:meseKey;
+    html+=`<div class="day-label" style="margin-bottom:.5rem;margin-top:1rem">${mLabel}</div>`;
+    perMese[meseKey].forEach(e=>{
+      const isOggi=e.data===oggi,isFuturo=e.data>oggi;
+      const cls=isOggi?"oggi":isFuturo?"futuro":"passato";
+      const dataFmt=fmtData(e.data);
+      const oraFmt=e.tuttoGiorno?"Tutto il giorno":(e.oraInizio&&e.oraFine?`${e.oraInizio} – ${e.oraFine}`:"");
+      const persCount=e.personale?e.personale.length:0;
+      html+=`<div class="evento-card ${cls}" onclick="apriDettaglioEvento('${e.id}')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
+          <div style="flex:1;min-width:0">
+            <div class="evento-data">&#128197; ${dataFmt}${isOggi?' &middot; <span style="color:var(--gold)">OGGI</span>':''}</div>
+            <div class="evento-titolo">${esc(e.titolo)}</div>
+            <div class="evento-ora">${oraFmt}</div>
+            ${e.descrizione?`<div style="font-size:.78rem;color:var(--muted);margin-top:.25rem">${esc(e.descrizione)}</div>`:''}
+            <div style="margin-top:.4rem;display:flex;flex-wrap:wrap;gap:4px;align-items:center">
+              ${e.richiedePersonale?`<span class="badge badge-purple">&#128100; ${persCount} ${persCount===1?'persona':'persone'}</span>`:''}
+            </div>
+          </div>
+          ${canEdit?`<div style="display:flex;gap:.25rem;flex-shrink:0" onclick="event.stopPropagation()">
+            <button class="btn btn-icon btn-outline" style="font-size:.75rem;width:28px;height:28px" onclick="apriModificaEvento('${e.id}')">&#9998;</button>
+            <button class="btn btn-icon" style="font-size:.75rem;width:28px;height:28px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171" onclick="eliminaEvento('${e.id}')">&#128465;</button>
+          </div>`:''}
+        </div>
+      </div>`;
+    });
+  });
+  cont.innerHTML=html;
+}
+
+function apriDettaglioEvento(id){
+  const e=_eventiCache.find(x=>x.id===id);if(!e)return;
+  const canEdit=["COORDINATORE","ORIENTATRICE"].includes(_user.ruolo);
+  $("ev-detail-title").textContent=e.titolo;
+  const oraFmt=e.tuttoGiorno?"Tutto il giorno":(e.oraInizio&&e.oraFine?`${e.oraInizio} – ${e.oraFine}`:"");
+  let html=`<div style="margin-bottom:1rem">
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:.25rem">&#128197; ${fmtData(e.data)} &nbsp;&#9200; ${oraFmt}</div>
+    ${e.descrizione?`<div style="font-size:.9rem;margin-bottom:.5rem">${esc(e.descrizione)}</div>`:''}
+  </div>`;
+  if(e.richiedePersonale){
+    const pers=e.personale||[];
+    html+=`<div class="divider"></div><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <div class="section-title" style="margin-bottom:0">Personale coinvolto</div>
+      ${canEdit?`<button class="btn btn-outline btn-sm" onclick="apriAggiungiPersonale('${id}')">&#10133; Aggiungi</button>`:''}
+    </div>`;
+    if(!pers.length){html+=`<div style="font-size:.82rem;color:var(--muted);font-style:italic">Nessuna figura assegnata.</div>`;}
+    else{
+      pers.forEach(p=>{
+        const col=TIPO_COLORS[p.tipo]||"var(--muted)";
+        const fascia=p.tuttoEvento?"tutto l'evento":(p.oraInizio&&p.oraFine?`${p.oraInizio}–${p.oraFine}`:"");
+        html+=`<div style="display:flex;align-items:center;gap:.65rem;padding:.5rem 0;border-bottom:1px solid var(--border)">
+          <span style="min-width:60px;text-align:center;font-size:.7rem;font-weight:700;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:6px;padding:.15rem .35rem;color:${col}">${esc(p.tipo)}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:.85rem">${esc(p.nome||p.email||'')}</div>
+            ${p.email&&p.email!==p.nome?`<div style="font-size:.7rem;color:var(--muted)">${esc(p.email)}</div>`:''}
+            <div style="font-size:.72rem;color:var(--muted)">${fascia}</div>
+          </div>
+          ${canEdit?`<button class="btn btn-icon" style="font-size:.72rem;color:var(--muted);width:26px;height:26px;flex-shrink:0" onclick="rimuoviPersonale('${p.id}','${id}')">&#10005;</button>`:''}
+        </div>`;
+      });
+    }
+  }
+  $("ev-detail-body").innerHTML=html;
+  openModal("modal-evento-detail");
+}
+
+/* Form crea/modifica evento */
+function apriNuovoEvento(){
+  _evFigureLocali=[];
+  $("ev-edit-id").value="";
+  $("modal-evento-title").textContent="Nuovo evento";
+  $("ev-titolo").value="";$("ev-desc").value="";$("ev-data").value=todayISO();
+  $("ev-tutto-giorno").checked=false;$("ev-richiede-pers").checked=false;
+  $("ev-ini").value="09:00";$("ev-fin").value="13:00";
+  sh("ev-orario-fields");hd("ev-personale-section");
+  $("ev-fig-tipo").value="";$("ev-fig-lista-wrap").classList.add("hide");$("ev-fig-nome-wrap").classList.add("hide");
+  document.querySelectorAll("#modal-evento .chip-group .chip").forEach(c=>c.classList.remove("selected"));
+  $("ev-fig-tutto").checked=true;hd("ev-fig-orario");
+  hideErr("ev-err");_renderFigureLocali();
+  openModal("modal-evento");
+}
+
+function apriModificaEvento(id){
+  const e=_eventiCache.find(x=>x.id===id);if(!e)return;
+  _evFigureLocali=[];
+  $("ev-edit-id").value=id;
+  $("modal-evento-title").textContent="Modifica evento";
+  $("ev-titolo").value=e.titolo||"";$("ev-desc").value=e.descrizione||"";$("ev-data").value=e.data||"";
+  $("ev-tutto-giorno").checked=!!e.tuttoGiorno;toggleTuttoGiorno();
+  $("ev-ini").value=e.oraInizio||"09:00";$("ev-fin").value=e.oraFine||"13:00";
+  $("ev-richiede-pers").checked=!!e.richiedePersonale;toggleRichiedePersonale();
+  document.querySelectorAll("#modal-evento .chip-group .chip").forEach(c=>c.classList.remove("selected"));
+  $("ev-fig-tipo").value="";$("ev-fig-lista-wrap").classList.add("hide");$("ev-fig-nome-wrap").classList.add("hide");
+  $("ev-fig-tutto").checked=true;hd("ev-fig-orario");
+  hideErr("ev-err");_renderFigureLocali();
+  openModal("modal-evento");
+}
+
+function toggleTuttoGiorno(){
+  if($("ev-tutto-giorno").checked){hd("ev-orario-fields");}else{sh("ev-orario-fields");}
+}
+function toggleRichiedePersonale(){
+  if($("ev-richiede-pers").checked){sh("ev-personale-section");_caricaPersonaleListe();}else{hd("ev-personale-section");}
+}
+let _persListeLoaded=false;
+async function _caricaPersonaleListe(){
+  if(_persListeLoaded)return;
+  const res=await api("getPersonaleListe",{});
+  if(res.success){_personaleListe=res;_persListeLoaded=true;}
+}
+function selTipoFigura(el,tipo){
+  document.querySelectorAll("#modal-evento .chip-group .chip").forEach(c=>c.classList.remove("selected"));
+  el.classList.add("selected");
+  $("ev-fig-tipo").value=tipo;
+  if(tipo==="ALTRO"){sh("ev-fig-nome-wrap");hd("ev-fig-lista-wrap");}
+  else{hd("ev-fig-nome-wrap");sh("ev-fig-lista-wrap");_buildPersonaLista(tipo);}
+}
+function _buildPersonaLista(tipo){
+  const sel=$("ev-fig-lista");sel.innerHTML='<option value="">-- Seleziona --</option>';
+  let lista=[];
+  if(tipo==="TUTOR")lista=_personaleListe.tutor||[];
+  else if(tipo==="DOCENTE")lista=_personaleListe.docenti||[];
+  else if(tipo==="STUDENTE")lista=_personaleListe.studenti||[];
+  lista.forEach(p=>{const o=document.createElement("option");o.value=p.email||"";o.dataset.nome=p.nome||"";o.textContent=p.nome+(p.annualita?" ("+p.annualita+"° anno)":"");sel.appendChild(o);});
+}
+function toggleFigTuttoEvento(){
+  if($("ev-fig-tutto").checked){hd("ev-fig-orario");}else{sh("ev-fig-orario");}
+}
+function aggiungiFiguraLocale(){
+  const tipo=$("ev-fig-tipo").value;
+  if(!tipo){alert("Seleziona il tipo di figura.");return;}
+  let email="",nome="";
+  if(tipo==="ALTRO"){nome=$("ev-fig-nome").value.trim();if(!nome){alert("Inserisci il nome.");return;}}
+  else{const sel=$("ev-fig-lista");email=sel.value;if(!email){alert("Seleziona la persona.");return;}nome=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].dataset.nome||sel.options[sel.selectedIndex].text:email;}
+  const tuttoEvento=$("ev-fig-tutto").checked;
+  const oraIni=tuttoEvento?"":$("ev-fig-ini").value;
+  const oraFin=tuttoEvento?"":$("ev-fig-fin").value;
+  if(!tuttoEvento&&(!oraIni||!oraFin)){alert("Inserisci la fascia oraria.");return;}
+  _evFigureLocali.push({tipo,email,nome,tuttoEvento,oraInizio:oraIni,oraFine:oraFin});
+  _renderFigureLocali();
+  // reset selezione
+  document.querySelectorAll("#modal-evento .chip-group .chip").forEach(c=>c.classList.remove("selected"));
+  $("ev-fig-tipo").value="";hd("ev-fig-lista-wrap");hd("ev-fig-nome-wrap");$("ev-fig-nome").value="";
+  if($("ev-fig-lista"))$("ev-fig-lista").value="";
+  $("ev-fig-tutto").checked=true;hd("ev-fig-orario");
+}
+function _renderFigureLocali(){
+  const cont=$("ev-figure-list");if(!cont)return;
+  if(!_evFigureLocali.length){cont.innerHTML='';return;}
+  const TIPO_BG={TUTOR:"rgba(52,211,153,.15)",STUDENTE:"rgba(96,165,250,.15)",DOCENTE:"rgba(167,139,250,.15)",ALTRO:"rgba(251,191,36,.15)"};
+  cont.innerHTML=_evFigureLocali.map((f,i)=>{
+    const col=TIPO_COLORS[f.tipo]||"var(--muted)";
+    const fascia=f.tuttoEvento?"Tutto l'evento":(f.oraInizio&&f.oraFine?`${f.oraInizio}–${f.oraFine}`:"");
+    return`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:${TIPO_BG[f.tipo]||'var(--surface2)'};border-radius:8px;margin-bottom:4px">
+      <span style="font-size:.7rem;font-weight:700;color:${col};min-width:56px">${f.tipo}</span>
+      <span style="flex:1;font-size:.82rem;font-weight:600">${esc(f.nome)}</span>
+      <span style="font-size:.7rem;color:var(--muted)">${fascia}</span>
+      <button onclick="_evFigureLocali.splice(${i},1);_renderFigureLocali()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0 2px">&#10005;</button>
+    </div>`;
+  }).join("");
+}
+
+async function salvaEvento(){
+  hideErr("ev-err");
+  const editId=$("ev-edit-id").value||"";
+  const titolo=$("ev-titolo").value.trim();
+  const data=$("ev-data").value;
+  const tuttoGiorno=$("ev-tutto-giorno").checked;
+  const oraInizio=$("ev-ini").value;
+  const oraFine=$("ev-fin").value;
+  const richiedePersonale=$("ev-richiede-pers").checked;
+  if(!titolo)return showErr("ev-err","Inserisci il titolo.");
+  if(!data)return showErr("ev-err","Inserisci la data.");
+  if(!tuttoGiorno&&(!oraInizio||!oraFine))return showErr("ev-err","Inserisci orario o seleziona 'Tutto il giorno'.");
+  const payload={titolo,descrizione:$("ev-desc").value.trim(),data,tuttoGiorno,oraInizio:tuttoGiorno?"":oraInizio,oraFine:tuttoGiorno?"":oraFine,richiedePersonale,personale:_evFigureLocali};
+  let res;
+  if(editId){res=await api("modificaEvento",{...payload,id:editId});}
+  else{res=await api("creaEvento",payload);}
+  if(!res.success)return showErr("ev-err",res.message||"Errore nel salvataggio.");
+  chiudiModal("modal-evento");
+  await _caricaEventi();
+}
+
+async function eliminaEvento(id){
+  if(!confirm("Eliminare questo evento? Il personale associato verrà rimosso."))return;
+  const res=await api("eliminaEvento",{id});
+  if(res.success)await _caricaEventi();
+  else alert(res.message);
+}
+
+// Aggiunta personale dopo la creazione (dal dettaglio)
+let _addPersEventoId="";
+async function apriAggiungiPersonale(idEvento){
+  _addPersEventoId=idEvento;
+  chiudiModal("modal-evento-detail");
+  _evFigureLocali=[];
+  const e=_eventiCache.find(x=>x.id===idEvento);
+  $("ev-edit-id").value="";
+  $("modal-evento-title").textContent="Aggiungi personale";
+  $("ev-titolo").value=e?e.titolo:"";
+  $("ev-desc").value="";
+  $("ev-data").value=e?e.data:"";
+  $("ev-tutto-giorno").checked=e?!!e.tuttoGiorno:false;
+  $("ev-ini").value=e&&e.oraInizio?e.oraInizio:"09:00";
+  $("ev-fin").value=e&&e.oraFine?e.oraFine:"13:00";
+  // blocca modifica campi base, mostra solo sezione personale
+  ["ev-titolo","ev-desc","ev-data","ev-ini","ev-fin"].forEach(id=>{$(id).disabled=true;});
+  $("ev-tutto-giorno").disabled=true;$("ev-richiede-pers").disabled=true;
+  $("ev-richiede-pers").checked=true;
+  sh("ev-personale-section");hd("ev-orario-fields");
+  document.querySelectorAll("#modal-evento .chip-group .chip").forEach(c=>c.classList.remove("selected"));
+  $("ev-fig-tipo").value="";hd("ev-fig-lista-wrap");hd("ev-fig-nome-wrap");$("ev-fig-tutto").checked=true;hd("ev-fig-orario");
+  hideErr("ev-err");_renderFigureLocali();
+  await _caricaPersonaleListe();
+  // overwrite bottone salva
+  document.querySelector("#modal-evento .btn-primary").onclick=salvaPersonaleAggiuntivo;
+  openModal("modal-evento");
+}
+
+async function salvaPersonaleAggiuntivo(){
+  hideErr("ev-err");
+  if(!_evFigureLocali.length)return showErr("ev-err","Aggiungi almeno una figura.");
+  const res=await api("aggiungiPersonaleEvento",{idEvento:_addPersEventoId,persone:_evFigureLocali});
+  if(!res.success)return showErr("ev-err",res.message||"Errore.");
+  // reset button
+  document.querySelector("#modal-evento .btn-primary").onclick=salvaEvento;
+  ["ev-titolo","ev-desc","ev-data","ev-ini","ev-fin"].forEach(id=>{$(id).disabled=false;});
+  $("ev-tutto-giorno").disabled=false;$("ev-richiede-pers").disabled=false;
+  chiudiModal("modal-evento");
+  await _caricaEventi();
+  apriDettaglioEvento(_addPersEventoId);
+}
+
+async function rimuoviPersonale(persId,evId){
+  if(!confirm("Rimuovere questa figura?"))return;
+  const res=await api("rimuoviPersonaleEvento",{id:persId});
+  if(res.success){await _caricaEventi();chiudiModal("modal-evento-detail");apriDettaglioEvento(evId);}
+  else alert(res.message);
+}
+
+/* ===== EXPORT EXCEL EVENTI (CSV scaricabile) ===== */
+function esportaEventiExcel(){
+  const oggi=todayISO();
+  let lista=_eventiCache.slice();
+  if(!lista.length){alert("Nessun evento da esportare.");return;}
+  const rows=[["Data","Titolo","Descrizione","Ora inizio","Ora fine","Tutto il giorno","Tipo figura","Nome/Email figura","Fascia oraria figura","Ore"]];
+  lista.forEach(e=>{
+    const pers=e.personale||[];
+    if(!pers.length){
+      const ore=(!e.tuttoGiorno&&e.oraInizio&&e.oraFine)?(_parseMinutes(e.oraFine)-_parseMinutes(e.oraInizio))/60:"";
+      rows.push([fmtData(e.data),e.titolo,e.descrizione||"",e.oraInizio||"",e.oraFine||"",e.tuttoGiorno?"SI":"NO","","","",ore]);
+    } else {
+      pers.forEach(p=>{
+        let ore="";
+        if(p.tuttoEvento&&!e.tuttoGiorno&&e.oraInizio&&e.oraFine)ore=Math.round((_parseMinutes(e.oraFine)-_parseMinutes(e.oraInizio))/60*10)/10;
+        else if(!p.tuttoEvento&&p.oraInizio&&p.oraFine)ore=Math.round((_parseMinutes(p.oraFine)-_parseMinutes(p.oraInizio))/60*10)/10;
+        const fascia=p.tuttoEvento?"Tutto l'evento":(p.oraInizio&&p.oraFine?p.oraInizio+"–"+p.oraFine:"");
+        rows.push([fmtData(e.data),e.titolo,e.descrizione||"",e.oraInizio||"",e.oraFine||"",e.tuttoGiorno?"SI":"NO",p.tipo,p.nome||p.email||"",fascia,ore]);
+      });
+    }
+  });
+  const csv=rows.map(r=>r.map(c=>`"${String(c||"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
+  const bom="\uFEFF";
+  const blob=new Blob([bom+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="eventi_ITS.csv";document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+/* ============================
+   CONTATTI (solo ORIENTATRICE)
+   ============================ */
+let _contattiStudenti=[],_contattiDocenti=[];
+let _currentContattiTab="studenti";
+
+function switchPaneContatti(tab){switchPane("contatti");setTimeout(()=>_switchContattiTab(tab),50);}
+
+async function renderContatti(){
+  const pane=$("pane-contatti");
+  pane.innerHTML=`<div class="page-header"><h2>&#128101; Contatti</h2></div>
+    <div class="tab-row" style="margin-bottom:1rem">
+      <button class="tab-btn active" id="ctab-studenti" onclick="_switchContattiTab('studenti',this)">Studenti</button>
+      <button class="tab-btn" id="ctab-docenti" onclick="_switchContattiTab('docenti',this)">Docenti</button>
+    </div>
+    <div class="form-group" style="margin-bottom:.75rem">
+      <input type="search" id="contatti-search" placeholder="&#128269; Cerca per nome..." oninput="_renderContattiLista()">
+    </div>
+    <div id="contatti-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  await _assicuraStudenti();
+  _contattiStudenti=_studenti;
+  const dr=await api("getDocenti",{});
+  _contattiDocenti=(dr.docenti||[]).filter(d=>d.email&&d.email.includes("@")&&!["coordinatore","tutor","orientatrice","orientatrici"].includes(String(d.materia||"").toLowerCase()));
+  // de-dup docenti per email
+  const visti={};
+  _contattiDocenti=_contattiDocenti.filter(d=>{const em=String(d.email).toLowerCase();if(visti[em])return false;visti[em]=true;return true;});
+  _currentContattiTab="studenti";
+  _renderContattiLista();
+}
+
+function _switchContattiTab(tab,btn){
+  _currentContattiTab=tab;
+  document.querySelectorAll("#pane-contatti .tab-btn").forEach(b=>b.classList.remove("active"));
+  const target=$("ctab-"+tab)||(btn||null);if(target)target.classList.add("active");
+  if($("ctab-"+tab))$("ctab-"+tab).classList.add("active");
+  _renderContattiLista();
+}
+
+function _renderContattiLista(){
+  const cont=$("contatti-list");if(!cont)return;
+  const query=($("contatti-search")?$("contatti-search").value:"").trim().toLowerCase();
+  let lista=_currentContattiTab==="studenti"?_contattiStudenti:_contattiDocenti;
+  if(query)lista=lista.filter(p=>(p.nome||"").toLowerCase().includes(query)||(p.email||"").toLowerCase().includes(query));
+  if(!lista.length){cont.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun contatto trovato.</div>`;return;}
+
+  // Raggruppa per iniziale
+  const perLettera={};
+  lista.forEach(p=>{const l=(p.nome||"?")[0].toUpperCase();if(!perLettera[l])perLettera[l]=[];perLettera[l].push(p);});
+  const AVATAR_COLORS=["#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6","#ec4899","#14b8a6","#f97316"];
+  function avatarColor(nome){let s=0;for(let i=0;i<nome.length;i++)s+=nome.charCodeAt(i);return AVATAR_COLORS[s%AVATAR_COLORS.length];}
+
+  let html="";
+  Object.keys(perLettera).sort().forEach(lettera=>{
+    html+=`<div class="day-label" style="margin-bottom:.25rem;margin-top:.75rem">${lettera}</div><div class="card" style="padding:.25rem .5rem;margin-bottom:.5rem">`;
+    perLettera[lettera].forEach(p=>{
+      const tel=String(p.telefono||"").trim().replace(/\s/g,"");
+      const nomeParts=(p.nome||"").trim().split(" ");
+      const initials=nomeParts.length>=2?(nomeParts[0][0]||""+(nomeParts[1][0]||"")):(p.nome||"?")[0];
+      const col=avatarColor(p.nome||"");
+      html+=`<div class="contatto-row">
+        <div class="contatto-avatar" style="background:${col}20;color:${col}">${initials.toUpperCase()}</div>
+        <div class="contatto-info">
+          <div class="contatto-nome">${esc(p.nome)}</div>
+          <div class="contatto-dettaglio">${_currentContattiTab==="docenti"&&p.materia?esc(p.materia)+' &middot; ':''} ${esc(p.email)}</div>
+          ${_currentContattiTab==="studenti"&&p.annualita?`<div style="font-size:.65rem;color:var(--muted)">${p.annualita}° anno</div>`:''}
+        </div>
+        ${tel?`<div class="tel-actions">
+          <a href="tel:${esc(tel)}" class="tel-btn tel-btn-call" title="Chiama">&#128222;</a>
+          <a href="https://wa.me/${_normalizzaTel(tel)}" target="_blank" rel="noopener" class="tel-btn tel-btn-wa" title="WhatsApp">&#128172;</a>
+        </div>`:tel===''?'<span style="font-size:.65rem;color:var(--muted)">N/D</span>':''}
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  cont.innerHTML=html;
+}
+
+function _normalizzaTel(tel){
+  tel=tel.replace(/\D/g,"");
+  if(tel.startsWith("0"))tel="39"+tel;
+  return tel;
+}
+
+/* ===== NOTIFICHE ===== */
 async function avviaNotifiche(){
   checkNotifiche();_notifInterval=setInterval(checkNotifiche,60000);
   if(!("Notification" in window)||!("serviceWorker" in navigator))return;
@@ -1178,10 +1608,11 @@ async function avviaNotifiche(){
 async function checkNotifiche(){try{const res=await api("getNuoveComunicazioni",{});aggiornaNotifiche(res.count||0);}catch(e){}}
 function aggiornaNotifiche(count){const dot=$("notif-dot");if(dot){count>0?sh("notif-dot"):hd("notif-dot");}const bdot=$("bnav-dot-comunicazioni");if(bdot){count>0?sh("bnav-dot-comunicazioni"):hd("bnav-dot-comunicazioni");}}
 
-/* INIT */
+/* ===== INIT ===== */
 document.addEventListener("DOMContentLoaded",function(){
   [$("in-email"),$("in-pwd")].forEach(function(el){if(el)el.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});});
-  document.querySelectorAll(".modal-overlay").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.add("hide");});});
+  document.querySelectorAll(".modal-overlay").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m){m.classList.add("hide");// reset form stato aggiunta personale se era aperto
+  if(m.id==="modal-evento"){document.querySelector("#modal-evento .btn-primary").onclick=salvaEvento;["ev-titolo","ev-desc","ev-data","ev-ini","ev-fin"].forEach(id=>{$(id)&&($(id).disabled=false);});$("ev-tutto-giorno")&&($("ev-tutto-giorno").disabled=false);$("ev-richiede-pers")&&($("ev-richiede-pers").disabled=false);}}});});
   if(_token&&_user){api("checkSession",{}).then(function(res){if(res&&res.success)avviaDashboard();}).catch(function(){});}
 });
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){console.log("SW registrato:",reg.scope);}).catch(function(e){console.warn("SW non registrato:",e.message);});});}
