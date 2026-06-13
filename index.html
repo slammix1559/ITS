@@ -223,7 +223,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
       <div class="chip" onclick="toggleChip(this,'1anno')">1&#176; anno</div>
       <div class="chip" onclick="toggleChip(this,'2anno')">2&#176; anno</div>
       <div class="chip" onclick="toggleChip(this,'docenti')">Docenti</div>
-      <div class="chip" onclick="toggleChip(this,'team')">Team</div>
+      <div class="chip" onclick="toggleChip(this,'team')">Tutor</div>
       <div class="chip" onclick="toggleChip(this,'orientatrici')">Orientatrici</div>
     </div>
   </div>
@@ -564,12 +564,12 @@ async function renderComunicazioni(){
   const res=await api("getComunicazioni",{});if(!res.success)return;_comunicazioni=res.comunicazioni||[];renderListaComm();aggiornaNotifiche(0);
 }
 function renderListaComm(){const cont=$("comm-list");if(!_comunicazioni.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>';return;}
-  const DL={tutti:"Tutti",studenti:"Studenti","1anno":"1\u00b0 Anno","2anno":"2\u00b0 Anno",docenti:"Docenti",team:"Team",orientatrici:"Orientatrici"};
+  const DL={tutti:"Tutti",studenti:"Studenti","1anno":"1\u00b0 Anno","2anno":"2\u00b0 Anno",docenti:"Docenti",team:"Tutor",orientatrici:"Orientatrici"};
   cont.innerHTML=_comunicazioni.map(c=>`<div class="comm-card ${c.letta?'':'unread'}" onclick="apriComm('${esc(c.ID)}')"><div class="comm-title">${esc(c.TITOLO)}${!c.letta?' <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>':''}</div><div class="comm-meta"><span>${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DL[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div><div class="comm-preview">${esc(c.TESTO)}</div></div>`).join("");}
 function apriComm(id){const c=_comunicazioni.find(x=>x.ID===id);if(!c)return;$("comm-detail-title").textContent=c.TITOLO;$("comm-detail-meta").textContent=fmtData(c.DATA_CREAZIONE)+" - "+c.DESTINATARI;$("comm-detail-testo").textContent=c.TESTO;openModal("modal-comm-detail");if(!c.letta){api("segnaComunicazioneLetta",{id}).then(()=>{c.letta=true;renderListaComm();checkNotifiche();});}}
 function apriNuovaComunicazione(){$("comm-titolo").value=$("comm-testo").value="";document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));hideErr("comm-err");openModal("modal-nuova-comm");}
 function toggleChip(el){document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
-async function inviaComunicazione(){hideErr("comm-err");const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();const destEl=document.querySelector("#chip-dest .chip.selected");const DM={"Tutti":"tutti","Studenti (tutti)":"studenti","1\u00b0 anno":"1anno","2\u00b0 anno":"2anno","Docenti":"docenti","Team":"team","Orientatrici":"orientatrici"};const d=DM[destEl?.textContent]||"";if(!titolo)return showErr("comm-err","Titolo.");if(!testo)return showErr("comm-err","Testo.");if(!d)return showErr("comm-err","Destinatari.");const res=await api("creaComunicazione",{titolo,testo,destinatari:d});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();}
+async function inviaComunicazione(){hideErr("comm-err");const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();const destEl=document.querySelector("#chip-dest .chip.selected");const DM={"Tutti":"tutti","Studenti (tutti)":"studenti","1\u00b0 anno":"1anno","2\u00b0 anno":"2anno","Docenti":"docenti","Tutor":"team","Orientatrici":"orientatrici"};const d=DM[destEl?.textContent]||"";if(!titolo)return showErr("comm-err","Titolo.");if(!testo)return showErr("comm-err","Testo.");if(!d)return showErr("comm-err","Destinatari.");const res=await api("creaComunicazione",{titolo,testo,destinatari:d});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();}
 
 /* EVENTI */
 const MESI_SHORT=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
