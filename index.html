@@ -120,8 +120,7 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
-</head>
-<body>
+</head><body>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -142,7 +141,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <button class="btn btn-sm btn-outline" onclick="doLogout()">Esci</button>
   </div>
 </nav>
-
 <div id="view-login" class="login-wrap">
   <div class="login-card">
     <div class="login-logo">
@@ -178,7 +176,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     </div>
   </div>
 </div>
-
 <div id="view-dashboard" class="hide">
   <div class="main">
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem" class="fade-in">
@@ -200,10 +197,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <div id="pane-contatti" class="fade-in hide"></div>
   </div>
 </div>
-
-<nav id="bottom-nav" class="bottom-nav hide"></nav>
-
-<!-- MODALI -->
+<nav id="bottom-nav" class="bottom-nav hide"></nav><!-- MODALI -->
 <div id="modal-pwd" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Cambia password</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-pwd')">&#10005;</button></div>
   <div class="form-group"><label>Password attuale</label><input type="password" id="pwd-old" placeholder="Attuale"></div>
@@ -213,7 +207,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="pwd-ok" class="alert alert-success hide" style="margin-bottom:.75rem">Password aggiornata!</div>
   <button class="btn btn-primary" style="width:100%" onclick="cambiaPwd()">Salva</button>
 </div></div>
-
 <div id="modal-nuova-comm" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Nuova comunicazione</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-nuova-comm')">&#10005;</button></div>
   <div class="form-group"><label>Titolo</label><input type="text" id="comm-titolo" placeholder="Oggetto"></div>
@@ -232,7 +225,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="comm-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
   <button class="btn btn-primary" style="width:100%" onclick="inviaComunicazione()">Pubblica</button>
 </div></div>
-
 <div id="modal-disp" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Inserisci disponibilit&#224;</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp')">&#10005;</button></div>
   <div class="form-group"><label>Data</label><input type="date" id="disp-data" onchange="aggiornaSlotOccupati()"></div>
@@ -244,7 +236,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="disp-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
   <button class="btn btn-primary" style="width:100%" onclick="salvaDisponibilita()">Conferma</button>
 </div></div>
-
 <div id="modal-disp-docente" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Disponibilit&#224; docente</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-disp-docente')">&#10005;</button></div>
   <div class="form-group"><label>Periodo</label>
@@ -270,14 +261,11 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="dd-edit-id" data-id=""></div>
   <button class="btn btn-primary" style="width:100%" id="dd-save-btn" onclick="salvaDispDocente()">Salva</button>
 </div></div>
-
 <div id="modal-comm-detail" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4 id="comm-detail-title" style="flex:1;padding-right:1rem"></h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-comm-detail')">&#10005;</button></div>
   <div class="text-muted" id="comm-detail-meta" style="font-size:.78rem;margin-bottom:.75rem"></div>
   <div id="comm-detail-testo" style="font-size:.92rem;line-height:1.7;white-space:pre-wrap"></div>
 </div></div>
-
-<!-- MODALE NUOVO EVENTO -->
 <div id="modal-evento" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Nuovo evento</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-evento')">&#10005;</button></div>
   <div class="form-group"><label>Titolo</label><input type="text" id="ev-titolo" placeholder="Es. Open Day"></div>
@@ -293,8 +281,6 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="ev-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
   <button class="btn btn-primary" style="width:100%" onclick="salvaEvento()">Salva evento</button>
 </div></div>
-
-<!-- MODALE PERSONALE EVENTO ESISTENTE -->
 <div id="modal-ev-pers" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem"><h4>Personale evento</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-ev-pers')">&#10005;</button></div>
   <div class="text-muted" id="pe-ev-title" style="font-size:.8rem;margin-bottom:.75rem"></div>
@@ -304,15 +290,27 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div id="pe-builder"></div>
   <div id="pe-msg" style="margin-top:.5rem"></div>
 </div></div>
-
-<!-- MODALE TELEFONO -->
 <div id="modal-tel" class="modal-overlay hide"><div class="modal-box" style="text-align:center">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4 id="tel-nome"></h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-tel')">&#10005;</button></div>
   <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:800;margin-bottom:1.25rem" id="tel-num"></div>
   <a id="tel-call" href="#" class="btn btn-primary" style="width:100%;margin-bottom:.6rem;padding:.8rem">&#128222; Chiama</a>
   <a id="tel-wa" href="#" target="_blank" rel="noopener" class="btn" style="width:100%;background:#25D366;color:#fff;padding:.8rem">&#128172; Messaggio WhatsApp</a>
 </div></div>
-<script>
+<!-- BANNER ANDROID -->
+<div id="banner-installa" class="hide" style="position:fixed;bottom:70px;left:1rem;right:1rem;z-index:500;background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;box-shadow:0 4px 24px rgba(0,0,0,.4)">
+  <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" style="width:40px;height:40px;border-radius:8px">
+  <div style="flex:1"><div style="font-weight:600;font-size:.9rem">Installa ITSApp</div><div style="font-size:.75rem;color:var(--muted)">Accesso rapido dalla schermata Home</div></div>
+  <button class="btn btn-primary btn-sm" onclick="installaPWA()">Installa</button>
+  <button class="btn btn-icon btn-outline" onclick="this.parentElement.classList.add('hide')" style="flex-shrink:0">&#10005;</button>
+</div>
+<!-- BANNER iOS -->
+<div id="banner-installa-ios" class="hide" style="position:fixed;bottom:70px;left:1rem;right:1rem;z-index:500;background:var(--surface);border:1px solid var(--accent);border-radius:14px;padding:1rem 1.25rem;box-shadow:0 4px 24px rgba(0,0,0,.4)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+    <div style="font-weight:600;font-size:.9rem">Installa ITSApp</div>
+    <button class="btn btn-icon btn-outline" onclick="this.closest('[id]').classList.add('hide')">&#10005;</button>
+  </div>
+  <div style="font-size:.8rem;color:var(--muted);line-height:1.6">Tocca <strong style="color:var(--text)">&#11014;&#65039; Condividi</strong> in basso, poi <strong style="color:var(--text)">"Aggiungi a schermata Home"</strong></div>
+</div><script>
 const API_URL="https://script.google.com/macros/s/AKfycbxI4VsRWppgB2vB1pTwIiNqCy9T7E7kxqnv4l2I8aC92ruOTHqQuE2JQtHtPwmuKEJj/exec";
 const VAPID_PUBLIC_KEY="BF9-vERyvWjeebYpcIjE3ZDFuju-yBroCusMbMnatKX_cYtrwIHIPwCGaRkV0qaH_XnQwQpeKVyHZPxElq1dso0";
 let _token=localStorage.getItem("its_token")||null;
@@ -323,7 +321,7 @@ let _eventiCache=[],_contattiCache=null;
 
 async function api(action,payload){
   let r;
-  try{r=await fetch(API_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,payload:payload||{},token:_token||''})});}
+  try{r=await fetch(API_URL,{method:"POST",redirect:"follow",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,payload:payload||{},token:_token||""})});}
   catch(e){throw new Error("Impossibile raggiungere il server.");}
   let d;
   try{d=await r.json();}catch(e){throw new Error("Risposta server non valida.");}
@@ -346,7 +344,6 @@ function ruoloLabel(r){return{COORDINATORE:"Coordinatore",TUTOR:"Tutor",DOCENTE:
 function showLogin(){HD("form-reset1");HD("form-reset2");SH("form-login");}
 function showReset(){HD("form-login");HD("form-reset2");SH("form-reset1");$("reset-email").value=$("in-email").value||"";}
 
-/* AUTH */
 async function doLogin(){
   hideErr("login-err");
   const email=$("in-email").value.trim(),pwd=$("in-pwd").value;
@@ -396,22 +393,20 @@ function switchPane(name){
   SH("pane-"+name);const b=$("bnav-"+name);if(b)b.classList.add("active");_currentPane=name;
   if(name==="home")renderHome();else if(name==="orario")renderOrario();else if(name==="voti")renderVoti();else if(name==="presenze")renderPresenze();else if(name==="comunicazioni")renderComunicazioni();else if(name==="disponibilita")renderDisponibilita();else if(name==="disponibilita-docente")renderDisponibilitaDocente();else if(name==="disponibilita-coord")renderDisponibilitaCoord();else if(name==="eventi")renderEventi();else if(name==="contatti")renderContatti();
 }
-
-/* HOME */
 async function renderHome(){
   const pane=$("pane-home");pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   try{
     const res=await api("getDashboard",{});if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
-    if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
+    if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?"var(--warning)":"var(--text)"}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
     else if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilit&agrave;</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128198; Eventi</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Comunicazione</button></div>`;}
     else if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Disponib.</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilit&agrave;</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
-    else if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):'<div class="text-muted">Nessuna materia.</div>'}</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
+    else if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):"<div class=\"text-muted\">Nessuna materia.</div>"}</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
     else if(r==="ORIENTATRICE"||r==="ORIENTATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('eventi')"><div class="stat-val" style="color:var(--gold)">${s.eventiFuturi||0}</div><div class="stat-lbl">Eventi futuri</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Calendario eventi</button><button class="btn btn-outline" onclick="switchPane('contatti')">&#128222; Contatti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Comunicazioni</button></div>`;}
     pane.innerHTML=html;
   }catch(e){pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
-/* ORARIO */
+
 function _filtraLezioniDocente(lezioni){if(_user.ruolo!=="DOCENTE")return lezioni;const cognome=(_user.cognome||"").toLowerCase().trim();return lezioni.filter(l=>{const doc=(l.docente||"").toLowerCase();return cognome&&doc.includes(cognome);});}
 function _renderLezioni(lezioni){
   const oggi=todayISO(),perData={};lezioni.forEach(l=>{const key=l.data||l.giornoFull;if(!perData[key])perData[key]=[];perData[key].push(l);});
@@ -430,8 +425,6 @@ async function renderOrario(){
   }catch(e){pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
 async function cambiaOrario(ann,btn){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");const pane=$("pane-orario"),tabs=pane.querySelector(".tab-row");const loader=document.createElement("div");loader.style.cssText="text-align:center;padding:2rem";loader.innerHTML='<div class="spinner"></div>';while(pane.lastChild!==tabs)pane.removeChild(pane.lastChild);pane.appendChild(loader);try{const res=await api("getOrario",{annualita:ann});loader.outerHTML=_renderLezioni(res.lezioni||[]);}catch(e){}}
-
-/* VOTI - compact version */
 let _votiData=null,_selectedStudenteVoti=null,_materieList=[];
 async function _assicuraStudenti(){if(!_studenti.length){const sr=await api("getStudenti",{});_studenti=sr.studenti||[];}}
 async function _assicuraMaterie(){if(_materieList.length)return;const dr=await api("getDocenti",{});const tuttiDoc=dr.docenti||[];if(_user.ruolo==="DOCENTE")_materieList=tuttiDoc.filter(d=>String(d.email||"").toLowerCase()===_user.email.toLowerCase()).map(d=>d.materia).filter(m=>m);if(!_materieList.length)_materieList=[...new Set(tuttiDoc.map(d=>d.materia).filter(m=>m&&!["coordinatore","tutor","orientatrice"].includes(m.toLowerCase())))];}
@@ -439,17 +432,14 @@ async function renderVoti(){
   const pane=$("pane-voti"),r=_user.ruolo;
   if(r==="STUDENTE"){pane.innerHTML=`<div class="page-header"><h2>&#128202; I miei voti</h2></div><div id="voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;await caricaVotiStudente();return;}
   if(r==="COORDINATORE"||r==="TUTOR"){
-    pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">${r==="COORDINATORE"?'<button class="tab-btn active" id="tab-inserisci" onclick="switchVotiTab(\'inserisci\',this)">&#128221; Inserisci</button>':''}<button class="tab-btn ${r==="TUTOR"?"active":""}" id="tab-tabellone" onclick="switchVotiTab('tabellone',this)">&#128203; Tabellone</button>${r==="COORDINATORE"?'<button class="tab-btn" id="tab-consulta" onclick="switchVotiTab(\'consulta\',this)">&#128269; Consulta</button>':''}</div>${r==="COORDINATORE"?'<div id="voti-inserisci-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>':''}<div id="voti-tabellone-pane" class="${r==="COORDINATORE"?"hide":""}"><div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap"><div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div><button class="btn btn-primary" onclick="aggiornaTabellone()">Aggiorna</button></div><div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div></div>${r==="COORDINATORE"?'<div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>':''}`;
+    pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">${r==="COORDINATORE"?'<button class="tab-btn active" id="tab-inserisci" onclick="switchVotiTab(\'inserisci\',this)">&#128221; Inserisci</button>':''}<button class="tab-btn ${r==="TUTOR"?"active":""}" id="tab-tabellone" onclick="switchVotiTab('tabellone',this)">&#128203; Tabellone</button>${r==="COORDINATORE"?'<button class="tab-btn" id="tab-consulta" onclick="switchVotiTab(\'consulta\',this)">&#128269; Consulta</button>':''}</div>${r==="COORDINATORE"?'<div id="voti-inserisci-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>':''}<div id="voti-tabellone-pane" class="${r==="COORDINATORE"?"hide":""}"><div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap"><div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div><button class="btn btn-primary" onclick="aggiornaTabellone()">Aggiorna</button></div><div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div></div>${r==="COORDINATORE"?'<div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>':''}\`;
     await _assicuraStudenti();await _assicuraMaterie();if(r==="COORDINATORE")await renderRegistro();await renderTabellone();return;
   }
-  /* DOCENTE */
   pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">&#128221; Inserisci</button><button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">&#128269; Consulta</button></div><div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>`;
   await _assicuraStudenti();await _assicuraMaterie();await renderRegistro();
 }
-function switchVotiTab(tab,btn){document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)HD("voti-"+p+"-pane");});const target=$("voti-"+tab+"-pane");if(target)SH("voti-"+tab+"-pane");if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"\u00b0)";sel.appendChild(o);});}}
+function switchVotiTab(tab,btn){document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)HD("voti-"+p+"-pane");});const target=$("voti-"+tab+"-pane");if(target)SH("voti-"+tab+"-pane");if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"°)";sel.appendChild(o);});}}
 async function aggiornaTabellone(){await renderTabellone();}
-
-/* Tabellone */
 async function renderTabellone(){
   const cont=$("tabellone-content");if(!cont)return;cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   const annoSel=$("tab-anno-sel")?$("tab-anno-sel").value:"tutti";const res=await api("getVoti",{emailStudente:null});if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
@@ -461,13 +451,11 @@ async function renderTabellone(){
   function colM(m){if(m>=28)return"var(--success)";if(m>=24)return"var(--accent2)";if(m>=18)return"var(--warning)";return"var(--danger)";}
   function fV(v){return v%1===0?String(v):v.toFixed(1);}
   let html=`<div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border)"><table style="border-collapse:collapse;min-width:100%;font-size:.78rem"><thead><tr style="background:var(--surface2)"><th style="position:sticky;left:0;z-index:2;background:var(--surface2);padding:.6rem .8rem;text-align:left;border-bottom:2px solid var(--border);min-width:150px;font-size:.72rem;color:var(--muted);text-transform:uppercase">Studente</th>`;
-  materie.forEach(m=>{const abbr=m.length>11?m.substring(0,10)+"\u2026":m;html+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;font-size:.68rem;color:var(--muted);text-transform:uppercase" title="${esc(m)}">${esc(abbr)}</th>`;});
+  materie.forEach(m=>{const abbr=m.length>11?m.substring(0,10)+"…":m;html+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;font-size:.68rem;color:var(--muted);text-transform:uppercase" title="${esc(m)}">${esc(abbr)}</th>`;});
   html+=`<th style="padding:.5rem .7rem;border-bottom:2px solid var(--border);border-left:2px solid rgba(59,130,246,.5);text-align:center;font-size:.72rem;color:var(--accent2);text-transform:uppercase">Media</th></tr></thead><tbody>`;
-  studenti.forEach((s,idx)=>{const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.5rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;font-size:.84rem">${esc(s.nome)}</td>`;let somma=0,cnt=0;materie.forEach(m=>{const vals=votiSt[m]||[];const media=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:null;if(media!==null){somma+=media;cnt++;}html+=`<td style="background:${bgRow};padding:.4rem .3rem;border-bottom:1px solid var(--border);border-left:1px solid var(--border);text-align:center">${media!==null?`<span style="font-family:var(--font-head);font-weight:700;color:${colM(media)}">${fV(media)}</span>`:'<span style="color:rgba(255,255,255,.12)">&mdash;</span>'}</td>`;});const mg=cnt?Math.round((somma/cnt)*100)/100:null;html+=`<td style="background:${bgRow};padding:.5rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center">${mg!==null?`<span style="font-family:var(--font-head);font-size:1rem;font-weight:800;color:${colM(mg)}">${fV(mg)}</span>`:'&mdash;'}</td></tr>`;});
+  studenti.forEach((s,idx)=>{const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.5rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;font-size:.84rem">${esc(s.nome)}</td>`;let somma=0,cnt=0;materie.forEach(m=>{const vals=votiSt[m]||[];const media=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:null;if(media!==null){somma+=media;cnt++;}html+=`<td style="background:${bgRow};padding:.4rem .3rem;border-bottom:1px solid var(--border);border-left:1px solid var(--border);text-align:center">${media!==null?`<span style="font-family:var(--font-head);font-weight:700;color:${colM(media)}">${fV(media)}</span>`:"<span style=\"color:rgba(255,255,255,.12)\">&mdash;</span>"}</td>`;});const mg=cnt?Math.round((somma/cnt)*100)/100:null;html+=`<td style="background:${bgRow};padding:.5rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center">${mg!==null?`<span style="font-family:var(--font-head);font-size:1rem;font-weight:800;color:${colM(mg)}">${fV(mg)}</span>`:"&mdash;"}</td></tr>`;});
   html+=`</tbody></table></div>`;cont.innerHTML=html;
 }
-
-/* Registro inserimento */
 async function renderRegistro(){
   const pane=$("voti-inserisci-pane")||$("voti-registro-pane");if(!pane)return;
   if(!_materieList.length){pane.innerHTML='<div class="alert alert-danger">Nessuna materia.</div>';return;}
@@ -485,7 +473,7 @@ async function apriRegistro(){
   const vm={};tuttiVoti.filter(v=>(v.MATERIA||"").toLowerCase()===materia.toLowerCase()).forEach(v=>{const em=String(v.EMAIL_STUDENTE||"").toLowerCase();if(!vm[em])vm[em]=[];vm[em].push(v);});
   let html=`<div class="section-title">${esc(materia)} &middot; ${stud.length} studenti</div><div class="card" style="padding:.25rem .5rem">`;
   stud.forEach(s=>{const em=s.email.toLowerCase(),vs=vm[em]||[];const media=vs.length?Math.round((vs.reduce((a,v)=>a+(parseFloat(v.VOTO)||0),0)/vs.length)*10)/10:null;
-    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.5rem"><div style="flex:1"><span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span></div>${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)}">&empty; ${media}</span>`:''}<input type="number" min="0" max="30" step="0.5" placeholder="&mdash;" data-email="${esc(em)}" style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0"></div></div>`;});
+    html+=`<div style="padding:.55rem .25rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.5rem"><div style="flex:1"><span style="font-weight:600;font-size:.88rem">${esc(s.nome)}</span></div>${media!==null?`<span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${mediaColor(media)}">&empty; ${media}</span>`:""}<input type="number" min="0" max="30" step="0.5" placeholder="&mdash;" data-email="${esc(em)}" style="width:58px;padding:.35rem .4rem;font-size:.88rem;text-align:center;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);flex-shrink:0"></div></div>`;});
   html+=`</div><div style="margin-top:1rem"><div class="form-group" style="margin-bottom:0"><label>Note</label><input type="text" id="reg-note-globale" placeholder="Opzionale"></div></div><button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="salvaRegistro('${esc(materia)}')">&#128190; Salva voti</button><div id="reg-save-msg" style="margin-top:.5rem"></div>`;
   $("registro-table").innerHTML=html;
 }
@@ -501,7 +489,6 @@ async function salvaRegistro(materia){
 async function caricaVotiStudente(){$("voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{});if(!res.success){$("voti-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}const pm=res.perMateria||[];if(!pm.length){$("voti-content").innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});$("voti-content").innerHTML=html;}
 async function cambiaStudenteVoti(email){_selectedStudenteVoti=email||null;const cont=$("voti-content");if(!email){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}if(cont)cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{emailStudente:email});const pm=res.perMateria||[];if(!pm.length){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});if(cont)cont.innerHTML=html;}
 async function eliminaVotoById(id){if(!confirm("Eliminare voto?"))return;await api("eliminaVoto",{id});if(_currentPane==="voti")renderVoti();}
-/* PRESENZE */
 let _selectedStudentePresenze=null,_presenzeAll=[],_appelloStato={},_filtroPresTipo=null;
 const ORE_TOTALI_JS={"1":500,"2":500};
 async function renderPresenze(){
@@ -556,7 +543,7 @@ function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:
 function _htmlStats(res){const s=res.stats||{},ot=ORE_TOTALI_JS[_user.annualita||"1"]||500,perc=Math.min(100,Math.round((s.orePresenti/ot)*100*10)/10)||0;return`<div class="grid-3" style="margin-bottom:1rem"><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('ASSENZA')"><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('RITARDO')"><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('USCITA')"><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div></div></div><div class="card" style="margin-bottom:1rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${perc}%"></div></div></div>`;}
 function _htmlLista(presenze,filtro,conElimina){let lista=presenze.slice();if(filtro)lista=lista.filter(p=>p.TIPO===filtro);const TL={PRESENZA:"P",ASSENZA:"A",RITARDO:"R",USCITA:"U"},TC={PRESENZA:"var(--success)",ASSENZA:"var(--danger)",RITARDO:"var(--warning)",USCITA:"#a78bfa"};if(!lista.length)return'<div class="text-muted" style="text-align:center;padding:1rem">Nessuna registrazione.</div>';let html='<div class="card" style="padding:.3rem .6rem">';lista.slice().reverse().forEach(p=>{const col=TC[p.TIPO]||"var(--muted)";html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .2rem;border-bottom:1px solid var(--border)"><span style="width:24px;height:24px;border-radius:6px;background:${col};color:${p.TIPO==='RITARDO'?'#000':'#fff'};display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.75rem;flex-shrink:0">${TL[p.TIPO]||"?"}</span><div style="flex:1"><span style="font-size:.82rem">${esc(p.dataIT||fmtData(p.DATA))}</span></div><div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>${conElimina&&["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.7rem;width:24px;height:24px" onclick="eliminaPresenzaById('${p.ID}')">&#10005;</button>`:''}</div>`;});html+='</div>';return html;}
 async function eliminaPresenzaById(id){if(!confirm("Eliminare?"))return;await api("eliminaPresenza",{id});await caricaPresenze(_selectedStudentePresenze);}
-/* COMUNICAZIONI */
+
 let _comunicazioni=[];
 async function renderComunicazioni(){
   const pane=$("pane-comunicazioni"),r=_user.ruolo;
@@ -572,7 +559,6 @@ function apriNuovaComunicazione(){$("comm-titolo").value=$("comm-testo").value="
 function toggleChip(el){document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
 async function inviaComunicazione(){hideErr("comm-err");const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();const destEl=document.querySelector("#chip-dest .chip.selected");const DM={"Tutti":"tutti","Studenti (tutti)":"studenti","1\u00b0 anno":"1anno","2\u00b0 anno":"2anno","Docenti":"docenti","Tutor":"team","Orientatrici":"orientatrici"};const d=DM[destEl?.textContent]||"";if(!titolo)return showErr("comm-err","Titolo.");if(!testo)return showErr("comm-err","Testo.");if(!d)return showErr("comm-err","Destinatari.");const res=await api("creaComunicazione",{titolo,testo,destinatari:d});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();}
 
-/* EVENTI */
 const MESI_SHORT=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 const GG_SHORT=["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
 let _neFigure=[];
@@ -635,14 +621,11 @@ async function salvaEvento(){
   const res=await api("creaEvento",payload);if(!res.success)return showErr("ev-err",res.message);chiudiModal("modal-evento");renderEventi();
 }
 async function eliminaEvento(id){if(!confirm("Eliminare evento?"))return;await api("eliminaEvento",{id});renderEventi();}
-
-/* PERSONALE EVENTO ESISTENTE */
 let _peEventoId=null;
 async function apriPersonaleEvento(evId){
   _peEventoId=evId;const ev=_eventiCache.find(e=>e.id===evId);if(!ev)return;
   $("pe-ev-title").textContent=ev.titolo+" - "+fmtData(ev.data);
-  _renderPeList(ev);_renderNeBuilder("pe-builder");openModal("modal-ev-pers");
-  _neFigure=[];
+  _renderPeList(ev);_renderNeBuilder("pe-builder");openModal("modal-ev-pers");_neFigure=[];
 }
 function _renderPeList(ev){
   const cont=$("pe-list");const pers=ev.personale||[];
@@ -650,7 +633,6 @@ function _renderPeList(ev){
   cont.innerHTML=pers.map(p=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.35rem 0;border-bottom:1px solid var(--border)"><span style="font-weight:600;font-size:.85rem;flex:1">${esc(p.nome)}</span><span style="font-size:.72rem;color:var(--muted)">${p.tuttoEvento?"tutto":esc(p.oraInizio)+"-"+esc(p.oraFine)}</span><button class="btn btn-icon" style="width:24px;height:24px;font-size:.7rem;color:var(--danger)" onclick="rimuoviPers('${p.id}')">&#10005;</button></div>`).join("");
 }
 async function rimuoviPers(id){if(!confirm("Rimuovere?"))return;await api("rimuoviPersonaleEvento",{id});const res=await api("getEventi",{});_eventiCache=res.eventi||[];const ev=_eventiCache.find(e=>e.id===_peEventoId);if(ev)_renderPeList(ev);_renderListaEventi();}
-/* Override _neAggiungi per pe-builder: aggiunge direttamente via API */
 const _origNeAggiungi=_neAggiungi;
 function _neAggiungiPE(){
   const contId="pe-builder",tipo=$(contId+"-tipo").value;if(!tipo)return;
@@ -668,12 +650,9 @@ function _neAggiungiPE(){
     setTimeout(()=>{$("pe-msg").innerHTML="";},1500);
   });
 }
-/* Patch: when builder is inside pe-builder modal, use API version */
 document.addEventListener("click",function(e){
   if(e.target.closest("#pe-builder")&&e.target.classList.contains("btn-success")){e.preventDefault();e.stopPropagation();_neAggiungiPE();}
 },true);
-
-/* ESPORTA EVENTI EXCEL */
 function esportaEventi(){
   if(!_eventiCache.length){alert("Nessun evento da esportare.");return;}
   const rows=[["Evento","Data","Ora Inizio","Ora Fine","Tutto il giorno","Personale - Nome","Personale - Tipo","Personale - Dalle","Personale - Alle","Ore"]];
@@ -691,7 +670,7 @@ function esportaEventi(){
   const ws=XLSX.utils.aoa_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Eventi");
   XLSX.writeFile(wb,"ITSApp_Eventi_Export.xlsx");
 }
-/* CONTATTI (orientatrici + coordinatore) */
+
 async function renderContatti(){
   const pane=$("pane-contatti");
   pane.innerHTML=`<div class="page-header"><h2>&#128222; Contatti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="tab-btn active" id="ct-studenti" onclick="switchContTab('studenti',this)">Studenti</button><button class="tab-btn" id="ct-docenti" onclick="switchContTab('docenti',this)">Docenti</button></div><div id="contatti-studenti"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div id="contatti-docenti" class="hide"></div>`;
@@ -726,7 +705,6 @@ function apriTelefono(nome,tel){
   openModal("modal-tel");
 }
 
-/* DISPONIBILITA TUTOR */
 const TUTOR_COLORS=[{bg:"rgba(59,130,246,.85)",border:"#3b82f6",text:"#fff"},{bg:"rgba(239,68,68,.85)",border:"#ef4444",text:"#fff"},{bg:"rgba(16,185,129,.85)",border:"#10b981",text:"#fff"},{bg:"rgba(245,158,11,.85)",border:"#f59e0b",text:"#000"},{bg:"rgba(139,92,246,.85)",border:"#8b5cf6",text:"#fff"},{bg:"rgba(236,72,153,.85)",border:"#ec4899",text:"#fff"}];
 let _dispColorMap={},_dispLista=[],_calWeekOffset=0;
 function _getTutorName(email){if(!email)return"";let l=email.split("@")[0].toLowerCase().replace(/\.(docenti|studenti|tutor)$/i,"");if(l.includes("."))l=l.split(".").pop();else if(l.length>1)l=l.slice(1);return l.charAt(0).toUpperCase()+l.slice(1);}
@@ -768,7 +746,6 @@ function apriModalDisp(){$("disp-data").value=todayISO();$("disp-ini").value=$("
 async function salvaDisponibilita(){hideErr("disp-err");const data=$("disp-data").value,ini=$("disp-ini").value,fin=$("disp-fin").value,note=$("disp-note").value;if(!data)return showErr("disp-err","Data.");if(!ini||!fin||ini>=fin)return showErr("disp-err","Orario.");const res=await api("inserisciDisponibilita",{data,oraInizio:ini,oraFine:fin,note});if(!res.success)return showErr("disp-err",res.message);chiudiModal("modal-disp");await _caricaERenderCal();}
 async function rimuoviDisp(id){if(!confirm("Rimuovere?"))return;await api("rimuoviDisponibilita",{id});await _caricaERenderCal();}
 
-/* DISPONIBILITA' DOCENTI */
 const PERIODI_INFO={"1":{label:"1\u00b0 Periodo",mesi:"Set \u2013 Nov",border:"#3b82f6"},"2":{label:"2\u00b0 Periodo",mesi:"Dic \u2013 Feb",border:"#10b981"},"3":{label:"3\u00b0 Periodo",mesi:"Mar \u2013 Mag",border:"#f59e0b"}};
 const GIORNI_INFO={"LUN":"Luned\u00ec","MAR":"Marted\u00ec","MER":"Mercoled\u00ec","GIO":"Gioved\u00ec","VEN":"Venerd\u00ec"};
 const GIORNI_ORDER=["LUN","MAR","MER","GIO","VEN"];
@@ -791,8 +768,6 @@ function _renderGridDD(lista,cont){
 function apriModalDispDoc(id,pre){document.querySelectorAll("#chips-periodo .chip, #chips-giorno .chip").forEach(c=>c.classList.remove("selected"));$("dd-periodo").value=$("dd-giorno").value="";$("dd-note").value="";$("dd-edit-id").dataset.id=id||"";hideErr("dd-err");_buildSlotOpts("dd-ini","14:30");_buildSlotOpts("dd-fin","19:30");if(pre){const idx=parseInt(pre)-1;const chips=document.querySelectorAll("#chips-periodo .chip");if(chips[idx]){chips[idx].classList.add("selected");$("dd-periodo").value=pre;}}openModal("modal-disp-docente");}
 async function salvaDispDocente(){hideErr("dd-err");const per=$("dd-periodo").value,gg=$("dd-giorno").value,ini=$("dd-ini").value,fin=$("dd-fin").value,note=$("dd-note").value;if(!per)return showErr("dd-err","Periodo.");if(!gg)return showErr("dd-err","Giorno.");if(!ini||!fin||ini>=fin)return showErr("dd-err","Orario.");const res=await api("inserisciDispDocente",{periodo:per,giorno:gg,oraInizio:ini,oraFine:fin,note});if(!res.success)return showErr("dd-err",res.message);chiudiModal("modal-disp-docente");await _caricaDispDoc();}
 async function eliminaDD(id){if(!confirm("Eliminare?"))return;await api("eliminaDispDocente",{id});await _caricaDispDoc();}
-
-/* DISPONIBILITA COORD */
 function renderDisponibilitaCoord(){
   const pane=$("pane-disponibilita-coord");
   pane.innerHTML=`<div class="page-header"><h2>&#128198; Disponibilit&agrave;</h2></div><div class="grid-2" style="gap:1rem"><div class="card" style="cursor:pointer" onclick="switchPane('disponibilita')"><div style="font-size:2rem;margin-bottom:.5rem">&#128197;</div><div style="font-family:var(--font-head);font-weight:700">Tutor</div><div style="font-size:.8rem;color:var(--muted)">Calendario settimanale</div></div><div class="card" style="cursor:pointer" onclick="apriDispDocCoord()"><div style="font-size:2rem;margin-bottom:.5rem">&#127979;</div><div style="font-family:var(--font-head);font-weight:700">Docenti</div><div style="font-size:.8rem;color:var(--muted)">Disponibilit&agrave; periodiche</div></div></div>`;
@@ -815,6 +790,31 @@ function filtraDDCoord(){
 }
 async function elimDDCoord(id){if(!confirm("Rimuovere?"))return;await api("eliminaDispDocenteCoord",{id});_dispDocAll=_dispDocAll.filter(d=>d.ID!==id);filtraDDCoord();}
 
+/* ══════ BANNER PWA ══════ */
+let _deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  _deferredPrompt = e;
+  if (!window.matchMedia("(display-mode: standalone)").matches) {
+    const b = document.getElementById("banner-installa");
+    if (b) b.classList.remove("hide");
+  }
+});
+window.addEventListener("appinstalled", function() {
+  const b = document.getElementById("banner-installa");
+  if (b) b.classList.add("hide");
+  _deferredPrompt = null;
+});
+function installaPWA() {
+  if (!_deferredPrompt) return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(function() {
+    _deferredPrompt = null;
+    const b = document.getElementById("banner-installa");
+    if (b) b.classList.add("hide");
+  });
+}
+
 /* NOTIFICHE */
 async function avviaNotifiche(){checkNotifiche();_notifInterval=setInterval(checkNotifiche,60000);if(!("Notification" in window)||!("serviceWorker" in navigator))return;let perm=Notification.permission;if(perm==="default")perm=await Notification.requestPermission();if(perm!=="granted")return;try{_fcmMessaging=firebase.messaging();const swReg=await navigator.serviceWorker.ready;const fcmToken=await _fcmMessaging.getToken({vapidKey:VAPID_PUBLIC_KEY,serviceWorkerRegistration:swReg});if(fcmToken)await api("registraDevice",{subscription:JSON.stringify({fcmToken}),email:_user.email});_fcmMessaging.onMessage(function(p){const n=p.notification||{};if(Notification.permission==="granted")new Notification(n.title||"ITSApp",{body:n.body||"",icon:"https://slammix1559.github.io/ITS/logoITS.png"});checkNotifiche();});}catch(e){console.error("FCM:",e.message);}}
 async function checkNotifiche(){try{const res=await api("getNuoveComunicazioni",{});aggiornaNotifiche(res.count||0);}catch(e){}}
@@ -824,72 +824,13 @@ function aggiornaNotifiche(count){const d=$("notif-dot");if(d){count>0?SH("notif
 document.addEventListener("DOMContentLoaded",function(){
   [$("in-email"),$("in-pwd")].forEach(function(el){if(el)el.addEventListener("keydown",function(e){if(e.key==="Enter")doLogin();});});
   document.querySelectorAll(".modal-overlay").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.add("hide");});});
+  // Banner iOS
+  const isIOS=/iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+  const isStandalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone;
+  if(isIOS&&!isStandalone){const b=document.getElementById("banner-installa-ios");if(b)b.classList.remove("hide");}
   if(_token&&_user){api("checkSession",{}).then(function(res){if(res&&res.success)avviaDashboard();}).catch(function(){});}
 });
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){console.log("SW:",reg.scope);}).catch(function(e){console.warn("SW err:",e.message);});});}
 </script>
-  // ── BANNER INSTALLAZIONE PWA ──
-let _deferredPrompt = null;
-
-window.addEventListener("beforeinstallprompt", function(e) {
-  e.preventDefault();
-  _deferredPrompt = e;
-  // Mostra il banner solo se non già installata
-  if (!window.matchMedia("(display-mode: standalone)").matches) {
-    document.getElementById("banner-installa").classList.remove("hide");
-  }
-});
-
-window.addEventListener("appinstalled", function() {
-  document.getElementById("banner-installa").classList.add("hide");
-  _deferredPrompt = null;
-});
-
-function installaPWA() {
-  if (_deferredPrompt) {
-    _deferredPrompt.prompt();
-    _deferredPrompt.userChoice.then(function(r) {
-      _deferredPrompt = null;
-      document.getElementById("banner-installa").classList.add("hide");
-    });
-  }
-}
-
-// iOS — mostra istruzioni manuali
-const isIOS = /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
-const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
-if (isIOS && !isStandalone) {
-  document.getElementById("banner-installa-ios").classList.remove("hide");
-}
-  <!-- Banner installazione Android -->
-<div id="banner-installa" class="hide" style="
-  position:fixed; bottom:70px; left:1rem; right:1rem; z-index:500;
-  background:var(--surface); border:1px solid var(--accent);
-  border-radius:14px; padding:1rem 1.25rem;
-  display:flex; align-items:center; gap:.75rem;
-  box-shadow:0 4px 24px rgba(0,0,0,.4)">
-  <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" style="width:40px;height:40px;border-radius:8px">
-  <div style="flex:1">
-    <div style="font-weight:600;font-size:.9rem">Installa ITSApp</div>
-    <div style="font-size:.75rem;color:var(--muted)">Accesso rapido dalla schermata Home</div>
-  </div>
-  <button class="btn btn-primary btn-sm" onclick="installaPWA()">Installa</button>
-  <button class="btn btn-icon btn-outline" onclick="this.parentElement.classList.add('hide')" style="flex-shrink:0">✕</button>
-</div>
-
-<!-- Banner installazione iOS -->
-<div id="banner-installa-ios" class="hide" style="
-  position:fixed; bottom:70px; left:1rem; right:1rem; z-index:500;
-  background:var(--surface); border:1px solid var(--accent);
-  border-radius:14px; padding:1rem 1.25rem;
-  box-shadow:0 4px 24px rgba(0,0,0,.4)">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
-    <div style="font-weight:600;font-size:.9rem">Installa ITSApp</div>
-    <button class="btn btn-icon btn-outline" onclick="this.closest('div[id]').classList.add('hide')">✕</button>
-  </div>
-  <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
-    Tocca <strong style="color:var(--text)">⬆️ Condividi</strong> in basso, poi <strong style="color:var(--text)">"Aggiungi a schermata Home"</strong>
-  </div>
-</div>
 </body>
 </html>
