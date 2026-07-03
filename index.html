@@ -861,5 +861,35 @@ const isStandalone = window.matchMedia("(display-mode: standalone)").matches || 
 if (isIOS && !isStandalone) {
   document.getElementById("banner-installa-ios").classList.remove("hide");
 }
+  <!-- Banner installazione Android -->
+<div id="banner-installa" class="hide" style="
+  position:fixed; bottom:70px; left:1rem; right:1rem; z-index:500;
+  background:var(--surface); border:1px solid var(--accent);
+  border-radius:14px; padding:1rem 1.25rem;
+  display:flex; align-items:center; gap:.75rem;
+  box-shadow:0 4px 24px rgba(0,0,0,.4)">
+  <img src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" style="width:40px;height:40px;border-radius:8px">
+  <div style="flex:1">
+    <div style="font-weight:600;font-size:.9rem">Installa ITSApp</div>
+    <div style="font-size:.75rem;color:var(--muted)">Accesso rapido dalla schermata Home</div>
+  </div>
+  <button class="btn btn-primary btn-sm" onclick="installaPWA()">Installa</button>
+  <button class="btn btn-icon btn-outline" onclick="this.parentElement.classList.add('hide')" style="flex-shrink:0">✕</button>
+</div>
+
+<!-- Banner installazione iOS -->
+<div id="banner-installa-ios" class="hide" style="
+  position:fixed; bottom:70px; left:1rem; right:1rem; z-index:500;
+  background:var(--surface); border:1px solid var(--accent);
+  border-radius:14px; padding:1rem 1.25rem;
+  box-shadow:0 4px 24px rgba(0,0,0,.4)">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+    <div style="font-weight:600;font-size:.9rem">Installa ITSApp</div>
+    <button class="btn btn-icon btn-outline" onclick="this.closest('div[id]').classList.add('hide')">✕</button>
+  </div>
+  <div style="font-size:.8rem;color:var(--muted);line-height:1.6">
+    Tocca <strong style="color:var(--text)">⬆️ Condividi</strong> in basso, poi <strong style="color:var(--text)">"Aggiungi a schermata Home"</strong>
+  </div>
+</div>
 </body>
 </html>
