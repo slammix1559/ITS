@@ -791,7 +791,7 @@ function filtraDDCoord(){
 }
 async function elimDDCoord(id){if(!confirm("Rimuovere?"))return;await api("eliminaDispDocenteCoord",{id});_dispDocAll=_dispDocAll.filter(d=>d.ID!==id);filtraDDCoord();}
 
-/* ══════ BANNER PWA ══════ */
+/* BANNER PWA */
 let _deferredPrompt = null;
 window.addEventListener("beforeinstallprompt", function(e) {
   e.preventDefault();
