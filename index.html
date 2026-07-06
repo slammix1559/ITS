@@ -973,7 +973,7 @@ function _notaRigaHtml(c) {
     + (c.email ? "\nEmail: " + c.email : "")
     + (c.telefono ? "\nTel: " + c.telefono : "")
     + (c.note ? "\nNote: " + c.note : ""));
-  var waHref = waNum ? "https://wa.me/" + waNum.replace(/^\+/,"") + "?text=" + waMsg : "https://wa.me/?text=" + waMsg;
+var waHref = "https://wa.me/?text=" + waMsg;
   return '<div style="display:flex;align-items:center;gap:.5rem;padding:.55rem .2rem;border-bottom:1px solid var(--border)">'
     + '<div style="flex:1;min-width:0;cursor:pointer" onclick="apriDettaglioNota(\'' + esc(c.id) + '\')">'
     + '<div style="font-weight:600;font-size:.88rem">' + nomeCompleto + '</div>'
