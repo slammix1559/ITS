@@ -1008,7 +1008,7 @@ function _renderMieNoteCoord() {
       + '<div style="flex:1"><div style="font-weight:600;font-size:.9rem">' + esc(n.titolo) + '</div>'
       + '<div style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem">'
       + esc(n.dataIT) + ' &middot; '
-      + (n.destinatario === "tutti" ? 'Tutti gli orientatori' : '&#128100; ' + esc(n.destinatario))
+      + (n.destinatario === "tutti" ? 'Tutti gli orientatori' : n.destinatario === "nessuno" ? '&#128274; Nota privata' : '&#128100; ' + esc(n.destinatario))
       + '</div>'
       + '<div style="font-size:.84rem;white-space:pre-wrap">' + esc(n.testo) + '</div></div>'
       + '<button class="btn btn-icon" style="width:26px;height:26px;font-size:.7rem;color:var(--danger);flex-shrink:0" onclick="eliminaNoteCoord(\'' + esc(n.id) + '\')">&#10005;</button>'
@@ -1154,19 +1154,32 @@ async function eliminaNota(id) {
 async function apriNuovaNoteCoord() {
   $("nc-titolo").value = $("nc-testo").value = "";
   hideErr("nc-err");
-  // Popola il select con gli orientatori dal foglio team
   var sel = $("nc-dest");
-  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>';
+  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
+    + '<option value="nessuno">Nessuno (nota privata)</option>';
   try {
     var res = await api("getDocenti", {});
     var docenti = res.docenti || [];
-    docenti.filter(function(d){ return d.materia && d.materia.toLowerCase().includes("orientat"); })
-      .forEach(function(d){
-        var opt = document.createElement("option");
-        opt.value = d.email;
-        opt.textContent = d.nome || d.email;
-        sel.appendChild(opt);
-      });
+    // Legge il nome reale dal foglio team (colonna nome)
+    // Il foglio team restituisce materia=ruolo e nome=ruolo per i membri team
+    // Usiamo la chiamata getContatti per avere i nomi reali degli orientatori
+    var resTeam = await api("getContatti", {});
+    // Costruiamo mappa email->nome dal foglio team via getDocenti
+    // I membri orientatori hanno materia="orientatrice" o "orientatore"
+    docenti.filter(function(d){
+      return d.materia && d.materia.toLowerCase().includes("orientat");
+    }).forEach(function(d){
+      var opt = document.createElement("option");
+      opt.value = d.email;
+      // Deriva nome leggibile: rimuove dominio e prefisso
+      var local = d.email.split("@")[0]
+        .replace(/\.(docenti|studenti|tutor)$/i, "")
+        .replace(/\./g, " ");
+      // Capitalizza ogni parola
+      var nomeEmail = local.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      opt.textContent = nomeEmail;
+      sel.appendChild(opt);
+    });
   } catch(e) {}
   sel.value = "tutti";
   openModal("modal-nota-coord");
