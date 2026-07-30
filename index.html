@@ -401,7 +401,7 @@ async function renderHome(){
     const res=await api("getDashboard",{});if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
     if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?"var(--warning)":"var(--text)"}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
-    else if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilit&agrave;</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128198; Eventi</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Comunicazione</button></div>`;}
+    else if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilit&agrave;</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128198; Eventi</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('note')">&#128214; Note orientatori</button></div>`;}
     else if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Disponib.</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilit&agrave;</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
     else if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):"<div class=\"text-muted\">Nessuna materia.</div>"}</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
     else if(r==="ORIENTATRICE"||r==="ORIENTATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('eventi')"><div class="stat-val" style="color:var(--gold)">${s.eventiFuturi||0}</div><div class="stat-lbl">Eventi futuri</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Calendario eventi</button><button class="btn btn-outline" onclick="switchPane('contatti')">&#128222; Contatti</button><button class="btn btn-outline" onclick="switchPane('note')">&#128214; Note</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Comunicazioni</button></div>`;}
@@ -902,35 +902,127 @@ if("serviceWorker" in navigator){window.addEventListener("load",function(){navig
 </div></div>
 
 <script>
-// ======================== NOTE ORIENTATORI ========================
+// ======================== NOTE ========================
 var _noteCache = [];
+var _noteCoordCache = [];
 var _noteVistaPerEnte = false;
 
 async function renderNote() {
   var pane = $("pane-note");
-  pane.innerHTML = '<div class="page-header"><h2>&#128214; Note</h2></div>'
-    + '<div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center">'
-    + '<button class="btn btn-primary btn-sm" onclick="apriNuovaNota()">&#10133; Nuovo</button>'
-    + '<div style="margin-left:auto;display:flex;gap:.4rem">'
-    + '<button class="btn btn-sm" id="btn-vista-cognome" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:.78rem;cursor:pointer" onclick="setVistaNote(false)">A-Z</button>'
-    + '<button class="btn btn-sm" id="btn-vista-ente" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-size:.78rem;cursor:pointer;color:var(--muted)" onclick="setVistaNote(true)">Ente</button>'
-    + '</div></div>'
-    + '<div class="form-group" style="margin-bottom:.75rem">'
-    + '<input type="text" id="note-search" placeholder="Cerca..." oninput="renderListaNota()">'
+  var r = _user.ruolo;
+  var isCoord = r === "COORDINATORE";
+
+  pane.innerHTML = '<div class="page-header"><h2>&#128214; Note orientatori</h2></div>'
+    + '<div style="display:flex;gap:.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap">'
+    + (isCoord
+        ? '<button class="btn btn-primary btn-sm" onclick="apriNuovaNoteCoord()">&#10133; Nuova nota</button>'
+        : '<button class="btn btn-primary btn-sm" onclick="apriNuovaNota()">&#10133; Nuovo contatto</button>')
+    + (!isCoord ? '<div style="margin-left:auto;display:flex;gap:.4rem">'
+        + '<button class="btn btn-sm" id="btn-vista-cognome" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.4rem .8rem;font-size:.78rem;cursor:pointer" onclick="setVistaNote(false)">A-Z</button>'
+        + '<button class="btn btn-sm" id="btn-vista-ente" style="background:transparent;border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-size:.78rem;cursor:pointer;color:var(--muted)" onclick="setVistaNote(true)">Ente</button>'
+        + '</div>' : '')
     + '</div>'
-    + '<div id="note-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>';
-  var res = await api("getNoteOrientatore", {});
-  if (!res.success) { $("note-list").innerHTML = '<div class="alert alert-danger">' + esc(res.message) + '</div>'; return; }
-  _noteCache = res.contatti || [];
-  renderListaNota();
+    + (isCoord
+        ? '<div class="tab-row" style="margin-bottom:1rem">'
+          + '<button class="tab-btn active" id="ntab-rubrica" onclick="switchNoteTab(\'rubrica\',this)">Rubrica orientatori</button>'
+          + '<button class="tab-btn" id="ntab-mienote" onclick="switchNoteTab(\'mienote\',this)">Mie note</button>'
+          + '</div>'
+        : '')
+    + (!isCoord ? '<div class="form-group" style="margin-bottom:.75rem"><input type="text" id="note-search" placeholder="Cerca..." oninput="renderListaNota()"></div>' : '')
+    + '<div id="note-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>'
+    + (isCoord ? '<div id="note-coord-list" class="hide"></div>' : '');
+
+  if (isCoord) {
+    // Carica rubrica orientatori e note coordinatore in parallelo
+    var [res1, res2] = await Promise.all([
+      api("getNoteOrientatore", {}),
+      api("getNoteCoordinatore", {})
+    ]);
+    _noteCache = res1.success ? (res1.contatti || []) : [];
+    _noteCoordCache = res2.success ? (res2.note || []) : [];
+    _renderRubricaCoord();
+  } else {
+    // Carica rubrica orientatore + note del coordinatore per lui
+    var [res1, res2] = await Promise.all([
+      api("getNoteOrientatore", {}),
+      api("getNoteCoordPerOrientatore", {})
+    ]);
+    _noteCache = res1.success ? (res1.contatti || []) : [];
+    _noteCoordCache = res2.success ? (res2.note || []) : [];
+    renderListaNota();
+    // Se ci sono note del coordinatore, mostra sezione dedicata
+    if (_noteCoordCache.length) {
+      var nl = $("note-list");
+      if (nl) {
+        var noteCoordHtml = '<div class="section-title" style="margin-top:1rem">&#128203; Note dal coordinatore</div>'
+          + '<div class="card" style="padding:.5rem .75rem;margin-bottom:1rem">';
+        _noteCoordCache.forEach(function(n) {
+          noteCoordHtml += '<div style="padding:.6rem 0;border-bottom:1px solid var(--border)">'
+            + '<div style="font-weight:600;font-size:.88rem">' + esc(n.titolo) + '</div>'
+            + '<div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">' + esc(n.dataIT) + '</div>'
+            + '<div style="font-size:.85rem;white-space:pre-wrap">' + esc(n.testo) + '</div>'
+            + '</div>';
+        });
+        noteCoordHtml += '</div>';
+        nl.insertAdjacentHTML('beforebegin', noteCoordHtml);
+      }
+    }
+  }
+}
+
+function switchNoteTab(tab, btn) {
+  document.querySelectorAll("#pane-note .tab-btn").forEach(function(b){ b.classList.remove("active"); });
+  btn.classList.add("active");
+  if (tab === "rubrica") { SH("note-list"); HD("note-coord-list"); }
+  else { HD("note-list"); SH("note-coord-list"); _renderMieNoteCoord(); }
+}
+
+function _renderRubricaCoord() {
+  var cont = $("note-list"); if (!cont) return;
+  if (!_noteCache.length) { cont.innerHTML = '<div class="text-muted" style="text-align:center;padding:2rem">Nessun contatto inserito dagli orientatori.</div>'; return; }
+  // Raggruppa per orientatore
+  var perOr = {};
+  _noteCache.forEach(function(c) {
+    var k = c.emailOrientatore || "Sconosciuto";
+    if (!perOr[k]) perOr[k] = [];
+    perOr[k].push(c);
+  });
+  var html = "";
+  Object.keys(perOr).sort().forEach(function(email) {
+    var nome = email.split("@")[0].replace(/\./g," ");
+    html += '<div class="section-title" style="margin-top:.75rem">&#128100; ' + esc(nome) + '</div>'
+      + '<div class="card" style="padding:.25rem .6rem;margin-bottom:.5rem">';
+    perOr[email].forEach(function(c) { html += _notaRigaHtml(c, true); });
+    html += '</div>';
+  });
+  cont.innerHTML = html;
+}
+
+function _renderMieNoteCoord() {
+  var cont = $("note-coord-list"); if (!cont) return;
+  if (!_noteCoordCache.length) { cont.innerHTML = '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna nota inserita.</div>'; return; }
+  var html = '<div class="card" style="padding:.25rem .75rem">';
+  _noteCoordCache.forEach(function(n) {
+    html += '<div style="padding:.65rem 0;border-bottom:1px solid var(--border)">'
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">'
+      + '<div style="flex:1"><div style="font-weight:600;font-size:.9rem">' + esc(n.titolo) + '</div>'
+      + '<div style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem">'
+      + esc(n.dataIT) + ' &middot; '
+      + (n.destinatario === "tutti" ? 'Tutti gli orientatori' : '&#128100; ' + esc(n.destinatario))
+      + '</div>'
+      + '<div style="font-size:.84rem;white-space:pre-wrap">' + esc(n.testo) + '</div></div>'
+      + '<button class="btn btn-icon" style="width:26px;height:26px;font-size:.7rem;color:var(--danger);flex-shrink:0" onclick="eliminaNoteCoord(\'' + esc(n.id) + '\')">&#10005;</button>'
+      + '</div></div>';
+  });
+  html += '</div>';
+  cont.innerHTML = html;
 }
 
 function setVistaNote(perEnte) {
   _noteVistaPerEnte = perEnte;
-  var btnCognome = $("btn-vista-cognome");
-  var btnEnte    = $("btn-vista-ente");
-  if (btnCognome) { btnCognome.style.background = perEnte ? "transparent" : "var(--accent)"; btnCognome.style.color = perEnte ? "var(--muted)" : "#fff"; btnCognome.style.border = perEnte ? "1px solid var(--border)" : "none"; }
-  if (btnEnte)    { btnEnte.style.background = perEnte ? "var(--accent)" : "transparent"; btnEnte.style.color = perEnte ? "#fff" : "var(--muted)"; btnEnte.style.border = perEnte ? "none" : "1px solid var(--border)"; }
+  var btnC = $("btn-vista-cognome"), btnE = $("btn-vista-ente");
+  if (btnC) { btnC.style.background = perEnte ? "transparent" : "var(--accent)"; btnC.style.color = perEnte ? "var(--muted)" : "#fff"; btnC.style.border = perEnte ? "1px solid var(--border)" : "none"; }
+  if (btnE) { btnE.style.background = perEnte ? "var(--accent)" : "transparent"; btnE.style.color = perEnte ? "#fff" : "var(--muted)"; btnE.style.border = perEnte ? "none" : "1px solid var(--border)"; }
   renderListaNota();
 }
 
@@ -939,43 +1031,38 @@ function renderListaNota() {
   var q = ($("note-search") ? $("note-search").value.toLowerCase() : "");
   var lista = _noteCache.filter(function(c) {
     if (!q) return true;
-    return (c.cognome + " " + c.nome + " " + c.ente + " " + c.email + " " + c.telefono).toLowerCase().includes(q);
+    return (c.cognome+" "+c.nome+" "+c.ente+" "+c.email+" "+c.telefono).toLowerCase().includes(q);
   });
   if (!lista.length) { cont.innerHTML = '<div class="text-muted" style="text-align:center;padding:2rem">Nessun contatto trovato.</div>'; return; }
-
   if (_noteVistaPerEnte) {
-    // Raggruppa per ente
     var perEnte = {};
-    lista.forEach(function(c) { var k = c.ente || "(Senza ente)"; if (!perEnte[k]) perEnte[k] = []; perEnte[k].push(c); });
+    lista.forEach(function(c){ var k=c.ente||"(Senza ente)"; if(!perEnte[k])perEnte[k]=[]; perEnte[k].push(c); });
     var html = "";
-    Object.keys(perEnte).sort().forEach(function(ente) {
+    Object.keys(perEnte).sort().forEach(function(ente){
       html += '<div class="section-title" style="margin-top:.75rem">' + esc(ente) + '</div>';
       html += '<div class="card" style="padding:.25rem .6rem;margin-bottom:.5rem">';
-      perEnte[ente].forEach(function(c) { html += _notaRigaHtml(c); });
+      perEnte[ente].forEach(function(c){ html += _notaRigaHtml(c, false); });
       html += '</div>';
     });
     cont.innerHTML = html;
   } else {
-    // Vista A-Z per cognome
     var html = '<div class="card" style="padding:.25rem .6rem">';
-    lista.forEach(function(c) { html += _notaRigaHtml(c); });
+    lista.forEach(function(c){ html += _notaRigaHtml(c, false); });
     html += '</div>';
     cont.innerHTML = html;
   }
 }
 
-function _notaRigaHtml(c) {
-  var waNum = (c.telefono || "").replace(/[^0-9+]/g, "");
-  if (waNum && waNum.charAt(0) === "3") waNum = "+39" + waNum;
+function _notaRigaHtml(c, soloLettura) {
   var nomeCompleto = esc(c.cognome) + " " + esc(c.nome);
   var waMsg = encodeURIComponent("Contatto: " + c.cognome + " " + c.nome
     + (c.ente ? "\nEnte: " + c.ente : "")
     + (c.email ? "\nEmail: " + c.email : "")
     + (c.telefono ? "\nTel: " + c.telefono : "")
     + (c.note ? "\nNote: " + c.note : ""));
-var waHref = "https://wa.me/?text=" + waMsg;
+  var waHref = "https://wa.me/?text=" + waMsg;
   return '<div style="display:flex;align-items:center;gap:.5rem;padding:.55rem .2rem;border-bottom:1px solid var(--border)">'
-    + '<div style="flex:1;min-width:0;cursor:pointer" onclick="apriDettaglioNota(\'' + esc(c.id) + '\')">'
+    + '<div style="flex:1;min-width:0;cursor:pointer" onclick="apriDettaglioNota(\'' + esc(c.id) + '\','+soloLettura+')">'
     + '<div style="font-weight:600;font-size:.88rem">' + nomeCompleto + '</div>'
     + (c.ente ? '<div style="font-size:.72rem;color:var(--muted)">' + esc(c.ente) + '</div>' : '')
     + '</div>'
@@ -983,8 +1070,8 @@ var waHref = "https://wa.me/?text=" + waMsg;
     + '</div>';
 }
 
-function apriDettaglioNota(id) {
-  var c = _noteCache.filter(function(x) { return x.id === id; })[0];
+function apriDettaglioNota(id, soloLettura) {
+  var c = _noteCache.filter(function(x){ return x.id===id; })[0];
   if (!c) return;
   $("nd-title").textContent = c.cognome + " " + c.nome;
   var body = '';
@@ -992,24 +1079,33 @@ function apriDettaglioNota(id) {
   if (c.email)    body += '<div style="margin-bottom:.5rem"><span style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Email</span><div><a href="mailto:' + esc(c.email) + '" style="color:var(--accent)">' + esc(c.email) + '</a></div></div>';
   if (c.telefono) body += '<div style="margin-bottom:.5rem"><span style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Telefono</span><div><a href="tel:' + esc(c.telefono) + '" style="color:var(--accent)">' + esc(c.telefono) + '</a></div></div>';
   if (c.note)     body += '<div style="margin-bottom:.5rem"><span style="font-size:.72rem;color:var(--muted);text-transform:uppercase">Note</span><div style="white-space:pre-wrap;font-size:.88rem">' + esc(c.note) + '</div></div>';
-  if (!body)      body  = '<div class="text-muted">Nessun dettaglio aggiuntivo.</div>';
+  if (c.emailOrientatore && _user.ruolo === "COORDINATORE")
+    body += '<div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--border);font-size:.72rem;color:var(--muted)">Inserito da: ' + esc(c.emailOrientatore) + '</div>';
+  if (!body) body = '<div class="text-muted">Nessun dettaglio aggiuntivo.</div>';
   $("nd-body").innerHTML = body;
-  $("nd-edit-btn").onclick = function() { chiudiModal("modal-nota-detail"); apriModificaNota(id); };
-  $("nd-del-btn").onclick  = function() { if (confirm("Eliminare questo contatto?")) eliminaNota(id); };
+  if (soloLettura) {
+    $("nd-edit-btn").style.display = "none";
+    $("nd-del-btn").style.display = "none";
+  } else {
+    $("nd-edit-btn").style.display = "";
+    $("nd-del-btn").style.display = "";
+    $("nd-edit-btn").onclick = function(){ chiudiModal("modal-nota-detail"); apriModificaNota(id); };
+    $("nd-del-btn").onclick  = function(){ if(confirm("Eliminare questo contatto?")) eliminaNota(id); };
+  }
   openModal("modal-nota-detail");
 }
 
 function apriNuovaNota() {
   $("modal-nota-title").textContent = "Nuovo contatto";
   $("nota-cognome").value = $("nota-nome").value = $("nota-ente").value = "";
-  $("nota-email").value   = $("nota-tel").value  = $("nota-note").value = "";
+  $("nota-email").value = $("nota-tel").value = $("nota-note").value = "";
   $("nota-edit-id").value = "";
   hideErr("nota-err");
   openModal("modal-nota");
 }
 
 function apriModificaNota(id) {
-  var c = _noteCache.filter(function(x) { return x.id === id; })[0];
+  var c = _noteCache.filter(function(x){ return x.id===id; })[0];
   if (!c) return;
   $("modal-nota-title").textContent = "Modifica contatto";
   $("nota-cognome").value = c.cognome;
@@ -1051,8 +1147,73 @@ async function eliminaNota(id) {
   if (!res.success) { alert(res.message); return; }
   var res2 = await api("getNoteOrientatore", {});
   _noteCache = res2.contatti || [];
-  renderListaNota();
+  if (_user.ruolo === "COORDINATORE") _renderRubricaCoord(); else renderListaNota();
+}
+
+// Note del coordinatore verso orientatori
+async function apriNuovaNoteCoord() {
+  $("nc-titolo").value = $("nc-testo").value = "";
+  hideErr("nc-err");
+  // Popola il select con gli orientatori dal foglio team
+  var sel = $("nc-dest");
+  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>';
+  try {
+    var res = await api("getDocenti", {});
+    var docenti = res.docenti || [];
+    docenti.filter(function(d){ return d.materia && d.materia.toLowerCase().includes("orientat"); })
+      .forEach(function(d){
+        var opt = document.createElement("option");
+        opt.value = d.email;
+        opt.textContent = d.nome || d.email;
+        sel.appendChild(opt);
+      });
+  } catch(e) {}
+  sel.value = "tutti";
+  openModal("modal-nota-coord");
+}
+
+async function salvaNoteCoord() {
+  hideErr("nc-err");
+  var payload = {
+    titolo:       $("nc-titolo").value.trim(),
+    testo:        $("nc-testo").value.trim(),
+    destinatario: $("nc-dest").value.trim() || "tutti"
+  };
+  if (!payload.titolo || !payload.testo) return showErr("nc-err", "Titolo e testo sono obbligatori.");
+  var res = await api("salvaNoteCoord", payload);
+  if (!res.success) return showErr("nc-err", res.message);
+  chiudiModal("modal-nota-coord");
+  var res2 = await api("getNoteCoordinatore", {});
+  _noteCoordCache = res2.note || [];
+  _renderMieNoteCoord();
+}
+
+async function eliminaNoteCoord(id) {
+  if (!confirm("Eliminare questa nota?")) return;
+  var res = await api("eliminaNoteCoord", { id: id });
+  if (!res.success) { alert(res.message); return; }
+  var res2 = await api("getNoteCoordinatore", {});
+  _noteCoordCache = res2.note || [];
+  _renderMieNoteCoord();
 }
 </script>
+<!-- MODAL NOTA COORDINATORE -->
+<div id="modal-nota-coord" class="modal-overlay hide"><div class="modal-box">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h4>Nuova nota per orientatori</h4>
+    <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-nota-coord')">&#10005;</button>
+  </div>
+  <div class="form-group"><label>Titolo *</label><input type="text" id="nc-titolo" placeholder="Es. Aggiornamento fiera lavoro"></div>
+  <div class="form-group"><label>Testo *</label><textarea id="nc-testo" rows="4" placeholder="Scrivi qui la nota..." style="resize:vertical"></textarea></div>
+  <div class="form-group">
+    <label>Destinatario</label>
+    <select id="nc-dest">
+      <option value="tutti">Tutti gli orientatori</option>
+    </select>
+  </div>
+  <div id="nc-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+  <button class="btn btn-primary" style="width:100%" onclick="salvaNoteCoord()">Pubblica nota</button>
+</div></div>
+
 </body>
 </html>
