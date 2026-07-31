@@ -1003,16 +1003,25 @@ function _renderMieNoteCoord() {
   if (!_noteCoordCache.length) { cont.innerHTML = '<div class="text-muted" style="text-align:center;padding:2rem">Nessuna nota inserita.</div>'; return; }
   var html = '<div class="card" style="padding:.25rem .75rem">';
   _noteCoordCache.forEach(function(n) {
+    var destLabel = n.destinatario === "tutti" ? 'Tutti gli orientatori'
+      : n.destinatario === "nessuno" ? '&#128274; Nota privata'
+      : '&#128100; ' + esc(n.destinatario);
+    var waMsg = encodeURIComponent(n.titolo + "\n\n" + n.testo);
+    var waHref = "https://wa.me/?text=" + waMsg;
     html += '<div style="padding:.65rem 0;border-bottom:1px solid var(--border)">'
       + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">'
-      + '<div style="flex:1"><div style="font-weight:600;font-size:.9rem">' + esc(n.titolo) + '</div>'
-      + '<div style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem">'
-      + esc(n.dataIT) + ' &middot; '
-      + (n.destinatario === "tutti" ? 'Tutti gli orientatori' : n.destinatario === "nessuno" ? '&#128274; Nota privata' : '&#128100; ' + esc(n.destinatario))
+      + '<div style="flex:1">'
+      + '<div style="font-weight:600;font-size:.9rem">' + esc(n.titolo) + '</div>'
+      + '<div style="font-size:.72rem;color:var(--muted);margin-bottom:.25rem">' + esc(n.dataIT) + ' &middot; ' + destLabel + '</div>'
+      + '<div style="font-size:.84rem;white-space:pre-wrap;margin-bottom:.4rem">' + esc(n.testo) + '</div>'
+      + '</div></div>'
+      + '<div style="display:flex;gap:4px;margin-top:.35rem;flex-wrap:wrap">'
+      + '<button class="btn btn-sm btn-outline" style="font-size:.72rem;padding:.3rem .6rem" onclick="apriModificaNoteCoord(\'' + esc(n.id) + '\')">&#9998; Modifica</button>'
+      + '<button class="btn btn-sm btn-outline" style="font-size:.72rem;padding:.3rem .6rem" onclick="apriCambioCondivisione(\'' + esc(n.id) + '\')">&#128257; Condivisione</button>'
+      + '<a href="' + waHref + '" target="_blank" rel="noopener" class="btn btn-sm" style="font-size:.72rem;padding:.3rem .6rem;background:#25D366;color:#fff;border:none;border-radius:8px;text-decoration:none">&#128172; WA</a>'
+      + '<button class="btn btn-icon" style="width:26px;height:26px;font-size:.7rem;color:var(--danger)" onclick="eliminaNoteCoord(\'' + esc(n.id) + '\')">&#10005;</button>'
       + '</div>'
-      + '<div style="font-size:.84rem;white-space:pre-wrap">' + esc(n.testo) + '</div></div>'
-      + '<button class="btn btn-icon" style="width:26px;height:26px;font-size:.7rem;color:var(--danger);flex-shrink:0" onclick="eliminaNoteCoord(\'' + esc(n.id) + '\')">&#10005;</button>'
-      + '</div></div>';
+      + '</div>';
   });
   html += '</div>';
   cont.innerHTML = html;
@@ -1152,7 +1161,9 @@ async function eliminaNota(id) {
 
 // Note del coordinatore verso orientatori
 async function apriNuovaNoteCoord() {
+  $("nc-modal-title").textContent = "Nuova nota per orientatori";
   $("nc-titolo").value = $("nc-testo").value = "";
+  $("nc-edit-id").value = "";
   hideErr("nc-err");
   var sel = $("nc-dest");
   sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
@@ -1187,18 +1198,76 @@ async function apriNuovaNoteCoord() {
 
 async function salvaNoteCoord() {
   hideErr("nc-err");
+  var editId = $("nc-edit-id") ? $("nc-edit-id").value : "";
   var payload = {
     titolo:       $("nc-titolo").value.trim(),
     testo:        $("nc-testo").value.trim(),
     destinatario: $("nc-dest").value.trim() || "tutti"
   };
   if (!payload.titolo || !payload.testo) return showErr("nc-err", "Titolo e testo sono obbligatori.");
-  var res = await api("salvaNoteCoord", payload);
+  var action = editId ? "modificaNoteCoord" : "salvaNoteCoord";
+  if (editId) payload.id = editId;
+  var res = await api(action, payload);
   if (!res.success) return showErr("nc-err", res.message);
   chiudiModal("modal-nota-coord");
   var res2 = await api("getNoteCoordinatore", {});
   _noteCoordCache = res2.note || [];
   _renderMieNoteCoord();
+}
+
+async function apriModificaNoteCoord(id) {
+  var n = _noteCoordCache.filter(function(x){ return x.id === id; })[0];
+  if (!n) return;
+  $("nc-modal-title").textContent = "Modifica nota";
+  $("nc-titolo").value = n.titolo;
+  $("nc-testo").value  = n.testo;
+  $("nc-edit-id").value = id;
+  hideErr("nc-err");
+  // Popola select e poi imposta il valore
+  var sel = $("nc-dest");
+  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
+    + '<option value="nessuno">Nessuno (nota privata)</option>';
+  try {
+    var res = await api("getDocenti", {});
+    (res.docenti || []).filter(function(d){
+      return d.materia && d.materia.toLowerCase().includes("orientat");
+    }).forEach(function(d){
+      var opt = document.createElement("option");
+      opt.value = d.email;
+      var local = d.email.split("@")[0].replace(/\.(docenti|studenti|tutor)$/i,"").replace(/\./g," ");
+      opt.textContent = local.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+  sel.value = n.destinatario;
+  openModal("modal-nota-coord");
+}
+
+async function apriCambioCondivisione(id) {
+  var n = _noteCoordCache.filter(function(x){ return x.id === id; })[0];
+  if (!n) return;
+  $("nc-modal-title").textContent = "Cambia condivisione";
+  $("nc-titolo").value = n.titolo;
+  $("nc-testo").value  = n.testo;
+  $("nc-edit-id").value = id;
+  hideErr("nc-err");
+  var sel = $("nc-dest");
+  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
+    + '<option value="nessuno">Nessuno (nota privata)</option>';
+  try {
+    var res = await api("getDocenti", {});
+    (res.docenti || []).filter(function(d){
+      return d.materia && d.materia.toLowerCase().includes("orientat");
+    }).forEach(function(d){
+      var opt = document.createElement("option");
+      opt.value = d.email;
+      var local = d.email.split("@")[0].replace(/\.(docenti|studenti|tutor)$/i,"").replace(/\./g," ");
+      opt.textContent = local.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+  sel.value = n.destinatario;
+  openModal("modal-nota-coord");
 }
 
 async function eliminaNoteCoord(id) {
@@ -1213,7 +1282,7 @@ async function eliminaNoteCoord(id) {
 <!-- MODAL NOTA COORDINATORE -->
 <div id="modal-nota-coord" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-    <h4>Nuova nota per orientatori</h4>
+    <h4 id="nc-modal-title">Nuova nota per orientatori</h4>
     <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-nota-coord')">&#10005;</button>
   </div>
   <div class="form-group"><label>Titolo *</label><input type="text" id="nc-titolo" placeholder="Es. Aggiornamento fiera lavoro"></div>
@@ -1224,8 +1293,9 @@ async function eliminaNoteCoord(id) {
       <option value="tutti">Tutti gli orientatori</option>
     </select>
   </div>
+  <input type="hidden" id="nc-edit-id">
   <div id="nc-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-  <button class="btn btn-primary" style="width:100%" onclick="salvaNoteCoord()">Pubblica nota</button>
+  <button class="btn btn-primary" style="width:100%" onclick="salvaNoteCoord()">Salva nota</button>
 </div></div>
 
 </body>
