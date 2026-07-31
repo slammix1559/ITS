@@ -1017,7 +1017,6 @@ function _renderMieNoteCoord() {
       + '</div></div>'
       + '<div style="display:flex;gap:4px;margin-top:.35rem;flex-wrap:wrap">'
       + '<button class="btn btn-sm btn-outline" style="font-size:.72rem;padding:.3rem .6rem" onclick="apriModificaNoteCoord(\'' + esc(n.id) + '\')">&#9998; Modifica</button>'
-      + '<button class="btn btn-sm btn-outline" style="font-size:.72rem;padding:.3rem .6rem" onclick="apriCambioCondivisione(\'' + esc(n.id) + '\')">&#128257; Condivisione</button>'
       + '<a href="' + waHref + '" target="_blank" rel="noopener" class="btn btn-sm" style="font-size:.72rem;padding:.3rem .6rem;background:#25D366;color:#fff;border:none;border-radius:8px;text-decoration:none">&#128172; WA</a>'
       + '<button class="btn btn-icon" style="width:26px;height:26px;font-size:.7rem;color:var(--danger)" onclick="eliminaNoteCoord(\'' + esc(n.id) + '\')">&#10005;</button>'
       + '</div>'
@@ -1224,33 +1223,6 @@ async function apriModificaNoteCoord(id) {
   $("nc-edit-id").value = id;
   hideErr("nc-err");
   // Popola select e poi imposta il valore
-  var sel = $("nc-dest");
-  sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
-    + '<option value="nessuno">Nessuno (nota privata)</option>';
-  try {
-    var res = await api("getDocenti", {});
-    (res.docenti || []).filter(function(d){
-      return d.materia && d.materia.toLowerCase().includes("orientat");
-    }).forEach(function(d){
-      var opt = document.createElement("option");
-      opt.value = d.email;
-      var local = d.email.split("@")[0].replace(/\.(docenti|studenti|tutor)$/i,"").replace(/\./g," ");
-      opt.textContent = local.replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-      sel.appendChild(opt);
-    });
-  } catch(e) {}
-  sel.value = n.destinatario;
-  openModal("modal-nota-coord");
-}
-
-async function apriCambioCondivisione(id) {
-  var n = _noteCoordCache.filter(function(x){ return x.id === id; })[0];
-  if (!n) return;
-  $("nc-modal-title").textContent = "Cambia condivisione";
-  $("nc-titolo").value = n.titolo;
-  $("nc-testo").value  = n.testo;
-  $("nc-edit-id").value = id;
-  hideErr("nc-err");
   var sel = $("nc-dest");
   sel.innerHTML = '<option value="tutti">Tutti gli orientatori</option>'
     + '<option value="nessuno">Nessuno (nota privata)</option>';
