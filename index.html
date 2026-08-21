@@ -1572,85 +1572,127 @@ async function cercaLezioni() {
   mostraLezioni(_lezioniCache);
 }
 
+function _orario(l) {
+  // Usa dalleStr/alleStr se disponibili (formato HH:MM), altrimenti usa numero
+  const d = l.dalleStr || (l.dalle+":00");
+  const a = l.alleStr  || (l.alle+":00");
+  return d + "–" + a;
+}
+
+function _moduloBreve(m) {
+  // "UF11 Controlli programmabili industriali" → "UF11 Controlli programm."
+  if (!m) return "";
+  const parts = m.split(" ");
+  if (parts.length <= 3) return m;
+  return parts.slice(0,4).join(" ") + (parts.length>4?"…":"");
+}
+
 function mostraLezioni(lezioni) {
   const res = $("go-vis-result");
   if (!lezioni.length) { res.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`; return; }
 
+  const totOre = Math.round(lezioni.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
+  const header = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+    <div class="section-title" style="margin-bottom:0">${lezioni.length} lezioni · ${totOre}h tot.</div>
+  </div>`;
+
   if (_vistaGO === "lista") {
-    res.innerHTML = `<div class="section-title">${lezioni.length} lezioni trovate</div>` +
-      lezioni.map(l=>`
-        <div class="list-item" style="margin-bottom:.5rem;padding:.75rem">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
-            <div style="flex:1">
-              <div style="font-weight:700;font-size:.85rem">${esc(l.dataIT)} · ${l.giorno}${l.annualita?' <span class="badge badge-blue">'+l.annualita+'° anno</span>':''}</div>
-              <div style="font-size:.82rem;color:var(--accent)">⏰ ${l.dalle}:00 – ${l.alle}:00 (${l.ore}h)</div>
-              <div style="font-weight:600;font-size:.88rem;margin-top:.2rem">${esc(l.modulo)}</div>
-              <div style="font-size:.78rem;color:var(--muted)">👤 ${esc(l.docente)}${l.ambiente?" · 📍"+esc(l.ambiente):""}</div>
-              ${l.note?`<div style="font-size:.75rem;color:var(--muted);font-style:italic">${esc(l.note)}</div>`:""}
-            </div>
-            <button class="btn btn-sm" style="background:rgba(239,68,68,.15);color:#f87171;flex-shrink:0"
-              onclick="eliminaLezioneGO(${l.rowIndex})">🗑</button>
+    // Vista compatta: una riga per lezione
+    res.innerHTML = header + `<div style="background:var(--surface);border-radius:12px;overflow:hidden;border:1px solid var(--border)">` +
+      lezioni.map((l,i)=>`
+        <div style="display:grid;grid-template-columns:80px 1fr auto;align-items:center;gap:.5rem;padding:.45rem .75rem;${i%2===0?'background:var(--surface)':'background:var(--surface2)'};border-bottom:1px solid var(--border)" title="${esc(l.docente)} · ${esc(l.ambiente)}">
+          <div>
+            <div style="font-size:.72rem;font-weight:700;color:var(--muted)">${esc(l.dataIT.slice(0,5))}</div>
+            <div style="font-size:.68rem;color:var(--accent)">${_orario(l)}</div>
           </div>
-        </div>`).join("");
+          <div style="min-width:0">
+            <div style="font-size:.78rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(_moduloBreve(l.modulo))}</div>
+            <div style="font-size:.68rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.docente?'👤 '+esc(l.docente):''}${l.ambiente?' · '+esc(l.ambiente.substring(0,20)):''}</div>
+          </div>
+          <button onclick="eliminaLezioneGO(${l.rowIndex},'${l.annualita}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:.2rem .4rem;border-radius:4px" title="Elimina">🗑</button>
+        </div>`).join("") + `</div>`;
 
   } else if (_vistaGO === "settimanale") {
-    const perSettimana = {};
+    // Raggruppa per settimana lun-ven
+    const sett = {};
     lezioni.forEach(l => {
-      // Calcola numero settimana
       const d = new Date(l.data);
-      const startOfYear = new Date(d.getFullYear(), 0, 1);
-      const week = Math.ceil(((d - startOfYear) / 86400000 + startOfYear.getDay() + 1) / 7);
-      const key = d.getFullYear() + "-W" + String(week).padStart(2,"0");
-      if (!perSettimana[key]) perSettimana[key] = [];
-      perSettimana[key].push(l);
+      const dow = d.getDay()||7; // 1=lun 7=dom
+      const lun = new Date(d); lun.setDate(d.getDate()-(dow-1));
+      const key = lun.toISOString().split("T")[0];
+      if (!sett[key]) sett[key] = [];
+      sett[key].push(l);
     });
-    res.innerHTML = Object.keys(perSettimana).sort().map(w => {
-      const ls = perSettimana[w];
-      const oreSettimana = ls.reduce((s,l)=>s+l.ore,0);
-      return `<div class="section-title">${w} · ${oreSettimana}h</div>` +
-        ls.map(l=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--surface);border-radius:8px;margin-bottom:.35rem">
-          <span style="font-size:.78rem;color:var(--muted);min-width:30px">${l.giorno.substring(0,3).toUpperCase()}</span>
-          <span style="font-size:.78rem;color:var(--accent)">${l.dalle}–${l.alle}</span>
-          <span style="font-size:.82rem;font-weight:600;flex:1">${esc(l.modulo.split(".")[0]+".")}</span>
-          <span style="font-size:.75rem;color:var(--muted)">${esc(l.docente)}</span>
-        </div>`).join("");
+    res.innerHTML = header + Object.keys(sett).sort().map(lunISO => {
+      const ven = new Date(lunISO); ven.setDate(ven.getDate()+4);
+      const ls = sett[lunISO];
+      const ore = Math.round(ls.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
+      const lunIT = lunISO.split("-").reverse().join("/");
+      const venIT = ven.toISOString().split("T")[0].split("-").reverse().join("/");
+      return `<div style="margin-bottom:.75rem">
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
+          ${lunIT} – ${venIT} &nbsp;·&nbsp; ${ore}h
+        </div>
+        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+          ${ls.map((l,i)=>`<div style="display:grid;grid-template-columns:60px 55px 1fr 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
+            <span style="color:var(--muted);font-weight:600">${(l.giorno||"").substring(0,3).toUpperCase()}</span>
+            <span style="color:var(--accent)">${_orario(l)}</span>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">${esc(_moduloBreve(l.modulo))}</span>
+            <span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.docente)}</span>
+          </div>`).join("")}
+        </div>
+      </div>`;
     }).join("");
 
   } else if (_vistaGO === "docente") {
     const perDoc = {};
     lezioni.forEach(l => {
-      if (!perDoc[l.docente]) perDoc[l.docente] = { lezioni:[], ore:0 };
-      perDoc[l.docente].lezioni.push(l);
-      perDoc[l.docente].ore += l.ore;
+      const k = l.docente||"—"; if (!perDoc[k]) perDoc[k]={lezioni:[],ore:0};
+      perDoc[k].lezioni.push(l); perDoc[k].ore=Math.round((perDoc[k].ore+(l.ore||0))*10)/10;
     });
-    res.innerHTML = Object.keys(perDoc).sort().map(doc => {
+    res.innerHTML = header + Object.keys(perDoc).sort().map(doc => {
       const d = perDoc[doc];
-      return `<div class="section-title">👤 ${esc(doc)} · ${d.ore}h totali</div>` +
-        d.lezioni.map(l=>`<div style="padding:.4rem .75rem;background:var(--surface);border-radius:8px;margin-bottom:.3rem;font-size:.82rem">
-          <span style="color:var(--muted)">${esc(l.dataIT)}</span> · ${l.dalle}–${l.alle} · <b>${esc(l.modulo.substring(0,30))}</b>
-        </div>`).join("");
+      return `<div style="margin-bottom:.75rem">
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
+          👤 ${esc(doc)} &nbsp;·&nbsp; ${d.lezioni.length} lezioni &nbsp;·&nbsp; ${d.ore}h
+        </div>
+        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+          ${d.lezioni.map((l,i)=>`<div style="display:grid;grid-template-columns:80px 55px 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
+            <span style="color:var(--muted)">${esc(l.dataIT.slice(0,5))}</span>
+            <span style="color:var(--accent)">${_orario(l)}</span>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">${esc(_moduloBreve(l.modulo))}</span>
+          </div>`).join("")}
+        </div>
+      </div>`;
     }).join("");
 
   } else if (_vistaGO === "uf") {
     const perUF = {};
     lezioni.forEach(l => {
-      if (!perUF[l.modulo]) perUF[l.modulo] = { lezioni:[], ore:0 };
-      perUF[l.modulo].lezioni.push(l);
-      perUF[l.modulo].ore += l.ore;
+      const k = l.modulo||"—"; if (!perUF[k]) perUF[k]={lezioni:[],ore:0};
+      perUF[k].lezioni.push(l); perUF[k].ore=Math.round((perUF[k].ore+(l.ore||0))*10)/10;
     });
-    res.innerHTML = Object.keys(perUF).sort().map(uf => {
+    res.innerHTML = header + Object.keys(perUF).sort().map(uf => {
       const u = perUF[uf];
-      return `<div class="section-title">📚 ${esc(uf)} · ${u.ore}h</div>` +
-        u.lezioni.map(l=>`<div style="padding:.4rem .75rem;background:var(--surface);border-radius:8px;margin-bottom:.3rem;font-size:.82rem">
-          <span style="color:var(--muted)">${esc(l.dataIT)}</span> · ${l.dalle}–${l.alle} · <b>${esc(l.docente)}</b>
-        </div>`).join("");
+      return `<div style="margin-bottom:.75rem">
+        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
+          📚 ${esc(uf)} &nbsp;·&nbsp; ${u.ore}h
+        </div>
+        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+          ${u.lezioni.map((l,i)=>`<div style="display:grid;grid-template-columns:80px 55px 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
+            <span style="color:var(--muted)">${esc(l.dataIT.slice(0,5))}</span>
+            <span style="color:var(--accent)">${_orario(l)}</span>
+            <span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.docente)}</span>
+          </div>`).join("")}
+        </div>
+      </div>`;
     }).join("");
   }
 }
 
-async function eliminaLezioneGO(rowIndex) {
+async function eliminaLezioneGO(rowIndex, annualita) {
   if (!confirm("Eliminare questa lezione dal calendario?")) return;
-  const r = await api("eliminaLezione", { rowIndex, annualita:"2" });
+  const r = await api("eliminaLezione", { rowIndex, annualita: annualita||"2" });
   if (r.success) { _lezioniCache = _lezioniCache.filter(l=>l.rowIndex!==rowIndex); mostraLezioni(_lezioniCache); }
   else alert(r.message);
 }
