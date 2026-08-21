@@ -1346,12 +1346,23 @@ async function renderGestioneOrario() {
 
   // Carica UF e docenti in parallelo
   pane.querySelector("#go-pane-inserisci").innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const [ruf, rdoc] = await Promise.all([
+  // Carica UF di entrambi gli anni e docenti
+  const [ruf1, ruf2, rdoc1, rdoc2] = await Promise.all([
+    api("getUF", {annualita:"1"}),
     api("getUF", {annualita:"2"}),
+    api("getDocentiOrario", {annualita:"1"}),
     api("getDocentiOrario", {annualita:"2"})
   ]);
-  _ufList = ruf.uf || [];
-  _docentiOrario = rdoc.docenti || [];
+  // Unisci UF con info annualità
+  const uf1 = (ruf1.uf||[]).map(u=>({...u, anni:"1"}));
+  const uf2 = (ruf2.uf||[]).map(u=>({...u, anni:"2"}));
+  // Unisci evitando duplicati (stesso nome)
+  const ufMap = {};
+  [...uf1,...uf2].forEach(u=>{ if(!ufMap[u.nome]) ufMap[u.nome]={...u,anni:[]}; if(!ufMap[u.nome].anni.includes(u.anni)) ufMap[u.nome].anni.push(u.anni); });
+  _ufList = Object.values(ufMap).sort((a,b)=>a.nome.localeCompare(b.nome));
+  // Unisci docenti
+  const docSet = new Set([...(rdoc1.docenti||[]),...(rdoc2.docenti||[])]);
+  _docentiOrario = [...docSet].sort();
   renderGOInserisci();
 }
 
@@ -1375,9 +1386,18 @@ function renderGOInserisci() {
       <p class="text-muted" style="font-size:.85rem;margin-bottom:1rem">
         Inserisci una lezione nel calendario. Se si ripete, specifica quante settimane consecutive.
       </p>
-      <div class="form-group">
-        <label>Data *</label>
-        <input type="date" id="go-data" value="${oggi}">
+      <div class="grid-2" style="gap:.75rem;margin-bottom:0">
+        <div class="form-group">
+          <label>Anno</label>
+          <select id="go-anno">
+            <option value="1">1° Anno</option>
+            <option value="2" selected>2° Anno</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Data *</label>
+          <input type="date" id="go-data" value="${oggi}">
+        </div>
       </div>
       <div class="grid-2" style="gap:.75rem">
         <div class="form-group">
@@ -1446,7 +1466,8 @@ async function salvaLezioneGO() {
   const btn = document.querySelector("#go-pane-inserisci .btn-primary");
   btn.disabled = true; btn.textContent = "Salvataggio...";
 
-  const res = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita:"2" });
+  const annualita = $("go-anno") ? $("go-anno").value : "2";
+  const res = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita });
   btn.disabled = false; btn.textContent = "💾 Salva lezione";
 
   if (!res.success) return showErr("go-ins-err", res.message);
@@ -1488,18 +1509,34 @@ function renderGOVisualizza() {
       </div>
       <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
         <div class="form-group" style="margin-bottom:0">
+          <label>Anno</label>
+          <select id="go-vis-anno">
+            <option value="">Entrambi</option>
+            <option value="1">1° Anno</option>
+            <option value="2">2° Anno</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
           <label>Filtra per UF</label>
           <select id="go-vis-uf">
             <option value="">Tutte le UF</option>
             ${_ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("")}
           </select>
         </div>
+      </div>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
         <div class="form-group" style="margin-bottom:0">
           <label>Filtra per docente</label>
           <input type="text" id="go-vis-doc" placeholder="Nome docente..." list="go-docenti-list2">
           <datalist id="go-docenti-list2">
             ${_docentiOrario.map(d=>`<option value="${esc(d)}">`).join("")}
           </datalist>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>&nbsp;</label>
+          <div style="padding-top:.35rem;font-size:.75rem;color:var(--muted)">
+            Lascia vuoti i filtri per vedere tutto
+          </div>
         </div>
       </div>
       <div class="tab-row" style="margin-bottom:.75rem">
@@ -1528,7 +1565,8 @@ async function cercaLezioni() {
   const doc = $("go-vis-doc").value.trim();
   const res = $("go-vis-result");
   res.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const r = await api("getLezioni", { dataDa:da, dataA:a, filtroUF:uf, filtroDocente:doc });
+  const anno = $("go-vis-anno") ? $("go-vis-anno").value : "";
+  const r = await api("getLezioni", { dataDa:da, dataA:a, filtroUF:uf, filtroDocente:doc, annualita:anno||null });
   if (!r.success) { res.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
   _lezioniCache = r.lezioni || [];
   mostraLezioni(_lezioniCache);
@@ -1544,7 +1582,7 @@ function mostraLezioni(lezioni) {
         <div class="list-item" style="margin-bottom:.5rem;padding:.75rem">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
             <div style="flex:1">
-              <div style="font-weight:700;font-size:.85rem">${esc(l.dataIT)} · ${l.giorno}</div>
+              <div style="font-weight:700;font-size:.85rem">${esc(l.dataIT)} · ${l.giorno}${l.annualita?' <span class="badge badge-blue">'+l.annualita+'° anno</span>':''}</div>
               <div style="font-size:.82rem;color:var(--accent)">⏰ ${l.dalle}:00 – ${l.alle}:00 (${l.ore}h)</div>
               <div style="font-weight:600;font-size:.88rem;margin-top:.2rem">${esc(l.modulo)}</div>
               <div style="font-size:.78rem;color:var(--muted)">👤 ${esc(l.docente)}${l.ambiente?" · 📍"+esc(l.ambiente):""}</div>
@@ -1630,6 +1668,14 @@ async function renderGOAnalisi() {
         <div class="form-group" style="margin-bottom:0"><label>Dal</label><input type="date" id="go-an-da" value="${oggi}"></div>
         <div class="form-group" style="margin-bottom:0"><label>Al</label><input type="date" id="go-an-a" value="${tra90ISO}"></div>
       </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label>Anno</label>
+        <select id="go-an-anno">
+          <option value="">Entrambi</option>
+          <option value="1">1° Anno</option>
+          <option value="2">2° Anno</option>
+        </select>
+      </div>
       <button class="btn btn-primary" style="width:100%" onclick="eseguiAnalisi()">📊 Analizza</button>
     </div>
     <div id="go-an-result"></div>`;
@@ -1640,7 +1686,8 @@ async function eseguiAnalisi() {
   const a  = $("go-an-a").value;
   const res = $("go-an-result");
   res.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const r = await api("getAnalisiOrario", { dataDa:da, dataA:a });
+  const anno = $("go-an-anno") ? $("go-an-anno").value : "";
+  const r = await api("getAnalisiOrario", { dataDa:da, dataA:a, annualita:anno||null });
   if (!r.success) { res.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
 
   const GIORNO_LABEL = { lunedì:"Lunedì", martedì:"Martedì", mercoledì:"Mercoledì", giovedì:"Giovedì", venerdì:"Venerdì" };
