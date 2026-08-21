@@ -1271,6 +1271,41 @@ async function eliminaNoteCoord(id) {
   <button class="btn btn-primary" style="width:100%" onclick="salvaNoteCoord()">Salva nota</button>
 </div></div>
 
+
+<!-- ══════ MODAL MODIFICA LEZIONE ══════ -->
+<div id="modal-modifica-lez" class="modal-overlay hide">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h4>✏️ Modifica lezione</h4>
+      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-modifica-lez')">✕</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:1rem" id="mod-lez-info"></div>
+    <div class="form-group">
+      <label>UF / Modulo</label>
+      <select id="mod-lez-uf"><option value="">-- Seleziona UF --</option></select>
+    </div>
+    <div class="form-group">
+      <label>Docente</label>
+      <input type="text" id="mod-lez-docente" list="mod-lez-docenti-list">
+      <datalist id="mod-lez-docenti-list"></datalist>
+    </div>
+    <div class="form-group">
+      <label>Sede / Ambiente</label>
+      <input type="text" id="mod-lez-ambiente">
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <input type="text" id="mod-lez-note">
+    </div>
+    <input type="hidden" id="mod-lez-rowIndex">
+    <input type="hidden" id="mod-lez-annualita">
+    <div id="mod-lez-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn btn-primary" style="flex:1" onclick="salvaModificaLezione()">💾 Salva</button>
+      <button class="btn btn-danger btn-sm" onclick="eliminaLezioneGO($('mod-lez-rowIndex').value, $('mod-lez-annualita').value);chiudiModal('modal-modifica-lez')">🗑 Elimina</button>
+    </div>
+  </div>
+</div>
 <!-- ══════ MODAL INSERISCI LEZIONE ══════ -->
 <div id="modal-lezione" class="modal-overlay hide">
   <div class="modal-box">
@@ -1552,7 +1587,10 @@ function renderGOVisualizza() {
           Mostra anche ore libere (non programmate)
         </label>
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="cercaLezioni()">🔍 Cerca</button>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-primary" style="flex:1" onclick="cercaLezioni()">🔍 Cerca</button>
+        <button class="btn btn-outline" onclick="esportaOrario()" title="Esporta CSV">⬇️ CSV</button>
+      </div>
     </div>
     <div id="go-vis-result"></div>`;
 }
@@ -1562,7 +1600,7 @@ function switchVistaGO(v, btn) {
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
   _vistaGO = v;
-  if (_lezioniCache.length) mostraLezioni(_lezioniCache, _lezioniOreLibere, $('go-vis-tutte')&&$('go-vis-tutte').checked);
+  if (_lezioniCache.length) mostraLezioni(_lezioniCache, [], $('go-vis-tutte')&&$('go-vis-tutte').checked);
 }
 
 async function cercaLezioni() {
@@ -1577,8 +1615,8 @@ async function cercaLezioni() {
   const r = await api("getLezioni", { dataDa:da, dataA:a, filtroUF:uf, filtroDocente:doc, annualita:anno||null, mostraTutte });
   if (!r.success) { res.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
   _lezioniCache = r.lezioni || [];
-  _lezioniOreLibere = r.oreLibere || [];
-  mostraLezioni(_lezioniCache, _lezioniOreLibere, mostraTutte);
+  _lezioniOreLibere = []; // calcolate in analisi
+  mostraLezioni(_lezioniCache, [], mostraTutte);
 }
 
 function _orario(l) {
@@ -1622,10 +1660,10 @@ function mostraLezioni(lezioni, oreLibere, mostraTutte) {
         html2 += `<div style="display:grid;grid-template-columns:55px 1fr auto;align-items:center;gap:.4rem;padding:.3rem .75rem .3rem 1.25rem;background:${bg};border-bottom:1px solid var(--border)" title="${esc(l.docente||'')} · ${esc(l.ambiente||'')}">
           <div style="font-size:.68rem;color:var(--accent);font-weight:600">${_orario(l)}</div>
           <div style="min-width:0">
-            <div style="font-size:.76rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(_moduloBreve(l.modulo))}</div>
+            <div style="font-size:.76rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${l.modulo?'var(--text)':'var(--success)'}">${l.modulo?esc(_moduloBreve(l.modulo)):'🕐 Ora libera'}</div>
             <div style="font-size:.65rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.docente?'👤 '+esc(l.docente):''}${l.ambiente?' · '+esc(l.ambiente.substring(0,18)):''}</div>
           </div>
-          <button onclick="eliminaLezioneGO(${l.rowIndex},'${l.annualita}')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:.15rem .3rem" title="Elimina">🗑</button>
+          <button onclick="apriModificaLezione(${l.rowIndex},'${l.annualita}','${esc(l.modulo).replace(/'/g,"\\'")}','${esc(l.docente).replace(/'/g,"\\'")}','${esc(l.ambiente).replace(/'/g,"\\'")}','${esc(l.note||"").replace(/'/g,"\\'")}','${_orario(l)}')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:.8rem;padding:.15rem .3rem;border-radius:4px" title="Modifica">✏️</button>
         </div>`;
       });
     });
@@ -1807,6 +1845,61 @@ async function eseguiAnalisi() {
 
   res.innerHTML = html;
 }
+// ══ MODIFICA LEZIONE ══
+function apriModificaLezione(rowIndex, annualita, modulo, docente, ambiente, note, orario) {
+  $("mod-lez-rowIndex").value = rowIndex;
+  $("mod-lez-annualita").value = annualita;
+  $("mod-lez-info").textContent = "Lezione " + orario + " · " + annualita + "° anno";
+  // Popola UF
+  const sel = $("mod-lez-uf");
+  sel.innerHTML = '<option value="">-- Seleziona UF --</option>' +
+    _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
+  sel.value = modulo;
+  $("mod-lez-docente").value = docente;
+  $("mod-lez-ambiente").value = ambiente;
+  $("mod-lez-note").value = note||"";
+  // Popola datalist docenti
+  $("mod-lez-docenti-list").innerHTML = _docentiOrario.map(d=>`<option value="${esc(d)}">`).join("");
+  hideErr("mod-lez-err");
+  openModal("modal-modifica-lez");
+}
+
+async function salvaModificaLezione() {
+  hideErr("mod-lez-err");
+  const rowIndex = parseInt($("mod-lez-rowIndex").value);
+  const annualita = $("mod-lez-annualita").value;
+  const modulo = $("mod-lez-uf").value;
+  const docente = $("mod-lez-docente").value.trim();
+  const ambiente = $("mod-lez-ambiente").value.trim();
+  const note = $("mod-lez-note").value.trim();
+  if (!modulo) return showErr("mod-lez-err","Seleziona una UF.");
+  const r = await api("modificaLezione", {rowIndex, annualita, modulo, docente, ambiente, note});
+  if (!r.success) return showErr("mod-lez-err", r.message);
+  chiudiModal("modal-modifica-lez");
+  await cercaLezioni(); // ricarica lista
+}
+
+// ══ EXPORT ORARIO ══
+function esportaOrario() {
+  if (!_lezioniCache.length) { alert("Nessuna lezione da esportare. Prima esegui una ricerca."); return; }
+  const filtroDocente = $("go-vis-doc") ? $("go-vis-doc").value.trim() : "";
+  const da = $("go-vis-da") ? $("go-vis-da").value : "";
+  const a  = $("go-vis-a")  ? $("go-vis-a").value : "";
+
+  // Crea CSV
+  const righe = [["Data","Giorno","Dalle","Alle","Ore","UF/Modulo","Docente","Ambiente","Note","Anno"]];
+  _lezioniCache.forEach(l => {
+    righe.push([l.dataIT, l.giorno, l.dalleStr, l.alleStr, l.ore, l.modulo, l.docente, l.ambiente, l.note, l.annualita+"° anno"]);
+  });
+  const csv = righe.map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a2 = document.createElement("a");
+  const nomeFile = "orario" + (filtroDocente?"_"+filtroDocente:"") + (da?"_dal_"+da:"") + (a?"_al_"+a:"") + ".csv";
+  a2.href=url; a2.download=nomeFile; a2.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+
 </script>
 
 </body>
