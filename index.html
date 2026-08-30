@@ -1673,7 +1673,10 @@ function mostraLezioni(lezioni, oreLibere, mostraTutte) {
         html2 += `<div style="display:grid;grid-template-columns:55px 1fr 22px 22px;align-items:center;gap:.3rem;padding:.3rem .6rem .3rem 1.25rem;background:${bg};border-bottom:1px solid var(--border)" title="${esc(l.docente||'')} · ${esc(l.ambiente||'')}">
           <div style="font-size:.68rem;color:var(--accent);font-weight:600">${_orario(l)}</div>
           <div style="min-width:0">
-            <div style="font-size:.76rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${l.modulo?'var(--text)':'var(--success)'}">${l.modulo?esc(_moduloBreve(l.modulo)):'🕐 Ora libera'}</div>
+            <div style="font-size:.76rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${l.modulo?'var(--text)':'var(--success)'}">
+              ${l.modulo?esc(_moduloBreve(l.modulo)):'🕐 Ora libera'}
+              ${l.annualita?`<span style="font-size:.58rem;background:${l.annualita==='1'?'rgba(16,185,129,.2)':'rgba(59,130,246,.2)'};color:${l.annualita==='1'?'#34d399':'var(--accent2)'};border-radius:3px;padding:.05rem .3rem;margin-left:.3rem;vertical-align:middle">${l.annualita}°</span>`:''}
+            </div>
             <div style="font-size:.65rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.docente?'👤 '+esc(l.docente):''}${l.ambiente?' · '+esc(l.ambiente.substring(0,18)):''}</div>
           </div>
           ${pallino}
