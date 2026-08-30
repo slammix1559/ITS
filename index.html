@@ -1653,11 +1653,8 @@ function mostraLezioni(lezioni, oreLibere, mostraTutte) {
       const oreGiorno = Math.round(ls.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
       const confCount    = ls.filter(l=>l.modulo&&l.confermato).length;
       const nonConfCount = ls.filter(l=>l.modulo&&!l.confermato).length;
-      // Badge anno: mostra 1° e/o 2° a seconda di quali anni sono presenti nel giorno
-      const anni = [...new Set(ls.map(l=>l.annualita).filter(Boolean))].sort();
-      const annoBadge = anni.map(a=>`<span style="font-size:.62rem;background:${a==='1'?'rgba(16,185,129,.2)':'rgba(59,130,246,.2)'};color:${a==='1'?'#34d399':'var(--accent2)'};border-radius:4px;padding:.1rem .35rem;margin-left:.3rem">${a}° anno</span>`).join("");
       html2 += `<div style="padding:.4rem .75rem;background:${bg};border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:.75rem;font-weight:700">${esc(ls[0].dataIT.slice(0,5))} · ${esc(ls[0].giorno)}${annoBadge}</span>
+        <span style="font-size:.75rem;font-weight:700">${esc(ls[0].dataIT.slice(0,5))} · ${esc(ls[0].giorno)}</span>
         <span style="display:flex;gap:.35rem;align-items:center">
           ${confCount>0?`<span style="font-size:.65rem;color:#34d399" title="${confCount} confermata/e">●${confCount}</span>`:''}
           ${nonConfCount>0?`<span style="font-size:.65rem;color:#f87171" title="${nonConfCount} non confermata/e">●${nonConfCount}</span>`:''}
