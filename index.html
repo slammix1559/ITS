@@ -1483,7 +1483,9 @@ function renderGOInserisci() {
 }
 
 async function salvaLezioneGO() {
-  hideErr("go-ins-err"); hd("go-ins-ok");
+  hideErr("go-ins-err");
+  const okEl2 = document.getElementById("go-ins-ok");
+  if (okEl2) okEl2.classList.add("hide");
   const data = $("go-data").value;
   const dalleRaw = $("go-dalle").value.trim();
   const alleRaw  = $("go-alle").value.trim();
