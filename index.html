@@ -1523,6 +1523,25 @@ async function salvaLezioneGO() {
   const res = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita });
   btn.disabled = false; btn.textContent = "💾 Salva lezione";
 
+  // Gestione conflitti
+  if (!res.success && res.message === "CONFLITTO" && res.conflitti) {
+    const lista = res.conflitti.map(c =>
+      `• ${c.data} ${c.dalle}-${c.alle}: ${c.modulo}${c.docente?" ("+c.docente+")":""}`
+    ).join("\n");
+    const sovrascrivi = confirm(
+      "⚠️ Attenzione! Nelle fasce orarie selezionate sono già presenti queste lezioni:\n\n" +
+      lista + "\n\n" +
+      "Vuoi sovrascriverle?"
+    );
+    if (!sovrascrivi) { return; }
+    // Rilancia con forza=true
+    const res2 = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita, forza: true });
+    if (!res2.success) return showErr("go-ins-err", res2.message);
+    const okEl3 = document.getElementById("go-ins-ok");
+    if (okEl3) { okEl3.textContent = `✅ ${res2.count} lezione/i salvate (sovrascrittura).`; okEl3.classList.remove("hide"); setTimeout(()=>okEl3.classList.add("hide"),4000); }
+    return;
+  }
+
   if (!res.success) return showErr("go-ins-err", res.message);
 
   // Mostra ok e aggiorna lista docenti
