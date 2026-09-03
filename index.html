@@ -1417,388 +1417,170 @@ function switchGOTab(tab, btn) {
 function renderGOInserisci() {
   const pane = $("go-pane-inserisci");
   const oggi = new Date().toISOString().split("T")[0];
+  const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
+  const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">`).join("");
   pane.innerHTML = `
-    <div class="card">
-      <p class="text-muted" style="font-size:.85rem;margin-bottom:1rem">
-        Inserisci una lezione nel calendario. Se si ripete, specifica quante settimane consecutive.
-      </p>
-      <div class="grid-2" style="gap:.75rem;margin-bottom:0">
-        <div class="form-group">
+    <div class="card" style="margin-bottom:.75rem">
+      <div class="grid-2" style="gap:.75rem">
+        <div class="form-group" style="margin-bottom:0">
           <label>Anno</label>
           <select id="go-anno">
             <option value="1">1° Anno</option>
             <option value="2" selected>2° Anno</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Data *</label>
-          <input type="date" id="go-data" value="${oggi}">
-        </div>
-      </div>
-      <div class="grid-2" style="gap:.75rem">
-        <div class="form-group">
-          <label>Dalle (ora) *</label>
-          <input type="text" id="go-dalle" placeholder="es. 14:30 o 14.30" inputmode="decimal">
-        </div>
-        <div class="form-group">
-          <label>Alle (ora) *</label>
-          <input type="text" id="go-alle" placeholder="es. 16:30 o 16.30" inputmode="decimal">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>UF / Modulo *</label>
-        <select id="go-uf">
-          <option value="">-- Seleziona UF --</option>
-          ${_ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)} (${u.oreAnno}h anno)</option>`).join("")}
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Docente *</label>
-        <input type="text" id="go-docente" placeholder="Cognome Nome" list="go-docenti-list" autocomplete="off">
-        <datalist id="go-docenti-list">
-          ${_docentiOrario.map(d=>`<option value="${esc(d)}">`).join("")}
-        </datalist>
-      </div>
-      <div class="form-group">
-        <label>Sede / Ambiente</label>
-        <input type="text" id="go-ambiente" placeholder="es. Aula 1, Laboratorio, Remoto...">
-      </div>
-      <div class="form-group">
-        <label>Note</label>
-        <input type="text" id="go-note" placeholder="Opzionale">
-      </div>
-      <div class="form-group">
-        <label>Ripeti per <b id="go-ripeti-val">1</b> settimana/e (stesso giorno)</label>
-        <input type="range" id="go-ripeti" min="1" max="20" value="1"
-          oninput="$('go-ripeti-val').textContent=this.value"
-          style="width:100%;accent-color:var(--accent);margin-top:.4rem">
-        <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted)">
-          <span>1 sett.</span><span>20 sett.</span>
-        </div>
-      </div>
-      <div id="go-ins-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-      <div id="go-ins-ok" class="alert alert-success hide" style="margin-bottom:.75rem"></div>
-      <button class="btn btn-primary" style="width:100%" onclick="salvaLezioneGO()">💾 Salva lezione</button>
-    </div>`;
-}
-
-async function salvaLezioneGO() {
-  hideErr("go-ins-err");
-  const okEl2 = document.getElementById("go-ins-ok");
-  if (okEl2) okEl2.classList.add("hide");
-  const data = $("go-data").value;
-  const dalleRaw = $("go-dalle").value.trim();
-  const alleRaw  = $("go-alle").value.trim();
-  const modulo = $("go-uf").value;
-  const docente = $("go-docente").value.trim();
-  const ambiente = $("go-ambiente").value.trim();
-  const note = $("go-note").value.trim();
-  const ripeti = $("go-ripeti").value;
-
-  // Converti orario: accetta 14, 14.30, 14:30 → numero decimale (14.5)
-  function parseOra(s) {
-    if (!s) return null;
-    s = s.replace(",",".");
-    if (s.includes(":")) { const [h,m]=s.split(":").map(Number); return h + m/60; }
-    if (s.includes(".") && s.split(".")[1].length <= 2) {
-      // es. 14.30 → 14h 30min → 14.5
-      const [h,m]=s.split(".").map(Number); return h + (m||0)/60;
-    }
-    return parseFloat(s);
-  }
-
-  const dalle = parseOra(dalleRaw);
-  const alle  = parseOra(alleRaw);
-
-  if (!data) return showErr("go-ins-err","Inserisci la data.");
-  if (dalle===null || alle===null || isNaN(dalle) || isNaN(alle)) return showErr("go-ins-err","Orario non valido. Usa formato 14.30 o 14:30.");
-  if (alle <= dalle) return showErr("go-ins-err","L'ora di fine deve essere dopo l'inizio.");
-  if (!modulo) return showErr("go-ins-err","Seleziona una UF.");
-  if (!docente) return showErr("go-ins-err","Inserisci il nome del docente.");
-
-  const btn = document.querySelector("#go-pane-inserisci .btn-primary");
-  btn.disabled = true; btn.textContent = "Salvataggio...";
-
-  const annualita = $("go-anno") ? $("go-anno").value : "2";
-  const res = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita });
-  btn.disabled = false; btn.textContent = "💾 Salva lezione";
-
-  // Gestione conflitti
-  if (!res.success && res.message === "CONFLITTO" && res.conflitti) {
-    // Salva i parametri per la sovrascrittura
-    window._pendingLezione = { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita };
-    // Mostra lista conflitti nel modal
-    const lista = res.conflitti.map(c =>
-      `<div style="padding:.3rem 0;border-bottom:1px solid var(--border)">
-        <span style="color:var(--warning)">⏰ ${c.dalle}–${c.alle}</span>
-        <span style="font-weight:600;margin-left:.4rem">${c.modulo}</span>
-        ${c.docente?`<span style="color:var(--muted);margin-left:.3rem">(${c.docente})</span>`:''}
-      </div>`
-    ).join("");
-    document.getElementById("conflitto-lista").innerHTML = lista;
-    openModal("modal-conflitto");
-    return;
-  }
-
-  if (!res.success) return showErr("go-ins-err", res.message);
-
-  // Mostra ok e aggiorna lista docenti
-  const okEl = $("go-ins-ok");
-  okEl.textContent = `✅ ${res.count} lezione/i salvate (${res.inserite.map(d=>d.split("-").reverse().join("/")).join(", ")})`;
-  okEl.classList.remove("hide");
-
-  // Aggiorna datalist docenti con il nuovo nome
-  if (docente && !_docentiOrario.includes(docente)) {
-    _docentiOrario.push(docente);
-    _docentiOrario.sort();
-    const dl = $("go-docenti-list");
-    if (dl) dl.innerHTML = _docentiOrario.map(d=>`<option value="${esc(d)}">`).join("");
-  }
-
-  setTimeout(() => okEl.classList.add("hide"), 4000);
-}
-
-// ── VISUALIZZA ──
-function renderGOVisualizza() {
-  const pane = $("go-pane-visualizza");
-  const oggi = new Date().toISOString().split("T")[0];
-  const tra30 = new Date(); tra30.setDate(tra30.getDate()+30);
-  const tra30ISO = tra30.toISOString().split("T")[0];
-
-  pane.innerHTML = `
-    <div class="card" style="margin-bottom:1rem">
-      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
         <div class="form-group" style="margin-bottom:0">
-          <label>Dal</label>
-          <input type="date" id="go-vis-da" value="${oggi}">
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Al</label>
-          <input type="date" id="go-vis-a" value="${tra30ISO}">
-        </div>
-      </div>
-      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Anno</label>
-          <select id="go-vis-anno">
-            <option value="">Entrambi</option>
-            <option value="1">1° Anno</option>
-            <option value="2">2° Anno</option>
-          </select>
-        </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>Filtra per UF</label>
-          <select id="go-vis-uf">
-            <option value="">Tutte le UF</option>
-            ${_ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("")}
+          <label>UF di riferimento</label>
+          <select id="go-uf-glob" onchange="aggiornaUFGlob()">
+            <option value="">-- Scegli UF --</option>
+            ${ufOpts}
           </select>
         </div>
       </div>
-      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
-        <div class="form-group" style="margin-bottom:0">
-          <label>Filtra per docente</label>
-          <input type="text" id="go-vis-doc" placeholder="Nome docente..." list="go-docenti-list2">
-          <datalist id="go-docenti-list2">
-            ${_docentiOrario.map(d=>`<option value="${esc(d)}">`).join("")}
-          </datalist>
+      <div id="go-uf-info" style="font-size:.78rem;color:var(--muted);margin-top:.4rem;min-height:1.2rem"></div>
+    </div>
+    <div class="card" style="padding:.5rem;margin-bottom:.75rem;overflow-x:auto">
+      <div style="min-width:620px">
+        <div style="display:grid;grid-template-columns:110px 75px 75px 1fr 1fr 65px 75px 28px;gap:.3rem;padding:.3rem .4rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border)">
+          <span>Data *</span><span>Dalle *</span><span>Alle *</span><span>Docente *</span><span>Sede</span><span>Note</span><span>Ripeti sett.</span><span></span>
         </div>
-        <div class="form-group" style="margin-bottom:0">
-          <label>&nbsp;</label>
-          <div style="padding-top:.35rem;font-size:.75rem;color:var(--muted)">
-            Lascia vuoti i filtri per vedere tutto
-          </div>
-        </div>
-      </div>
-      <div class="tab-row" style="margin-bottom:.75rem">
-        <button class="tab-btn active" id="vis-tab-lista" onclick="switchVistaGO('lista',this)">📋 Lista</button>
-        <button class="tab-btn" id="vis-tab-settimanale" onclick="switchVistaGO('settimanale',this)">📅 Settimanale</button>
-        <button class="tab-btn" id="vis-tab-docente" onclick="switchVistaGO('docente',this)">👤 Per docente</button>
-        <button class="tab-btn" id="vis-tab-uf" onclick="switchVistaGO('uf',this)">📚 Per UF</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
-        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;color:var(--text)">
-          <input type="checkbox" id="go-vis-tutte" style="width:16px;height:16px;accent-color:var(--accent)">
-          Mostra anche ore libere (non programmate)
-        </label>
-      </div>
-      <div style="display:flex;gap:.5rem">
-        <button class="btn btn-primary" style="flex:1" onclick="cercaLezioni()">🔍 Cerca</button>
-        <button class="btn btn-outline" onclick="esportaOrario()" title="Esporta PDF">📄 PDF</button>
+        <div id="go-righe-container"></div>
       </div>
     </div>
-    <div id="go-vis-result"></div>`;
+    <div style="display:flex;gap:.5rem;margin-bottom:.75rem">
+      <button class="btn btn-outline btn-sm" onclick="aggiungiRigaLezione()">➕ Aggiungi riga</button>
+      <button class="btn btn-outline btn-sm" onclick="svuotaRighe()">🗑 Svuota</button>
+    </div>
+    <datalist id="go-docenti-list">${docOpts}</datalist>
+    <div id="go-ins-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+    <div id="go-ins-ok" class="alert alert-success hide" style="margin-bottom:.75rem"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="salvaLezioniGO()">💾 Salva tutte le lezioni</button>`;
+  for (let i=0;i<3;i++) aggiungiRigaLezione();
 }
 
-let _vistaGO = "lista";
-function switchVistaGO(v, btn) {
-  document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  _vistaGO = v;
-  if (_lezioniCache.length) mostraLezioni(_lezioniCache, [], $('go-vis-tutte')&&$('go-vis-tutte').checked);
+let _rigaCount = 0;
+
+function aggiungiRigaLezione() {
+  const oggi = new Date().toISOString().split("T")[0];
+  const id = ++_rigaCount;
+  const row = document.createElement("div");
+  row.id = "go-riga-" + id;
+  row.style.cssText = "display:grid;grid-template-columns:110px 75px 75px 1fr 1fr 65px 75px 28px;gap:.3rem;padding:.25rem .4rem;border-bottom:1px solid var(--border);align-items:center;min-width:620px";
+  const docente = _ultimoDocente();
+  row.innerHTML = `
+    <input type="date" value="${oggi}" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <input type="text" placeholder="14:30" inputmode="decimal" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <input type="text" placeholder="16:30" inputmode="decimal" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <input type="text" placeholder="Docente" list="go-docenti-list" value="${docente}" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%" oninput="propagaDocente(${id})">
+    <input type="text" placeholder="Sede" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <input type="text" placeholder="Note" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <input type="number" value="1" min="1" max="20" style="font-size:.73rem;padding:.3rem .35rem;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:100%">
+    <button onclick="rimuoviRiga(${id})" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:.2rem">✕</button>`;
+  document.getElementById("go-righe-container").appendChild(row);
 }
 
-async function cercaLezioni() {
-  const da = $("go-vis-da").value;
-  const a  = $("go-vis-a").value;
-  const uf  = $("go-vis-uf").value;
-  const doc = $("go-vis-doc").value.trim();
-  const res = $("go-vis-result");
-  res.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  const anno = $("go-vis-anno") ? $("go-vis-anno").value : "";
-  const mostraTutte = $("go-vis-tutte") && $("go-vis-tutte").checked;
-  const r = await api("getLezioni", { dataDa:da, dataA:a, filtroUF:uf, filtroDocente:doc, annualita:anno||null, mostraTutte });
-  if (!r.success) { res.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
-  _lezioniCache = r.lezioni || [];
-  _lezioniOreLibere = []; // calcolate in analisi
-  mostraLezioni(_lezioniCache, [], mostraTutte);
+function _ultimoDocente() {
+  const rows = document.getElementById("go-righe-container") ? document.getElementById("go-righe-container").children : [];
+  for (let i=rows.length-1;i>=0;i--) { const v=rows[i].querySelectorAll("input")[3].value.trim(); if(v) return v; }
+  return "";
 }
 
-function _orario(l) {
-  const d = l.dalleStr || String(l.dalle||"");
-  const a = l.alleStr  || String(l.alle||"");
-  return d + "–" + a;
+function propagaDocente(id) {
+  const rows = Array.from(document.getElementById("go-righe-container").children);
+  const idx = rows.findIndex(r=>r.id==="go-riga-"+id);
+  if (idx<0) return;
+  const doc = rows[idx].querySelectorAll("input")[3].value.trim();
+  if (!doc) return;
+  for (let i=idx+1;i<rows.length;i++) { const inp=rows[i].querySelectorAll("input")[3]; if(!inp.value.trim()) inp.value=doc; }
 }
 
-function _moduloBreve(m) {
-  // "UF11 Controlli programmabili industriali" → "UF11 Controlli programm."
-  if (!m) return "";
-  const parts = m.split(" ");
-  if (parts.length <= 3) return m;
-  return parts.slice(0,4).join(" ") + (parts.length>4?"…":"");
+function rimuoviRiga(id) { const el=document.getElementById("go-riga-"+id); if(el) el.remove(); }
+
+function svuotaRighe() {
+  document.getElementById("go-righe-container").innerHTML="";
+  _rigaCount=0;
+  for(let i=0;i<3;i++) aggiungiRigaLezione();
 }
 
-function mostraLezioni(lezioni, oreLibere, mostraTutte) {
-  const res = $("go-vis-result");
-  if (!lezioni.length) { res.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`; return; }
+async function aggiornaUFGlob() {
+  const uf=$("go-uf-glob")?$("go-uf-glob").value:"";
+  const info=$("go-uf-info");
+  if (!uf||!info) return;
+  const anno=$("go-anno")?$("go-anno").value:"2";
+  info.textContent="Calcolo ore pianificate...";
+  try {
+    const r=await api("getLezioni",{filtroUF:uf,annualita:anno});
+    const orePian=r.lezioni?Math.round(r.lezioni.reduce((s,l)=>s+(l.ore||0),0)*10)/10:0;
+    const ufObj=_ufList.find(u=>u.nome===uf);
+    const orePrev=ufObj?(anno==="1"?ufObj.ore1:ufObj.ore2):0;
+    const rim=Math.max(0,orePrev-orePian);
+    info.innerHTML=`<span style="color:${rim>0?'var(--success)':'var(--danger)'}">📊 Pianificate: <b>${orePian}h</b> / ${orePrev}h previste &nbsp;·&nbsp; Rimanenti: <b>${rim}h</b></span>`;
+  } catch(e){info.textContent="";}
+}
 
-  const totOre = Math.round(lezioni.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
-  const header = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
-    <div class="section-title" style="margin-bottom:0">${lezioni.length} lezioni · ${totOre}h tot.</div>
-  </div>`;
+function parseOra(s) {
+  if(!s) return null;
+  s=String(s).replace(",",".");
+  if(s.includes(":")) { const[h,m]=s.split(":").map(Number); return h+m/60; }
+  if(s.includes(".")&&s.split(".")[1]&&s.split(".")[1].length<=2) { const[h,m]=s.split(".").map(Number); return h+(m||0)/60; }
+  return parseFloat(s);
+}
 
-  if (_vistaGO === "lista") {
-    // Raggruppa per giorno con colore alternato per ogni gruppo
-    const COLORI_GIORNO = ["rgba(59,130,246,.06)","rgba(245,158,11,.06)","rgba(16,185,129,.06)","rgba(139,92,246,.06)","rgba(239,68,68,.06)"];
-    const perGiorno = {}; const giorniOrder = [];
-    lezioni.forEach(l=>{ if(!perGiorno[l.data]){perGiorno[l.data]=[];giorniOrder.push(l.data);} perGiorno[l.data].push(l); });
-    let html2 = header + `<div style="border-radius:12px;overflow:hidden;border:1px solid var(--border)">`;
-    giorniOrder.forEach((data,gi)=>{
-      const ls = perGiorno[data]; const bg = COLORI_GIORNO[gi%COLORI_GIORNO.length];
-      const oreGiorno = Math.round(ls.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
-      const confCount    = ls.filter(l=>l.modulo&&l.confermato).length;
-      const nonConfCount = ls.filter(l=>l.modulo&&!l.confermato).length;
-      html2 += `<div style="padding:.4rem .75rem;background:${bg};border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:.75rem;font-weight:700">${esc(ls[0].dataIT.slice(0,5))} · ${esc(ls[0].giorno)}</span>
-        <span style="display:flex;gap:.35rem;align-items:center">
-          ${confCount>0?`<span style="font-size:.65rem;color:#34d399" title="${confCount} confermata/e">●${confCount}</span>`:''}
-          ${nonConfCount>0?`<span style="font-size:.65rem;color:#f87171" title="${nonConfCount} non confermata/e">●${nonConfCount}</span>`:''}
-          <span style="font-size:.7rem;color:var(--muted)">${oreGiorno}h</span>
-        </span>
-      </div>`;
-      ls.forEach(l=>{
-        const pallino = l.modulo
-          ? `<button onclick="toggleConfermaGO(${l.rowIndex},'${l.annualita}',${!l.confermato},this)"
-               style="background:none;border:2px solid ${l.confermato?'#34d399':'#f87171'};border-radius:50%;width:18px;height:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;flex-shrink:0"
-               title="${l.confermato?'Confermato — clicca per rimuovere':'Non confermato — clicca per confermare'}">
-               <span style="color:${l.confermato?'#34d399':'#f87171'};font-size:.5rem;line-height:1">●</span>
-             </button>`
-          : `<span style="width:18px;flex-shrink:0"></span>`;
-        html2 += `<div style="display:grid;grid-template-columns:55px 1fr 22px 22px;align-items:center;gap:.3rem;padding:.3rem .6rem .3rem 1.25rem;background:${bg};border-bottom:1px solid var(--border)" title="${esc(l.docente||'')} · ${esc(l.ambiente||'')}">
-          <div style="font-size:.68rem;color:var(--accent);font-weight:600">${_orario(l)}</div>
-          <div style="min-width:0">
-            <div style="font-size:.76rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:${l.modulo?'var(--text)':'var(--success)'}">
-              ${l.modulo?esc(_moduloBreve(l.modulo)):'🕐 Ora libera'}
-              ${l.annualita?`<span style="font-size:.58rem;background:${l.annualita==='1'?'rgba(16,185,129,.2)':'rgba(59,130,246,.2)'};color:${l.annualita==='1'?'#34d399':'var(--accent2)'};border-radius:3px;padding:.05rem .3rem;margin-left:.3rem;vertical-align:middle">${l.annualita}°</span>`:''}
-            </div>
-            <div style="font-size:.65rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.docente?'👤 '+esc(l.docente):''}${l.ambiente?' · '+esc(l.ambiente.substring(0,18)):''}</div>
-          </div>
-          ${pallino}
-          <button onclick="apriModificaLezione(${l.rowIndex},'${l.annualita}','${esc(l.modulo).replace(/'/g,"\'")}','${esc(l.docente).replace(/'/g,"\'")}','${esc(l.ambiente).replace(/'/g,"\'")}','${esc(l.note||"").replace(/'/g,"\'")}','${_orario(l)}')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:.8rem;padding:.1rem;border-radius:4px" title="Modifica">✏️</button>
-        </div>`;
-      });
-    });
-    html2 += `</div>`;
-    res.innerHTML = html2;
-
-  } else if (_vistaGO === "settimanale") {
-    // Raggruppa per settimana lun-ven
-    const sett = {};
-    lezioni.forEach(l => {
-      const d = new Date(l.data);
-      const dow = d.getDay()||7; // 1=lun 7=dom
-      const lun = new Date(d); lun.setDate(d.getDate()-(dow-1));
-      const key = lun.toISOString().split("T")[0];
-      if (!sett[key]) sett[key] = [];
-      sett[key].push(l);
-    });
-    res.innerHTML = header + Object.keys(sett).sort().map(lunISO => {
-      const ven = new Date(lunISO); ven.setDate(ven.getDate()+4);
-      const ls = sett[lunISO];
-      const ore = Math.round(ls.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
-      const lunIT = lunISO.split("-").reverse().join("/");
-      const venIT = ven.toISOString().split("T")[0].split("-").reverse().join("/");
-      return `<div style="margin-bottom:.75rem">
-        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
-          ${lunIT} – ${venIT} &nbsp;·&nbsp; ${ore}h
-        </div>
-        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
-          ${ls.map((l,i)=>`<div style="display:grid;grid-template-columns:60px 55px 1fr 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
-            <span style="color:var(--muted);font-weight:600">${(l.giorno||"").substring(0,3).toUpperCase()}</span>
-            <span style="color:var(--accent)">${_orario(l)}</span>
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">${esc(_moduloBreve(l.modulo))}</span>
-            <span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.docente)}</span>
-            <span style="color:${l.confermato?'#34d399':'#f87171'};font-size:.7rem" title="${l.confermato?'Confermato':'Non confermato'}">●</span>
-            <span style="font-size:.62rem;color:var(--muted)">${l.annualita?l.annualita+'°':''}</span>
-          </div>`).join("")}
-        </div>
-      </div>`;
-    }).join("");
-
-  } else if (_vistaGO === "docente") {
-    const perDoc = {};
-    lezioni.forEach(l => {
-      const k = l.docente||"—"; if (!perDoc[k]) perDoc[k]={lezioni:[],ore:0};
-      perDoc[k].lezioni.push(l); perDoc[k].ore=Math.round((perDoc[k].ore+(l.ore||0))*10)/10;
-    });
-    res.innerHTML = header + Object.keys(perDoc).sort().map(doc => {
-      const d = perDoc[doc];
-      return `<div style="margin-bottom:.75rem">
-        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
-          👤 ${esc(doc)} &nbsp;·&nbsp; ${d.lezioni.length} lezioni &nbsp;·&nbsp; ${d.ore}h
-        </div>
-        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
-          ${d.lezioni.map((l,i)=>`<div style="display:grid;grid-template-columns:80px 55px 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
-            <span style="color:var(--muted)">${esc(l.dataIT.slice(0,5))}</span>
-            <span style="color:var(--accent)">${_orario(l)}</span>
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600">${esc(_moduloBreve(l.modulo))}</span>
-          </div>`).join("")}
-        </div>
-      </div>`;
-    }).join("");
-
-  } else if (_vistaGO === "uf") {
-    const perUF = {};
-    lezioni.forEach(l => {
-      const k = l.modulo||"—"; if (!perUF[k]) perUF[k]={lezioni:[],ore:0};
-      perUF[k].lezioni.push(l); perUF[k].ore=Math.round((perUF[k].ore+(l.ore||0))*10)/10;
-    });
-    res.innerHTML = header + Object.keys(perUF).sort().map(uf => {
-      const u = perUF[uf];
-      return `<div style="margin-bottom:.75rem">
-        <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem">
-          📚 ${esc(uf)} &nbsp;·&nbsp; ${u.ore}h
-        </div>
-        <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
-          ${u.lezioni.map((l,i)=>`<div style="display:grid;grid-template-columns:80px 55px 1fr;gap:.4rem;padding:.35rem .6rem;font-size:.72rem;${i%2===0?'':'background:var(--surface2)'}">
-            <span style="color:var(--muted)">${esc(l.dataIT.slice(0,5))}</span>
-            <span style="color:var(--accent)">${_orario(l)}</span>
-            <span style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.docente)}</span>
-          </div>`).join("")}
-        </div>
-      </div>`;
-    }).join("");
+async function salvaLezioniGO() {
+  const errEl=document.getElementById("go-ins-err");
+  const okEl=document.getElementById("go-ins-ok");
+  if(errEl) errEl.classList.add("hide");
+  if(okEl) okEl.classList.add("hide");
+  const annualita=$("go-anno")?$("go-anno").value:"2";
+  const ufGlob=$("go-uf-glob")?$("go-uf-glob").value:"";
+  if(!ufGlob){showErr("go-ins-err","Seleziona la UF di riferimento.");return;}
+  const rows=Array.from(document.getElementById("go-righe-container").children);
+  const lezDaSalvare=[];
+  for(let i=0;i<rows.length;i++){
+    const inp=rows[i].querySelectorAll("input");
+    const data=inp[0].value.trim(), dalleRaw=inp[1].value.trim(), alleRaw=inp[2].value.trim();
+    const docente=inp[3].value.trim(), ambiente=inp[4].value.trim(), note=inp[5].value.trim();
+    const ripeti=parseInt(inp[6].value)||1;
+    if(!data&&!dalleRaw) continue;
+    const dalle=parseOra(dalleRaw), alle=parseOra(alleRaw);
+    if(!data){showErr("go-ins-err",`Riga ${i+1}: data mancante.`);return;}
+    if(!dalle||!alle||isNaN(dalle)||isNaN(alle)){showErr("go-ins-err",`Riga ${i+1}: orario non valido.`);return;}
+    if(alle<=dalle){showErr("go-ins-err",`Riga ${i+1}: ora fine deve essere dopo l'inizio.`);return;}
+    if(!docente){showErr("go-ins-err",`Riga ${i+1}: docente mancante.`);return;}
+    lezDaSalvare.push({data,dalle,alle,modulo:ufGlob,docente,ambiente,note,ripeti,annualita});
   }
+  if(!lezDaSalvare.length){showErr("go-ins-err","Nessuna riga compilata.");return;}
+  const btn=document.querySelector("#go-pane-inserisci .btn-primary");
+  if(btn){btn.disabled=true;btn.textContent="Salvataggio...";}
+  let salvate=0, conflittiTot=[];
+  for(const p of lezDaSalvare){
+    const res=await api("inserisciLezione",p);
+    if(res.success) salvate+=(res.count||1);
+    else if(res.message==="CONFLITTO"&&res.conflitti) conflittiTot.push({p,conflitti:res.conflitti});
+  }
+  if(btn){btn.disabled=false;btn.textContent="💾 Salva tutte le lezioni";}
+  if(conflittiTot.length>0){
+    window._pendingLezioni=conflittiTot;
+    window._pendingLezioneIdx=0;
+    window._pendingSalvate=salvate;
+    _mostraConflittoMultiplo();
+    return;
+  }
+  if(okEl){okEl.textContent=`✅ ${salvate} fasce orarie salvate.`;okEl.classList.remove("hide");setTimeout(()=>okEl.classList.add("hide"),5000);}
+  aggiornaUFGlob();
 }
+
+function _mostraConflittoMultiplo() {
+  const item=window._pendingLezioni[window._pendingLezioneIdx];
+  if(!item) return;
+  const idx=window._pendingLezioneIdx+1, tot=window._pendingLezioni.length;
+  const lista=item.conflitti.map(c=>`<div style="padding:.3rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--warning)">⏰ ${c.dalle}–${c.alle}</span><span style="font-weight:600;margin-left:.4rem">${c.modulo}</span>${c.docente?`<span style="color:var(--muted);margin-left:.3rem">(${c.docente})</span>`:""}</div>`).join("");
+  const el=document.getElementById("conflitto-lista");
+  if(el) el.innerHTML=`<div style="font-size:.75rem;color:var(--muted);margin-bottom:.5rem">Conflitto ${idx} di ${tot}</div>`+lista;
+  openModal("modal-conflitto");
+}
+
+async function salvaLezioneGO() { await salvaLezioniGO(); }
 
 async function eliminaLezioneGO(rowIndex, annualita) {
   if (!confirm("Eliminare questa lezione dal calendario?")) return;
@@ -1807,22 +1589,35 @@ async function eliminaLezioneGO(rowIndex, annualita) {
   else alert(r.message);
 }
 
+
 async function confermaSovrascrittura() {
   chiudiModal("modal-conflitto");
-  if (!window._pendingLezione) return;
-  const p = window._pendingLezione;
-  window._pendingLezione = null;
-  const btn = document.querySelector("#go-pane-inserisci .btn-primary");
-  if (btn) { btn.disabled = true; btn.textContent = "Salvataggio..."; }
-  const res = await api("inserisciLezione", { ...p, forza: true });
-  if (btn) { btn.disabled = false; btn.textContent = "💾 Salva lezione"; }
-  if (!res.success) { showErr("go-ins-err", res.message); return; }
-  const okEl = document.getElementById("go-ins-ok");
-  if (okEl) {
-    okEl.textContent = "✅ " + res.count + " lezione/i salvate (sovrascrittura).";
-    okEl.classList.remove("hide");
-    setTimeout(()=>okEl.classList.add("hide"), 4000);
+  // Caso multi-riga
+  if (window._pendingLezioni) {
+    const item=window._pendingLezioni[window._pendingLezioneIdx];
+    if(item) {
+      await api("inserisciLezione",{...item.p,forza:true});
+      window._pendingSalvate=(window._pendingSalvate||0)+(item.p.ripeti||1);
+    }
+    window._pendingLezioneIdx++;
+    if(window._pendingLezioneIdx<window._pendingLezioni.length) { _mostraConflittoMultiplo(); return; }
+    const okEl=document.getElementById("go-ins-ok");
+    if(okEl){okEl.textContent=`✅ ${window._pendingSalvate} fasce orarie salvate (con sovrascrittura).`;okEl.classList.remove("hide");setTimeout(()=>okEl.classList.add("hide"),5000);}
+    window._pendingLezioni=null;
+    aggiornaUFGlob();
+    return;
   }
+  // Caso singola lezione (legacy)
+  if (!window._pendingLezione) return;
+  const p=window._pendingLezione; window._pendingLezione=null;
+  const btn=document.querySelector("#go-pane-inserisci .btn-primary");
+  if(btn){btn.disabled=true;btn.textContent="Salvataggio...";}
+  const res=await api("inserisciLezione",{...p,forza:true});
+  if(btn){btn.disabled=false;btn.textContent="💾 Salva tutte le lezioni";}
+  if(!res.success){showErr("go-ins-err",res.message);return;}
+  const okEl=document.getElementById("go-ins-ok");
+  if(okEl){okEl.textContent="✅ Lezione salvata (sovrascrittura).";okEl.classList.remove("hide");setTimeout(()=>okEl.classList.add("hide"),4000);}
+  aggiornaUFGlob();
 }
 
 async function toggleConfermaGO(rowIndex, annualita, nuovoStato, btn) {
