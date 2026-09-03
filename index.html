@@ -1525,20 +1525,18 @@ async function salvaLezioneGO() {
 
   // Gestione conflitti
   if (!res.success && res.message === "CONFLITTO" && res.conflitti) {
+    // Salva i parametri per la sovrascrittura
+    window._pendingLezione = { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita };
+    // Mostra lista conflitti nel modal
     const lista = res.conflitti.map(c =>
-      `• ${c.data} ${c.dalle}-${c.alle}: ${c.modulo}${c.docente?" ("+c.docente+")":""}`
-    ).join("\n");
-    const sovrascrivi = confirm(
-      "⚠️ Attenzione! Nelle fasce orarie selezionate sono già presenti queste lezioni:\n\n" +
-      lista + "\n\n" +
-      "Vuoi sovrascriverle?"
-    );
-    if (!sovrascrivi) { return; }
-    // Rilancia con forza=true
-    const res2 = await api("inserisciLezione", { data, dalle, alle, modulo, docente, ambiente, note, ripeti, annualita, forza: true });
-    if (!res2.success) return showErr("go-ins-err", res2.message);
-    const okEl3 = document.getElementById("go-ins-ok");
-    if (okEl3) { okEl3.textContent = `✅ ${res2.count} lezione/i salvate (sovrascrittura).`; okEl3.classList.remove("hide"); setTimeout(()=>okEl3.classList.add("hide"),4000); }
+      `<div style="padding:.3rem 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--warning)">⏰ ${c.dalle}–${c.alle}</span>
+        <span style="font-weight:600;margin-left:.4rem">${c.modulo}</span>
+        ${c.docente?`<span style="color:var(--muted);margin-left:.3rem">(${c.docente})</span>`:''}
+      </div>`
+    ).join("");
+    document.getElementById("conflitto-lista").innerHTML = lista;
+    openModal("modal-conflitto");
     return;
   }
 
@@ -1625,7 +1623,7 @@ function renderGOVisualizza() {
       </div>
       <div style="display:flex;gap:.5rem">
         <button class="btn btn-primary" style="flex:1" onclick="cercaLezioni()">🔍 Cerca</button>
-        <button class="btn btn-outline" onclick="esportaOrario()" title="Esporta CSV">⬇️ CSV</button>
+        <button class="btn btn-outline" onclick="esportaOrario()" title="Esporta PDF">📄 PDF</button>
       </div>
     </div>
     <div id="go-vis-result"></div>`;
@@ -1809,6 +1807,24 @@ async function eliminaLezioneGO(rowIndex, annualita) {
   else alert(r.message);
 }
 
+async function confermaSovrascrittura() {
+  chiudiModal("modal-conflitto");
+  if (!window._pendingLezione) return;
+  const p = window._pendingLezione;
+  window._pendingLezione = null;
+  const btn = document.querySelector("#go-pane-inserisci .btn-primary");
+  if (btn) { btn.disabled = true; btn.textContent = "Salvataggio..."; }
+  const res = await api("inserisciLezione", { ...p, forza: true });
+  if (btn) { btn.disabled = false; btn.textContent = "💾 Salva lezione"; }
+  if (!res.success) { showErr("go-ins-err", res.message); return; }
+  const okEl = document.getElementById("go-ins-ok");
+  if (okEl) {
+    okEl.textContent = "✅ " + res.count + " lezione/i salvate (sovrascrittura).";
+    okEl.classList.remove("hide");
+    setTimeout(()=>okEl.classList.add("hide"), 4000);
+  }
+}
+
 async function toggleConfermaGO(rowIndex, annualita, nuovoStato, btn) {
   // Aggiorna cache locale subito (UI ottimistica)
   const l = _lezioniCache.find(x=>x.rowIndex===parseInt(rowIndex));
@@ -1952,25 +1968,107 @@ async function salvaModificaLezione() {
 // ══ EXPORT ORARIO ══
 function esportaOrario() {
   if (!_lezioniCache.length) { alert("Nessuna lezione da esportare. Prima esegui una ricerca."); return; }
-  const filtroDocente = $("go-vis-doc") ? $("go-vis-doc").value.trim() : "";
-  const da = $("go-vis-da") ? $("go-vis-da").value : "";
-  const a  = $("go-vis-a")  ? $("go-vis-a").value : "";
 
-  // Crea CSV
-  const righe = [["Data","Giorno","Dalle","Alle","Ore","UF/Modulo","Docente","Ambiente","Note","Anno"]];
+  const filtroUF  = $("go-vis-uf")  ? $("go-vis-uf").value.trim()  : "";
+  const filtroDoc = $("go-vis-doc") ? $("go-vis-doc").value.trim() : "";
+  const da = $("go-vis-da") ? $("go-vis-da").value : "";
+  const a  = $("go-vis-a")  ? $("go-vis-a").value  : "";
+
+  // Titolo calendarizzazione
+  const ufTitolo = filtroUF || (filtroDoc ? "Docente: "+filtroDoc : "Tutte le UF");
+  const periodoStr = (da||a) ? ((da?da.split("-").reverse().join("/"):"")+(a?" – "+a.split("-").reverse().join("/"):"")) : "";
+
+  // Raggruppa per data
+  const perData = {};
   _lezioniCache.forEach(l => {
-    righe.push([l.dataIT, l.giorno, l.dalleStr, l.alleStr, l.ore, l.modulo, l.docente, l.ambiente, l.note, l.annualita+"° anno"]);
+    if (!perData[l.data]) perData[l.data] = [];
+    perData[l.data].push(l);
   });
-  const csv = righe.map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a2 = document.createElement("a");
-  const nomeFile = "orario" + (filtroDocente?"_"+filtroDocente:"") + (da?"_dal_"+da:"") + (a?"_al_"+a:"") + ".csv";
-  a2.href=url; a2.download=nomeFile; a2.click();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+
+  // Costruisci righe tabella
+  const righeHtml = Object.keys(perData).sort().map(data => {
+    const ls = perData[data];
+    const oreGiorno = Math.round(ls.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
+    return `<tr style="background:#e8f0fe">
+      <td colspan="6" style="padding:6px 10px;font-weight:700;font-size:12px;border:1px solid #c0c8e0">
+        ${ls[0].dataIT} &nbsp;·&nbsp; ${ls[0].giorno} &nbsp;·&nbsp; ${oreGiorno}h
+      </td>
+    </tr>` + ls.map(l => `<tr>
+      <td style="padding:5px 10px;border:1px solid #dde">${l.dalleStr||""} – ${l.alleStr||""}</td>
+      <td style="padding:5px 10px;border:1px solid #dde;font-weight:600">${l.modulo||""}</td>
+      <td style="padding:5px 10px;border:1px solid #dde">${l.docente||""}</td>
+      <td style="padding:5px 10px;border:1px solid #dde">${l.ambiente||""}</td>
+      <td style="padding:5px 10px;border:1px solid #dde">${l.ore||""}h</td>
+      <td style="padding:5px 10px;border:1px solid #dde;color:${l.confermato?"#1a7a4a":"#c0392b"}">${l.confermato?"✔ Confermato":"○ Da confermare"}</td>
+    </tr>`).join("");
+  }).join("");
+
+  const totOre = Math.round(_lezioniCache.reduce((s,l)=>s+(l.ore||0),0)*10)/10;
+
+  const html = `<!DOCTYPE html><html lang="it"><head>
+  <meta charset="UTF-8">
+  <title>Calendarizzazione ${ufTitolo}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #1a1a2e; }
+    .header { display: flex; align-items: center; gap: 20px; border-bottom: 3px solid #0a3d8f; padding-bottom: 15px; margin-bottom: 20px; }
+    .logo { height: 70px; }
+    .titolo h1 { margin: 0; font-size: 18px; color: #0a3d8f; }
+    .titolo h2 { margin: 4px 0 0; font-size: 14px; color: #444; font-weight: normal; }
+    .meta { font-size: 11px; color: #666; margin-bottom: 15px; }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { background: #0a3d8f; color: white; padding: 8px 10px; text-align: left; border: 1px solid #0a3d8f; }
+    tr:nth-child(even) td { background: #f7f9ff; }
+    .footer { margin-top: 20px; font-size: 10px; color: #999; border-top: 1px solid #dde; padding-top: 10px; }
+    @media print { body { margin: 0; } @page { margin: 1.5cm; } }
+  </style>
+  </head><body>
+  <div class="header">
+    <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Logo">
+    <div class="titolo">
+      <h1>Calendarizzazione</h1>
+      <h2>${ufTitolo}</h2>
+    </div>
+  </div>
+  <div class="meta">
+    ${periodoStr ? "Periodo: <strong>"+periodoStr+"</strong> &nbsp;·&nbsp;" : ""}
+    Totale: <strong>${_lezioniCache.length} lezioni</strong> · <strong>${totOre}h</strong>
+    ${filtroDoc?" &nbsp;·&nbsp; Docente: <strong>"+filtroDoc+"</strong>":""}
+    &nbsp;·&nbsp; Generato il: <strong>${new Date().toLocaleDateString("it-IT")}</strong>
+  </div>
+  <table>
+    <thead><tr>
+      <th>Orario</th><th>UF / Modulo</th><th>Docente</th><th>Sede / Ambiente</th><th>Ore</th><th>Stato</th>
+    </tr></thead>
+    <tbody>${righeHtml}</tbody>
+  </table>
+  <div class="footer">ITS Meccanica e Meccatronica Lombardia &nbsp;·&nbsp; Documento generato automaticamente dall'app ITSApp</div>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  w.document.write(html);
+  w.document.close();
+  w.onload = function() { w.focus(); w.print(); };
 }
 
 </script>
+<!-- ══════ MODAL CONFLITTO LEZIONE ══════ -->
+<div id="modal-conflitto" class="modal-overlay hide">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h4>⚠️ Conflitto orario</h4>
+      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-conflitto')">✕</button>
+    </div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem">
+      Nelle fasce orarie selezionate sono già presenti le seguenti lezioni:
+    </p>
+    <div id="conflitto-lista" style="background:var(--surface2);border-radius:10px;padding:.75rem;margin-bottom:1rem;font-size:.82rem;max-height:200px;overflow-y:auto"></div>
+    <p style="font-size:.82rem;margin-bottom:1rem">Vuoi sovrascriverle con la nuova lezione?</p>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn btn-outline" style="flex:1" onclick="chiudiModal('modal-conflitto')">Annulla</button>
+      <button class="btn btn-danger" style="flex:1" onclick="confermaSovrascrittura()">Sovrascrivi</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
