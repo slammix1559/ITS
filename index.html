@@ -1380,61 +1380,12 @@ function mostraLezioni(lezioni) {
     </div>
   </div>
 </div>
-<!-- ══════ MODAL INSERISCI LEZIONE ══════ -->
-<div id="modal-lezione" class="modal-overlay hide">
-  <div class="modal-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h4>📝 Inserisci lezione</h4>
-      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-lezione')">✕</button>
-    </div>
-    <div class="form-group">
-      <label>Data *</label>
-      <input type="date" id="lez-data">
-    </div>
-    <div class="grid-2" style="gap:.75rem">
-      <div class="form-group">
-        <label>Dalle (ora) *</label>
-        <input type="number" id="lez-dalle" min="8" max="22" step="0.5" placeholder="es. 14">
-      </div>
-      <div class="form-group">
-        <label>Alle (ora) *</label>
-        <input type="number" id="lez-alle" min="8" max="23" step="0.5" placeholder="es. 17">
-      </div>
-    </div>
-    <div class="form-group">
-      <label>UF / Modulo *</label>
-      <select id="lez-uf"><option value="">-- Seleziona UF --</option></select>
-    </div>
-    <div class="form-group">
-      <label>Docente *</label>
-      <input type="text" id="lez-docente" placeholder="Cognome Nome" list="lez-docenti-list" autocomplete="off">
-      <datalist id="lez-docenti-list"></datalist>
-    </div>
-    <div class="form-group">
-      <label>Sede / Ambiente</label>
-      <input type="text" id="lez-ambiente" placeholder="es. Aula 1, Laboratorio...">
-    </div>
-    <div class="form-group">
-      <label>Note</label>
-      <input type="text" id="lez-note" placeholder="Opzionale">
-    </div>
-    <div class="form-group">
-      <label>Ripeti per <span id="ripeti-val">1</span> settimana/e</label>
-      <input type="range" id="lez-ripeti" min="1" max="20" value="1"
-        oninput="document.getElementById('ripeti-val').textContent=this.value"
-        style="width:100%;accent-color:var(--accent)">
-    </div>
-    <div id="lez-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
-    <button class="btn btn-primary" style="width:100%" onclick="salvaLezione()">💾 Salva lezione</button>
-  </div>
-</div>
+
 
 <script>
 // ══════ GESTIONE ORARIO ITS ══════
 let _ufList = [];
 let _docentiOrario = [];
-let _lezioniCache = [];
-let _lezioniOreLibere = [];
 let _analisiCache = null;
 let _gestioneOrarioTab = "inserisci"; // inserisci | visualizza | analisi
 
