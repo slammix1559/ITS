@@ -1410,8 +1410,66 @@ function switchGOTab(tab, btn) {
     if (p) p.classList.toggle("hide", t !== tab);
   });
   _gestioneOrarioTab = tab;
-  if (tab === "visualizza") renderGOVisualizza();
-  if (tab === "analisi") renderGOAnalisi();
+  if (tab === "visualizza") { if(typeof renderGOVisualizza==="function") renderGOVisualizza(); }
+  if (tab === "analisi")    { if(typeof renderGOAnalisi==="function")    renderGOAnalisi(); }
+}
+
+function renderGOVisualizza() {
+  const pane = $("go-pane-visualizza");
+  if (!pane) return;
+  const oggi = new Date().toISOString().split("T")[0];
+  const tra30 = new Date(); tra30.setDate(tra30.getDate()+30);
+  const tra30ISO = tra30.toISOString().split("T")[0];
+  const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
+  const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">`).join("");
+  pane.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0"><label>Dal</label><input type="date" id="go-vis-da" value="${oggi}"></div>
+        <div class="form-group" style="margin-bottom:0"><label>Al</label><input type="date" id="go-vis-a" value="${tra30ISO}"></div>
+      </div>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Anno</label>
+          <select id="go-vis-anno">
+            <option value="">Entrambi</option>
+            <option value="1">1° Anno</option>
+            <option value="2">2° Anno</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Filtra per UF</label>
+          <select id="go-vis-uf">
+            <option value="">Tutte le UF</option>
+            ${ufOpts}
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Filtra per docente</label>
+          <input type="text" id="go-vis-doc" placeholder="Nome docente..." list="go-vis-docenti-list">
+          <datalist id="go-vis-docenti-list">${docOpts}</datalist>
+        </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:.35rem">
+          <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.82rem;color:var(--text)">
+            <input type="checkbox" id="go-vis-tutte" style="width:16px;height:16px;accent-color:var(--accent)">
+            Mostra ore libere
+          </label>
+        </div>
+      </div>
+      <div class="tab-row" style="margin-bottom:.75rem">
+        <button class="tab-btn active" id="vis-tab-lista" onclick="switchVistaGO('lista',this)">📋 Lista</button>
+        <button class="tab-btn" id="vis-tab-settimanale" onclick="switchVistaGO('settimanale',this)">📅 Settimanale</button>
+        <button class="tab-btn" id="vis-tab-docente" onclick="switchVistaGO('docente',this)">👤 Per docente</button>
+        <button class="tab-btn" id="vis-tab-uf" onclick="switchVistaGO('uf',this)">📚 Per UF</button>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-primary" style="flex:1" onclick="cercaLezioni()">🔍 Cerca</button>
+        <button class="btn btn-outline" onclick="esportaOrario()" title="Esporta PDF">📄 PDF</button>
+      </div>
+    </div>
+    <div id="go-vis-result"></div>`;
 }
 
 function renderGOInserisci() {
