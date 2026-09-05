@@ -1447,10 +1447,12 @@ function renderGOPianifica() {
   const anno = oggi.getFullYear();
   const mese = oggi.getMonth() + 1;
   const MESI = ["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+  const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
+  const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
 
   pane.innerHTML = `
     <div class="card" style="margin-bottom:1rem">
-      <div class="grid-2" style="gap:.75rem">
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
         <div class="form-group" style="margin-bottom:0">
           <label>Anno</label>
           <select id="go-anno">
@@ -1465,12 +1467,39 @@ function renderGOPianifica() {
           </select>
         </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="caricaSlotsMese()">📅 Carica orario</button>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Filtra per UF</label>
+          <select id="go-filtro-uf">
+            <option value="">Tutte le UF</option>
+            ${ufOpts}
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Filtra per docente</label>
+          <select id="go-filtro-doc">
+            <option value="">Tutti i docenti</option>
+            ${docOpts}
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+        <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;font-size:.85rem">
+          <input type="checkbox" id="go-filtro-libere" style="width:16px;height:16px;accent-color:var(--accent)">
+          Mostra solo ore libere
+        </label>
+      </div>
+      <div style="display:flex;gap:.5rem">
+        <button class="btn btn-primary" style="flex:1" onclick="caricaSlotsMese()">📅 Carica orario</button>
+        <button class="btn btn-outline" onclick="esportaSlotsPDF()" title="Esporta PDF">📄 PDF</button>
+      </div>
     </div>
     <div id="go-slots-result"></div>`;
 
   caricaSlotsMese();
 }
+
+let _slotsCache = [];
 
 async function caricaSlotsMese() {
   const pane = document.getElementById("go-slots-result");
@@ -1480,12 +1509,16 @@ async function caricaSlotsMese() {
   if (!meseEl) return;
   const meseVal = meseEl.value;
   const annoNum = new Date().getFullYear();
+  const filtroUF  = $("go-filtro-uf")     ? $("go-filtro-uf").value     : "";
+  const filtroDoc = $("go-filtro-doc")    ? $("go-filtro-doc").value    : "";
+  const soloLibere= $("go-filtro-libere") ? $("go-filtro-libere").checked : false;
 
   pane.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div><p class="text-muted" style="margin-top:.5rem">Caricamento orario...</p></div>`;
 
-  const r = await api("getSlotsMese", { anno: annoNum, mese: meseVal, annualita: anno });
+  const r = await api("getSlotsMese", { anno: annoNum, mese: meseVal, annualita: anno, filtroUF, filtroDoc, soloLibere });
   if (!r.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
-  if (!r.giorni || !r.giorni.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo mese.</div>`; return; }
+  _slotsCache = r.giorni || [];
+  if (!_slotsCache.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo mese/filtro.</div>`; return; }
 
   const MESI_BREVI = ["","Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
   let html = "";
@@ -1671,6 +1704,65 @@ async function salvaPopupSlotForza() {
   await api("toggleConferma", { rowIndex: rowStart, annualita, confermato });
   chiudiModal("modal-slot");
   caricaSlotsMese();
+}
+
+// ── Export PDF slots ──
+function esportaSlotsPDF() {
+  if (!_slotsCache || !_slotsCache.length) { alert("Carica prima l'orario."); return; }
+  const annoEl = $("go-anno"), meseEl = $("go-mese");
+  const filtroUF  = $("go-filtro-uf")     ? $("go-filtro-uf").options[$("go-filtro-uf").selectedIndex].text     : "";
+  const filtroDoc = $("go-filtro-doc")    ? $("go-filtro-doc").options[$("go-filtro-doc").selectedIndex].text    : "";
+  const soloLib   = $("go-filtro-libere") ? $("go-filtro-libere").checked : false;
+  const annoTxt   = annoEl  ? annoEl.options[annoEl.selectedIndex].text   : "";
+  const meseTxt   = meseEl  ? meseEl.options[meseEl.selectedIndex].text   : "";
+
+  let titolo = "Orario " + annoTxt + " — " + meseTxt;
+  if (filtroUF  && filtroUF  !== "Tutte le UF")       titolo += " | " + filtroUF;
+  if (filtroDoc && filtroDoc !== "Tutti i docenti")    titolo += " | " + filtroDoc;
+  if (soloLib)                                          titolo += " | Solo ore libere";
+
+  const MESI_IT = ["","Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+
+  let righeHtml = "";
+  _slotsCache.forEach(g => {
+    const oreOcc = Math.round(g.blocchi.filter(b=>b.modulo).reduce((s,b)=>s+(b.ore||0),0)*10)/10;
+    const oreTot = Math.round(g.blocchi.reduce((s,b)=>s+(b.ore||0),0)*10)/10;
+    righeHtml += `<tr style="background:#e8f0fe"><td colspan="5" style="padding:5px 10px;font-weight:700;font-size:12px;border:1px solid #c0c8e0">
+      ${g.dataIT} · ${g.giorno} — ${oreOcc}/${oreTot}h occupate
+    </td></tr>`;
+    g.blocchi.forEach(b => {
+      const vuoto = !b.modulo;
+      const bg = vuoto ? "#fff" : (b.confermato ? "#f0fdf4" : "#f0f7ff");
+      righeHtml += `<tr style="background:${bg}">
+        <td style="padding:4px 8px;border:1px solid #dde;color:#1a6fcd;font-weight:600">${b.dalleStr}–${b.alleStr}</td>
+        <td style="padding:4px 8px;border:1px solid #dde;font-weight:${vuoto?'normal':'600'};color:${vuoto?'#aaa':'inherit'}">${vuoto?"— Slot libero —":b.modulo}</td>
+        <td style="padding:4px 8px;border:1px solid #dde">${b.docente||""}</td>
+        <td style="padding:4px 8px;border:1px solid #dde">${b.ambiente||""}</td>
+        <td style="padding:4px 8px;border:1px solid #dde;text-align:center">${b.modulo?(b.confermato?"✔":"○"):""}</td>
+      </tr>`;
+    });
+  });
+
+  const html = `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8">
+  <title>${titolo}</title>
+  <style>body{font-family:Arial,sans-serif;margin:0;padding:20px;color:#1a1a2e}
+  .header{display:flex;align-items:center;gap:20px;border-bottom:3px solid #0a3d8f;padding-bottom:15px;margin-bottom:20px}
+  .logo{height:65px}.titolo h1{margin:0;font-size:17px;color:#0a3d8f}.titolo h2{margin:3px 0 0;font-size:13px;color:#555;font-weight:normal}
+  table{width:100%;border-collapse:collapse;font-size:11px}th{background:#0a3d8f;color:white;padding:7px 8px;text-align:left;border:1px solid #0a3d8f}
+  .footer{margin-top:15px;font-size:10px;color:#999;border-top:1px solid #dde;padding-top:8px}
+  @media print{body{margin:0}@page{margin:1.5cm}}</style></head><body>
+  <div class="header">
+    <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS">
+    <div class="titolo"><h1>${titolo}</h1><h2>ITS Meccanica e Meccatronica Lombardia</h2></div>
+  </div>
+  <table><thead><tr><th>Orario</th><th>UF / Modulo</th><th>Docente</th><th>Sede</th><th>Stato</th></tr></thead>
+  <tbody>${righeHtml}</tbody></table>
+  <div class="footer">Generato il ${new Date().toLocaleDateString("it-IT")} · ITSApp</div>
+  </body></html>`;
+
+  const w = window.open("","_blank");
+  w.document.write(html); w.document.close();
+  w.onload = function(){ w.focus(); w.print(); };
 }
 
 // ── Abbinamenti UF-Docente ──
