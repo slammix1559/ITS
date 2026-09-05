@@ -1397,47 +1397,373 @@ async function renderGestioneOrario() {
       <p class="text-muted">Gestisci le lezioni del calendario ITS</p>
     </div>
     <div class="tab-row" style="margin-bottom:1.25rem">
-      <button class="tab-btn active" id="got-inserisci" onclick="switchGOTab('inserisci',this)">➕ Inserisci</button>
-      <button class="tab-btn" id="got-visualizza" onclick="switchGOTab('visualizza',this)">📋 Visualizza</button>
+      <button class="tab-btn active" id="got-pianifica" onclick="switchGOTab('pianifica',this)">📅 Pianifica orario</button>
+      <button class="tab-btn" id="got-abbinamenti" onclick="switchGOTab('abbinamenti',this)">🔗 Abbinamenti UF-Docente</button>
       <button class="tab-btn" id="got-analisi" onclick="switchGOTab('analisi',this)">📊 Analisi</button>
     </div>
-    <div id="go-pane-inserisci"></div>
-    <div id="go-pane-visualizza" class="hide"></div>
-    <div id="go-pane-analisi" class="hide"></div>`;
+    <div id="go-pane-pianifica"></div>
+    <div id="go-pane-abbinamenti" class="hide"></div>
+    <div id="go-pane-analisi" class="hide"></div>
+    `;
 
-  // Carica UF e docenti in parallelo
-  pane.querySelector("#go-pane-inserisci").innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  // Carica UF di entrambi gli anni e docenti
-  const [ruf1, ruf2, rdoc1, rdoc2] = await Promise.all([
+  // Carica UF, docenti e abbinamenti in parallelo
+  const [ruf1, ruf2, rdoc1, rdoc2, rabb] = await Promise.all([
     api("getUF", {annualita:"1"}),
     api("getUF", {annualita:"2"}),
     api("getDocentiOrario", {annualita:"1"}),
-    api("getDocentiOrario", {annualita:"2"})
+    api("getDocentiOrario", {annualita:"2"}),
+    api("getAbbinamenti", {})
   ]);
-  // Unisci UF con info annualità
-  const uf1 = (ruf1.uf||[]).map(u=>({...u, anni:"1"}));
-  const uf2 = (ruf2.uf||[]).map(u=>({...u, anni:"2"}));
-  // Unisci evitando duplicati (stesso nome)
+  const uf1 = (ruf1.uf||[]).map(u=>({...u,anni:"1"}));
+  const uf2 = (ruf2.uf||[]).map(u=>({...u,anni:"2"}));
   const ufMap = {};
   [...uf1,...uf2].forEach(u=>{ if(!ufMap[u.nome]) ufMap[u.nome]={...u,anni:[]}; if(!ufMap[u.nome].anni.includes(u.anni)) ufMap[u.nome].anni.push(u.anni); });
   _ufList = Object.values(ufMap).sort((a,b)=>a.nome.localeCompare(b.nome));
-  // Unisci docenti
   const docSet = new Set([...(rdoc1.docenti||[]),...(rdoc2.docenti||[])]);
   _docentiOrario = [...docSet].sort();
-  renderGOInserisci();
+  _abbinamenti = rabb.abbinamenti || [];
+
+  renderGOPianifica();
 }
 
+
 function switchGOTab(tab, btn) {
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("#pane-gestione-orario .tab-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  ["inserisci","visualizza","analisi"].forEach(t => {
-    const p = $("go-pane-"+t);
-    if (p) p.classList.toggle("hide", t !== tab);
+  ["pianifica","abbinamenti","analisi"].forEach(t=>{
+    const p=document.getElementById("go-pane-"+t);
+    if(p) p.classList.toggle("hide", t!==tab);
   });
   _gestioneOrarioTab = tab;
-  if (tab === "visualizza") { if(typeof renderGOVisualizza==="function") renderGOVisualizza(); }
-  if (tab === "analisi")    { if(typeof renderGOAnalisi==="function")    renderGOAnalisi(); }
+  if (tab==="pianifica")    renderGOPianifica();
+  if (tab==="abbinamenti")  renderGOAbbinamenti();
+  if (tab==="analisi")      renderGOAnalisi();
 }
+
+function renderGOPianifica() {
+  const pane = document.getElementById("go-pane-pianifica");
+  if (!pane) return;
+  const oggi = new Date();
+  const anno = oggi.getFullYear();
+  const mese = oggi.getMonth() + 1;
+  const MESI = ["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+  pane.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="grid-2" style="gap:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Anno</label>
+          <select id="go-anno">
+            <option value="1">1° Anno</option>
+            <option value="2" selected>2° Anno</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Mese</label>
+          <select id="go-mese">
+            ${[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>`<option value="${m}" ${m===mese?"selected":""}>${MESI[m]} ${anno}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:.75rem" onclick="caricaSlotsMese()">📅 Carica orario</button>
+    </div>
+    <div id="go-slots-result"></div>`;
+
+  caricaSlotsMese();
+}
+
+async function caricaSlotsMese() {
+  const pane = document.getElementById("go-slots-result");
+  if (!pane) return;
+  const anno = $("go-anno") ? $("go-anno").value : "2";
+  const meseEl = $("go-mese");
+  if (!meseEl) return;
+  const meseVal = meseEl.value;
+  const annoNum = new Date().getFullYear();
+
+  pane.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div><p class="text-muted" style="margin-top:.5rem">Caricamento orario...</p></div>`;
+
+  const r = await api("getSlotsMese", { anno: annoNum, mese: meseVal, annualita: anno });
+  if (!r.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
+  if (!r.giorni || !r.giorni.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo mese.</div>`; return; }
+
+  const MESI_BREVI = ["","Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
+  let html = "";
+
+  r.giorni.forEach(g => {
+    const oreOccupate = Math.round(g.blocchi.filter(b=>b.modulo).reduce((s,b)=>s+(b.ore||0),0)*10)/10;
+    const oreTot = Math.round(g.blocchi.reduce((s,b)=>s+(b.ore||0),0)*10)/10;
+
+    html += `<div class="schedule-day" style="margin-bottom:1rem">
+      <div class="day-label" style="display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem">
+        <span style="font-size:.8rem;font-weight:700">${esc(g.dataIT)} · ${esc(g.giorno)}</span>
+        <span style="font-size:.7rem;color:var(--muted)">${oreOccupate}/${oreTot}h</span>
+        <span style="flex:1;height:1px;background:var(--border)"></span>
+      </div>`;
+
+    g.blocchi.forEach(b => {
+      const vuoto = !b.modulo;
+      const bg = vuoto ? "rgba(255,255,255,.02)" : (b.confermato ? "rgba(16,185,129,.07)" : "rgba(59,130,246,.07)");
+      const borderCol = vuoto ? "var(--border)" : (b.confermato ? "#34d399" : "var(--accent)");
+
+      html += `<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:${bg};border-left:3px solid ${borderCol};border-radius:0 8px 8px 0;margin-bottom:.3rem">
+        <div style="min-width:90px;font-size:.75rem;color:var(--accent);font-weight:600">${esc(b.dalleStr)}–${esc(b.alleStr)}</div>
+        <div style="flex:1;min-width:0">
+          ${vuoto
+            ? `<span style="color:var(--muted);font-size:.78rem;font-style:italic">🕐 Slot libero</span>`
+            : `<div style="font-size:.78rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.modulo)}</div>
+               <div style="font-size:.68rem;color:var(--muted)">${b.docente?'👤 '+esc(b.docente):''}${b.ambiente?' · '+esc(b.ambiente.substring(0,20)):''}</div>`
+          }
+        </div>
+        ${!vuoto ? `<span style="font-size:.65rem;color:${b.confermato?'#34d399':'#f87171'}" title="${b.confermato?'Confermato':'Da confermare'}">●</span>` : ''}
+        <button onclick="apriPopupSlot(${b.rowIndex},${b.rowIndexFine},'${esc(b.dataISO)}','${esc(b.dalleStr)}','${esc(b.alleStr)}',${b.dalleMin},${b.alleMin},'${esc(b.modulo||'').replace(/'/g,"\'")}','${esc(b.docente||'').replace(/'/g,"\'")}','${esc(b.ambiente||'').replace(/'/g,"\'")}','${esc(b.note||'').replace(/'/g,"\'")}',${b.confermato},'${anno}')"
+          style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted);font-size:.75rem;padding:.2rem .45rem;flex-shrink:0;transition:all .15s"
+          onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"
+          title="${vuoto?'Inserisci lezione':'Modifica lezione'}">✏️</button>
+      </div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  pane.innerHTML = html;
+}
+
+function apriPopupSlot(rowStart, rowEnd, dataISO, dalleStr, alleStr, dalleMin, alleMin, modulo, docente, ambiente, note, confermato, annualita) {
+  // Prepara docenti suggeriti per questa UF dagli abbinamenti
+  const docSuggeriti = _abbinamenti.filter(a=>a.uf===modulo).map(a=>a.docente);
+  const vuoto = !modulo;
+
+  $("popup-slot-title").textContent = vuoto ? "➕ Inserisci lezione" : "✏️ Modifica lezione";
+  $("popup-slot-data").textContent = dataISO.split("-").reverse().join("/");
+  $("popup-slot-orario-info").textContent = dalleStr + " – " + alleStr;
+
+  // Dalle/Alle modificabili solo se slot vuoto
+  const sDalle = $("popup-slot-dalle");
+  const sAlle  = $("popup-slot-alle");
+  sDalle.value = dalleStr;
+  sAlle.value  = alleStr;
+  sDalle.disabled = !vuoto;
+  sAlle.disabled  = !vuoto;
+  if (!vuoto) {
+    sDalle.style.opacity = "0.5";
+    sAlle.style.opacity  = "0.5";
+  } else {
+    sDalle.style.opacity = "1";
+    sAlle.style.opacity  = "1";
+  }
+
+  // UF
+  const selUF = $("popup-slot-uf");
+  selUF.innerHTML = `<option value="">-- Seleziona UF --</option>` +
+    _ufList.map(u=>`<option value="${esc(u.nome)}" ${u.nome===modulo?"selected":""}>${esc(u.nome)}</option>`).join("");
+
+  // Docente con suggerimenti
+  const selDoc = $("popup-slot-docente");
+  selDoc.innerHTML = `<option value="">-- Seleziona docente --</option>`;
+  if (docSuggeriti.length) {
+    selDoc.innerHTML += `<optgroup label="Abbinati a questa UF">` + docSuggeriti.map(d=>`<option value="${esc(d)}" ${d===docente?"selected":""}>${esc(d)}</option>`).join("") + `</optgroup>`;
+  }
+  selDoc.innerHTML += `<optgroup label="Tutti i docenti">` + _docentiOrario.map(d=>`<option value="${esc(d)}" ${d===docente&&!docSuggeriti.includes(d)?"selected":""}>${esc(d)}</option>`).join("") + `</optgroup>`;
+  if (docente && !selDoc.value) selDoc.value = docente;
+
+  $("popup-slot-ambiente").value = ambiente||"";
+  $("popup-slot-note").value = note||"";
+  $("popup-slot-confermato").checked = !!confermato;
+  $("popup-slot-err").classList.add("hide");
+
+  // Memorizza dati per il salvataggio
+  $("popup-slot-rowstart").value = rowStart;
+  $("popup-slot-rowend").value   = rowEnd;
+  $("popup-slot-data-iso").value = dataISO;
+  $("popup-slot-annualita").value = annualita;
+  $("popup-slot-vuoto").value = vuoto ? "1" : "0";
+  $("popup-slot-dallemin").value = dalleMin;
+  $("popup-slot-allemin").value  = alleMin;
+
+  // Aggiorna suggerimenti docente quando cambia UF
+  selUF.onchange = function() {
+    const uf = selUF.value;
+    const sugg = _abbinamenti.filter(a=>a.uf===uf).map(a=>a.docente);
+    selDoc.innerHTML = `<option value="">-- Seleziona docente --</option>`;
+    if (sugg.length) selDoc.innerHTML += `<optgroup label="Abbinati a questa UF">` + sugg.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("") + `</optgroup>`;
+    selDoc.innerHTML += `<optgroup label="Tutti i docenti">` + _docentiOrario.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("") + `</optgroup>`;
+    if (sugg.length) selDoc.value = sugg[0];
+    // Pre-compila ambiente dall'abbinamento
+    const abb = _abbinamenti.find(a=>a.uf===uf);
+    if (abb && abb.ambiente) $("popup-slot-ambiente").value = abb.ambiente;
+  };
+
+  openModal("modal-slot");
+}
+
+async function salvaPopupSlot() {
+  const errEl = $("popup-slot-err");
+  errEl.classList.add("hide");
+
+  const rowStart  = parseInt($("popup-slot-rowstart").value);
+  const rowEnd    = parseInt($("popup-slot-rowend").value);
+  const dataISO   = $("popup-slot-data-iso").value;
+  const annualita = $("popup-slot-annualita").value;
+  const vuoto     = $("popup-slot-vuoto").value === "1";
+  const modulo    = $("popup-slot-uf").value;
+  const docente   = $("popup-slot-docente").value;
+  const ambiente  = $("popup-slot-ambiente").value.trim();
+  const note      = $("popup-slot-note").value.trim();
+  const confermato= $("popup-slot-confermato").checked;
+
+  if (!modulo)  { errEl.textContent="Seleziona la UF."; errEl.classList.remove("hide"); return; }
+  if (!docente) { errEl.textContent="Seleziona il docente."; errEl.classList.remove("hide"); return; }
+
+  let dalle, alle;
+  if (vuoto) {
+    // Nuovo inserimento: prendi dalle/alle dal form
+    dalle = parseOra($("popup-slot-dalle").value);
+    alle  = parseOra($("popup-slot-alle").value);
+    if (!dalle || !alle || isNaN(dalle) || isNaN(alle)) { errEl.textContent="Orario non valido."; errEl.classList.remove("hide"); return; }
+    if (alle <= dalle) { errEl.textContent="L'ora fine deve essere dopo l'inizio."; errEl.classList.remove("hide"); return; }
+  } else {
+    dalle = parseInt($("popup-slot-dallemin").value) / 60;
+    alle  = parseInt($("popup-slot-allemin").value)  / 60;
+  }
+
+  const btn = $("popup-slot-save");
+  btn.disabled = true; btn.textContent = "Salvataggio...";
+
+  const res = await api("inserisciLezione", {
+    data: dataISO, dalle, alle, modulo, docente, ambiente, note,
+    ripeti: 1, annualita, forza: false
+  });
+
+  btn.disabled = false; btn.textContent = "💾 Salva";
+
+  if (!res.success && res.message === "CONFLITTO" && res.conflitti) {
+    const lista = res.conflitti.map(c=>`• ${c.dalle}–${c.alle}: ${c.modulo} (${c.docente})`).join("
+");
+    errEl.innerHTML = `⚠️ Conflitto con:<br><small>${lista.replace(/
+/g,"<br>")}</small><br>
+      <button class="btn btn-danger btn-sm" style="margin-top:.5rem" onclick="salvaPopupSlotForza()">Sovrascrivi</button>`;
+    errEl.classList.remove("hide");
+    return;
+  }
+  if (!res.success) { errEl.textContent = res.message; errEl.classList.remove("hide"); return; }
+
+  // Aggiorna anche confermato se cambiato
+  if (!vuoto && res.success) {
+    await api("toggleConferma", { rowIndex: rowStart, annualita, confermato });
+  }
+
+  chiudiModal("modal-slot");
+  caricaSlotsMese();
+}
+
+async function salvaPopupSlotForza() {
+  const rowStart  = parseInt($("popup-slot-rowstart").value);
+  const dataISO   = $("popup-slot-data-iso").value;
+  const annualita = $("popup-slot-annualita").value;
+  const modulo    = $("popup-slot-uf").value;
+  const docente   = $("popup-slot-docente").value;
+  const ambiente  = $("popup-slot-ambiente").value.trim();
+  const note      = $("popup-slot-note").value.trim();
+  const confermato= $("popup-slot-confermato").checked;
+  const dalle     = parseInt($("popup-slot-dallemin").value) / 60 || parseOra($("popup-slot-dalle").value);
+  const alle      = parseInt($("popup-slot-allemin").value)  / 60 || parseOra($("popup-slot-alle").value);
+
+  await api("inserisciLezione", { data:dataISO, dalle, alle, modulo, docente, ambiente, note, ripeti:1, annualita, forza:true });
+  await api("toggleConferma", { rowIndex: rowStart, annualita, confermato });
+  chiudiModal("modal-slot");
+  caricaSlotsMese();
+}
+
+// ── Abbinamenti UF-Docente ──
+let _abbinamenti = [];
+
+async function renderGOAbbinamenti() {
+  const pane = document.getElementById("go-pane-abbinamenti");
+  if (!pane) return;
+  const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
+  const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
+
+  pane.innerHTML = `
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-title">Nuovo abbinamento</div>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>UF</label>
+          <select id="abb-uf"><option value="">-- Seleziona UF --</option>${ufOpts}</select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label>Docente</label>
+          <select id="abb-doc"><option value="">-- Seleziona docente --</option>${docOpts}</select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label>Sede/Ambiente (opzionale)</label>
+        <input type="text" id="abb-ambiente" placeholder="es. Lab. Automazione Mecc.">
+      </div>
+      <div id="abb-err" class="alert alert-danger hide" style="margin-bottom:.5rem"></div>
+      <button class="btn btn-primary" style="width:100%" onclick="aggiungiAbbinamento()">➕ Aggiungi abbinamento</button>
+    </div>
+    <div class="section-title">Abbinamenti esistenti</div>
+    <div id="abb-lista"></div>`;
+
+  renderListaAbbinamenti();
+}
+
+function renderListaAbbinamenti() {
+  const el = document.getElementById("abb-lista");
+  if (!el) return;
+  if (!_abbinamenti.length) { el.innerHTML=`<div class="text-muted" style="text-align:center;padding:1rem">Nessun abbinamento.</div>`; return; }
+
+  // Raggruppa per UF
+  const perUF = {};
+  _abbinamenti.forEach(a=>{ if(!perUF[a.uf]) perUF[a.uf]=[]; perUF[a.uf].push(a); });
+
+  el.innerHTML = Object.keys(perUF).sort().map(uf=>`
+    <div style="margin-bottom:.75rem">
+      <div style="font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem">${esc(uf)}</div>
+      <div style="background:var(--surface);border-radius:10px;overflow:hidden;border:1px solid var(--border)">
+        ${perUF[uf].map(a=>`
+          <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .75rem;border-bottom:1px solid var(--border)">
+            <div style="flex:1;font-size:.82rem">
+              <span style="font-weight:500">👤 ${esc(a.docente)}</span>
+              ${a.ambiente?`<span style="color:var(--muted);margin-left:.4rem;font-size:.75rem">· ${esc(a.ambiente)}</span>`:''}
+            </div>
+            <button onclick="eliminaAbb('${esc(a.uf).replace(/'/g,"\'")}','${esc(a.docente).replace(/'/g,"\'")}') "
+              style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:.2rem .4rem"
+              title="Elimina">🗑</button>
+          </div>`).join("")}
+      </div>
+    </div>`).join("");
+}
+
+async function aggiungiAbbinamento() {
+  const uf  = $("abb-uf").value;
+  const doc = $("abb-doc").value;
+  const amb = $("abb-ambiente").value.trim();
+  const err = $("abb-err");
+  err.classList.add("hide");
+  if (!uf)  { err.textContent="Seleziona una UF."; err.classList.remove("hide"); return; }
+  if (!doc) { err.textContent="Seleziona un docente."; err.classList.remove("hide"); return; }
+  const r = await api("salvaAbbinamento", { uf, docente:doc, ambiente:amb });
+  if (!r.success) { err.textContent=r.message; err.classList.remove("hide"); return; }
+  // Aggiorna cache locale
+  const idx = _abbinamenti.findIndex(a=>a.uf===uf&&a.docente===doc);
+  if (idx>=0) _abbinamenti[idx].ambiente=amb;
+  else _abbinamenti.push({uf, docente:doc, ambiente:amb});
+  renderListaAbbinamenti();
+  $("abb-uf").value=""; $("abb-doc").value=""; $("abb-ambiente").value="";
+}
+
+async function eliminaAbb(uf, docente) {
+  const r = await api("eliminaAbbinamento", {uf, docente});
+  if (r.success) {
+    _abbinamenti = _abbinamenti.filter(a=>!(a.uf===uf&&a.docente===docente));
+    renderListaAbbinamenti();
+  }
+}
+
 
 function renderGOVisualizza() {
   const pane = $("go-pane-visualizza");
@@ -1945,6 +2271,59 @@ function esportaOrario() {
       <button class="btn btn-outline" style="flex:1" onclick="chiudiModal('modal-conflitto')">Annulla</button>
       <button class="btn btn-danger" style="flex:1" onclick="confermaSovrascrittura()">Sovrascrivi</button>
     </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL SLOT ORARIO ══════ -->
+<div id="modal-slot" class="modal-overlay hide">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem">
+      <h4 id="popup-slot-title">✏️ Modifica lezione</h4>
+      <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-slot')">✕</button>
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem">
+      <span id="popup-slot-data"></span> &nbsp;·&nbsp;
+      <span id="popup-slot-orario-info" style="color:var(--accent);font-weight:600"></span>
+    </div>
+    <div class="grid-2" style="gap:.75rem">
+      <div class="form-group">
+        <label>Dalle *</label>
+        <input type="text" id="popup-slot-dalle" placeholder="es. 14:30" inputmode="decimal">
+      </div>
+      <div class="form-group">
+        <label>Alle *</label>
+        <input type="text" id="popup-slot-alle" placeholder="es. 16:30" inputmode="decimal">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>UF / Modulo *</label>
+      <select id="popup-slot-uf"></select>
+    </div>
+    <div class="form-group">
+      <label>Docente *</label>
+      <select id="popup-slot-docente"></select>
+    </div>
+    <div class="form-group">
+      <label>Sede / Ambiente</label>
+      <input type="text" id="popup-slot-ambiente" placeholder="es. Lab. Automazione Mecc.">
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <input type="text" id="popup-slot-note" placeholder="Opzionale">
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+      <input type="checkbox" id="popup-slot-confermato" style="width:16px;height:16px;accent-color:var(--accent)">
+      <label for="popup-slot-confermato" style="font-size:.85rem;cursor:pointer;text-transform:none;letter-spacing:0;margin-bottom:0">Docente confermato</label>
+    </div>
+    <input type="hidden" id="popup-slot-rowstart">
+    <input type="hidden" id="popup-slot-rowend">
+    <input type="hidden" id="popup-slot-data-iso">
+    <input type="hidden" id="popup-slot-annualita">
+    <input type="hidden" id="popup-slot-vuoto">
+    <input type="hidden" id="popup-slot-dallemin">
+    <input type="hidden" id="popup-slot-allemin">
+    <div id="popup-slot-err" class="alert alert-danger hide" style="margin-bottom:.75rem"></div>
+    <button id="popup-slot-save" class="btn btn-primary" style="width:100%" onclick="salvaPopupSlot()">💾 Salva</button>
   </div>
 </div>
 
