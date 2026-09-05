@@ -1639,11 +1639,8 @@ async function salvaPopupSlot() {
   btn.disabled = false; btn.textContent = "💾 Salva";
 
   if (!res.success && res.message === "CONFLITTO" && res.conflitti) {
-    const lista = res.conflitti.map(c=>`• ${c.dalle}–${c.alle}: ${c.modulo} (${c.docente})`).join("
-");
-    errEl.innerHTML = `⚠️ Conflitto con:<br><small>${lista.replace(/
-/g,"<br>")}</small><br>
-      <button class="btn btn-danger btn-sm" style="margin-top:.5rem" onclick="salvaPopupSlotForza()">Sovrascrivi</button>`;
+    const lista = res.conflitti.map(c=>`• ${c.dalle}–${c.alle}: ${c.modulo} (${c.docente})`).join("<br>");
+    errEl.innerHTML = `⚠️ Conflitto con:<br><small>${lista}</small><br><button class="btn btn-danger btn-sm" style="margin-top:.5rem" onclick="salvaPopupSlotForza()">Sovrascrivi</button>`;
     errEl.classList.remove("hide");
     return;
   }
