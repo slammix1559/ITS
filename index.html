@@ -1523,8 +1523,21 @@ async function caricaSlotsMese() {
   _slotsCache = r.giorni || [];
   if (!_slotsCache.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo mese/filtro.</div>`; return; }
 
+  // Calcola totali generali
+  const totOreOccupate = Math.round(_slotsCache.reduce((s,g)=>s+g.blocchi.filter(b=>b.modulo).reduce((s2,b)=>s2+(b.ore||0),0),0)*10)/10;
+  const totOreLibere   = Math.round(_slotsCache.reduce((s,g)=>s+g.blocchi.filter(b=>!b.modulo).reduce((s2,b)=>s2+(b.ore||0),0),0)*10)/10;
+  const totOreConf     = Math.round(_slotsCache.reduce((s,g)=>s+g.blocchi.filter(b=>b.modulo&&b.confermato).reduce((s2,b)=>s2+(b.ore||0),0),0)*10)/10;
+  const filtroUFTxt    = $("go-filtro-uf")  && $("go-filtro-uf").value  ? $("go-filtro-uf").options[$("go-filtro-uf").selectedIndex].text  : "";
+  const filtroDocTxt   = $("go-filtro-doc") && $("go-filtro-doc").value ? $("go-filtro-doc").options[$("go-filtro-doc").selectedIndex].text : "";
+
   const MESI_BREVI = ["","Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
-  let html = "";
+  let html = `<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:.75rem 1rem;margin-bottom:1rem;display:flex;flex-wrap:wrap;gap:.75rem;align-items:center">
+    ${filtroUFTxt  ? `<span style="font-size:.78rem;color:var(--muted)">📚 <b style="color:var(--text)">${esc(filtroUFTxt)}</b></span>` : ""}
+    ${filtroDocTxt ? `<span style="font-size:.78rem;color:var(--muted)">👤 <b style="color:var(--text)">${esc(filtroDocTxt)}</b></span>` : ""}
+    <span style="font-size:.78rem;color:var(--muted)">Occupate: <b style="color:var(--accent)">${totOreOccupate}h</b></span>
+    <span style="font-size:.78rem;color:var(--muted)">Confermate: <b style="color:#34d399">${totOreConf}h</b></span>
+    <span style="font-size:.78rem;color:var(--muted)">Libere: <b style="color:var(--muted)">${totOreLibere}h</b></span>
+  </div>`;
 
   const anno = $("go-anno") ? $("go-anno").value : "2";
   r.giorni.forEach(g => {
