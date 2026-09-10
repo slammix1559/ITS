@@ -1446,7 +1446,6 @@ function renderGOPianifica() {
   const oggi = new Date();
   const anno = oggi.getFullYear();
   const mese = oggi.getMonth() + 1;
-  const MESI = ["","Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
   const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
   const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
 
@@ -1461,11 +1460,16 @@ function renderGOPianifica() {
           </select>
         </div>
         <div class="form-group" style="margin-bottom:0">
-          <label>Mese</label>
-          <select id="go-mese">
-            ${[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>`<option value="${m}" ${m===mese?"selected":""}>${MESI[m]} ${anno}</option>`).join("")}
-          </select>
+          <label>Dal</label>
+          <input type="date" id="go-dal" value="${oggi.toISOString().split('T')[0]}">
         </div>
+      </div>
+      <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
+        <div class="form-group" style="margin-bottom:0">
+          <label>Al</label>
+          <input type="date" id="go-al" value="${new Date(oggi.getFullYear(), oggi.getMonth()+1, 0).toISOString().split('T')[0]}">
+        </div>
+        <div></div>
       </div>
       <div class="grid-2" style="gap:.75rem;margin-bottom:.75rem">
         <div class="form-group" style="margin-bottom:0">
@@ -1504,18 +1508,17 @@ let _slotsCache = [];
 async function caricaSlotsMese() {
   const pane = document.getElementById("go-slots-result");
   if (!pane) return;
-  const anno = $("go-anno") ? $("go-anno").value : "2";
-  const meseEl = $("go-mese");
-  if (!meseEl) return;
-  const meseVal = meseEl.value;
-  const annoNum = new Date().getFullYear();
-  const filtroUF  = $("go-filtro-uf")     ? $("go-filtro-uf").value     : "";
-  const filtroDoc = $("go-filtro-doc")    ? $("go-filtro-doc").value    : "";
-  const soloLibere= $("go-filtro-libere") ? $("go-filtro-libere").checked : false;
+  const annualita = $("go-anno") ? $("go-anno").value : "2";
+  const dal = $("go-dal") ? $("go-dal").value : "";
+  const al  = $("go-al")  ? $("go-al").value  : "";
+  if (!dal || !al) { pane.innerHTML=`<div class="alert alert-danger">Seleziona un intervallo di date.</div>`; return; }
+  const filtroUF   = $("go-filtro-uf")     ? $("go-filtro-uf").value      : "";
+  const filtroDoc  = $("go-filtro-doc")    ? $("go-filtro-doc").value     : "";
+  const soloLibere = $("go-filtro-libere") ? $("go-filtro-libere").checked : false;
 
   pane.innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div><p class="text-muted" style="margin-top:.5rem">Caricamento orario...</p></div>`;
 
-  const r = await api("getSlotsMese", { anno: annoNum, mese: meseVal, annualita: anno, filtroUF, filtroDoc, soloLibere });
+  const r = await api("getSlotsMese", { dal, al, annualita, filtroUF, filtroDoc, soloLibere });
   if (!r.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`; return; }
   _slotsCache = r.giorni || [];
   if (!_slotsCache.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo mese/filtro.</div>`; return; }
@@ -1548,7 +1551,7 @@ async function caricaSlotsMese() {
                <div style="font-size:.68rem;color:var(--muted)">${b.docente?'👤 '+esc(b.docente):''}${b.ambiente?' · '+esc(b.ambiente.substring(0,20)):''}</div>`
           }
         </div>
-        ${!vuoto ? `<span style="font-size:.65rem;color:${b.confermato?'#34d399':'#f87171'}" title="${b.confermato?'Confermato':'Da confermare'}">●</span>` : ''}
+        ${!vuoto ? `<button onclick="toggleConfermaSlot(${b.rowIndex},'${anno}',${!b.confermato},this)" style="background:none;border:none;cursor:pointer;padding:.1rem;font-size:.9rem;line-height:1;flex-shrink:0" title="${b.confermato?'Confermato — clicca per rimuovere':'Non confermato — clicca per confermare'}"><span style="color:${b.confermato?'#34d399':'#f87171'}">●</span></button>` : '<span style="width:20px;flex-shrink:0"></span>'}
         <button onclick="apriPopupSlot(${b.rowIndex},${b.rowIndexFine},'${esc(b.dataISO)}','${esc(b.dalleStr)}','${esc(b.alleStr)}',${b.dalleMin},${b.alleMin},'${esc(b.modulo||'').replace(/'/g,"\'")}','${esc(b.docente||'').replace(/'/g,"\'")}','${esc(b.ambiente||'').replace(/'/g,"\'")}','${esc(b.note||'').replace(/'/g,"\'")}',${b.confermato},'${anno}')"
           style="background:none;border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--muted);font-size:.75rem;padding:.2rem .45rem;flex-shrink:0;transition:all .15s"
           onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
@@ -1688,6 +1691,21 @@ async function salvaPopupSlot() {
   caricaSlotsMese();
 }
 
+async function toggleConfermaSlot(rowIndex, annualita, nuovoStato, btn) {
+  // Aggiorna UI ottimisticamente
+  const span = btn.querySelector("span");
+  if (span) span.style.color = nuovoStato ? "#34d399" : "#f87171";
+  btn.title = nuovoStato ? "Confermato — clicca per rimuovere" : "Non confermato — clicca per confermare";
+  btn.setAttribute("onclick", `toggleConfermaSlot(${rowIndex},'${annualita}',${!nuovoStato},this)`);
+  // Aggiorna backend
+  const r = await api("toggleConferma", { rowIndex, annualita, confermato: nuovoStato });
+  if (!r.success) {
+    // Rollback
+    if (span) span.style.color = nuovoStato ? "#f87171" : "#34d399";
+    alert("Errore: " + r.message);
+  }
+}
+
 async function salvaPopupSlotForza() {
   const rowStart  = parseInt($("popup-slot-rowstart").value);
   const dataISO   = $("popup-slot-data-iso").value;
@@ -1709,17 +1727,20 @@ async function salvaPopupSlotForza() {
 // ── Export PDF slots ──
 function esportaSlotsPDF() {
   if (!_slotsCache || !_slotsCache.length) { alert("Carica prima l'orario."); return; }
-  const annoEl = $("go-anno"), meseEl = $("go-mese");
-  const filtroUF  = $("go-filtro-uf")     ? $("go-filtro-uf").options[$("go-filtro-uf").selectedIndex].text     : "";
-  const filtroDoc = $("go-filtro-doc")    ? $("go-filtro-doc").options[$("go-filtro-doc").selectedIndex].text    : "";
+  const annoEl = $("go-anno");
+  const dalEl  = $("go-dal");
+  const alEl   = $("go-al");
+  const filtroUF  = $("go-filtro-uf")  ? $("go-filtro-uf").options[$("go-filtro-uf").selectedIndex].text   : "";
+  const filtroDoc = $("go-filtro-doc") ? $("go-filtro-doc").options[$("go-filtro-doc").selectedIndex].text  : "";
   const soloLib   = $("go-filtro-libere") ? $("go-filtro-libere").checked : false;
-  const annoTxt   = annoEl  ? annoEl.options[annoEl.selectedIndex].text   : "";
-  const meseTxt   = meseEl  ? meseEl.options[meseEl.selectedIndex].text   : "";
+  const annoTxt   = annoEl ? annoEl.options[annoEl.selectedIndex].text : "";
+  const dalTxt    = dalEl  ? dalEl.value.split("-").reverse().join("/")  : "";
+  const alTxt     = alEl   ? alEl.value.split("-").reverse().join("/")   : "";
 
-  let titolo = "Orario " + annoTxt + " — " + meseTxt;
-  if (filtroUF  && filtroUF  !== "Tutte le UF")       titolo += " | " + filtroUF;
-  if (filtroDoc && filtroDoc !== "Tutti i docenti")    titolo += " | " + filtroDoc;
-  if (soloLib)                                          titolo += " | Solo ore libere";
+  let titolo = "Orario " + annoTxt + " · " + dalTxt + " – " + alTxt;
+  if (filtroUF  && filtroUF  !== "Tutte le UF")    titolo += " | " + filtroUF;
+  if (filtroDoc && filtroDoc !== "Tutti i docenti") titolo += " | " + filtroDoc;
+  if (soloLib)                                       titolo += " | Solo ore libere";
 
   const MESI_IT = ["","Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 
