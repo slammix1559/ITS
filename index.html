@@ -1819,7 +1819,8 @@ async function renderGOAbbinamenti() {
         </div>
         <div class="form-group" style="margin-bottom:0">
           <label>Docente</label>
-          <select id="abb-doc"><option value="">-- Seleziona docente --</option>${docOpts}</select>
+          <input type="text" id="abb-doc" placeholder="Scrivi o scegli docente..." list="abb-doc-list" autocomplete="off">
+          <datalist id="abb-doc-list">${docOpts}</datalist>
         </div>
       </div>
       <div class="form-group" style="margin-bottom:.75rem">
@@ -1876,6 +1877,11 @@ async function aggiungiAbbinamento() {
   const idx = _abbinamenti.findIndex(a=>a.uf===uf&&a.docente===doc);
   if (idx>=0) _abbinamenti[idx].ambiente=amb;
   else _abbinamenti.push({uf, docente:doc, ambiente:amb});
+  // Aggiungi docente alla lista globale se nuovo
+  if (doc && !_docentiOrario.includes(doc)) {
+    _docentiOrario.push(doc);
+    _docentiOrario.sort();
+  }
   renderListaAbbinamenti();
   $("abb-uf").value=""; $("abb-doc").value=""; $("abb-ambiente").value="";
 }
