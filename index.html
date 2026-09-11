@@ -1455,6 +1455,7 @@ function renderGOPianifica() {
         <div class="form-group" style="margin-bottom:0">
           <label>Anno</label>
           <select id="go-anno">
+            <option value="">Entrambi gli anni</option>
             <option value="1">1° Anno</option>
             <option value="2" selected>2° Anno</option>
           </select>
@@ -1553,8 +1554,10 @@ async function caricaSlotsMese() {
 
     g.blocchi.forEach(b => {
       const vuoto = !b.modulo;
-      const bg = vuoto ? "rgba(255,255,255,.02)" : (b.confermato ? "rgba(16,185,129,.07)" : "rgba(59,130,246,.07)");
-      const borderCol = vuoto ? "var(--border)" : (b.confermato ? "#34d399" : "var(--accent)");
+      const annoB = b.annualita || anno;
+      const colAnno = annoB === "1" ? "var(--accent)" : "var(--gold)";
+      const bg = vuoto ? "rgba(255,255,255,.02)" : (b.confermato ? "rgba(16,185,129,.07)" : (annoB==="1"?"rgba(59,130,246,.07)":"rgba(245,158,11,.07)"));
+      const borderCol = vuoto ? "var(--border)" : (b.confermato ? "#34d399" : colAnno);
 
       html += `<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:${bg};border-left:3px solid ${borderCol};border-radius:0 8px 8px 0;margin-bottom:.3rem">
         <div style="min-width:90px;font-size:.75rem;color:var(--accent);font-weight:600">${esc(b.dalleStr)}–${esc(b.alleStr)}</div>
@@ -1964,6 +1967,7 @@ function renderGOInserisci() {
         <div class="form-group" style="margin-bottom:0">
           <label>Anno</label>
           <select id="go-anno">
+            <option value="">Entrambi gli anni</option>
             <option value="1">1° Anno</option>
             <option value="2" selected>2° Anno</option>
           </select>
