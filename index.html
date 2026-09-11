@@ -1564,8 +1564,11 @@ async function caricaSlotsMese() {
         <div style="flex:1;min-width:0">
           ${vuoto
             ? `<span style="color:var(--muted);font-size:.78rem;font-style:italic">🕐 Slot libero</span>`
-            : `<div style="font-size:.78rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.modulo)}</div>
-               <div style="font-size:.68rem;color:var(--muted)">${b.docente?'👤 '+esc(b.docente):''}${b.ambiente?' · '+esc(b.ambiente.substring(0,20)):''}</div>`
+            : `<div style="font-size:.78rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                ${esc(b.modulo)}
+                ${b.annualita?`<span style="font-size:.62rem;background:${b.annualita==='1'?'rgba(59,130,246,.2)':'rgba(245,158,11,.2)'};color:${b.annualita==='1'?'var(--accent2)':'var(--gold)'};border-radius:3px;padding:.05rem .35rem;margin-left:.35rem;vertical-align:middle;font-weight:600">${b.annualita}°</span>`:''}
+              </div>
+              <div style="font-size:.68rem;color:var(--muted)">${b.docente?'👤 '+esc(b.docente):''}${b.ambiente?' · '+esc(b.ambiente.substring(0,20)):''}</div>`
           }
         </div>
         ${!vuoto ? `<button onclick="toggleConfermaSlot(${b.rowIndex},'${anno}',${!b.confermato},this)" style="background:none;border:none;cursor:pointer;padding:.1rem;font-size:.9rem;line-height:1;flex-shrink:0" title="${b.confermato?'Confermato — clicca per rimuovere':'Non confermato — clicca per confermare'}"><span style="color:${b.confermato?'#34d399':'#f87171'}">●</span></button>` : '<span style="width:20px;flex-shrink:0"></span>'}
@@ -1773,6 +1776,7 @@ function esportaSlotsPDF() {
       const bg = vuoto ? "#fff" : (b.confermato ? "#f0fdf4" : "#f0f7ff");
       righeHtml += `<tr style="background:${bg}">
         <td style="padding:4px 8px;border:1px solid #dde;color:#1a6fcd;font-weight:600">${b.dalleStr}–${b.alleStr}</td>
+        <td style="padding:4px 8px;border:1px solid #dde;color:${b.annualita==='1'?'#1a6fcd':'#b45309'};font-weight:600">${b.annualita?b.annualita+"° anno":""}</td>
         <td style="padding:4px 8px;border:1px solid #dde;font-weight:${vuoto?'normal':'600'};color:${vuoto?'#aaa':'inherit'}">${vuoto?"— Slot libero —":b.modulo}</td>
         <td style="padding:4px 8px;border:1px solid #dde">${b.docente||""}</td>
         <td style="padding:4px 8px;border:1px solid #dde">${b.ambiente||""}</td>
@@ -1793,7 +1797,7 @@ function esportaSlotsPDF() {
     <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS">
     <div class="titolo"><h1>${titolo}</h1><h2>ITS Meccanica e Meccatronica Lombardia</h2></div>
   </div>
-  <table><thead><tr><th>Orario</th><th>UF / Modulo</th><th>Docente</th><th>Sede</th><th>Stato</th></tr></thead>
+  <table><thead><tr><th>Orario</th><th>Anno</th><th>UF / Modulo</th><th>Docente</th><th>Sede</th><th>Stato</th></tr></thead>
   <tbody>${righeHtml}</tbody></table>
   <div class="footer">Generato il ${new Date().toLocaleDateString("it-IT")} · ITSApp</div>
   </body></html>`;
