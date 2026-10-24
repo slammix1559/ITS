@@ -411,21 +411,146 @@ async function renderHome(){
 }
 
 function _filtraLezioniDocente(lezioni){if(_user.ruolo!=="DOCENTE")return lezioni;const cognome=(_user.cognome||"").toLowerCase().trim();return lezioni.filter(l=>{const doc=(l.docente||"").toLowerCase();return cognome&&doc.includes(cognome);});}
+// ============================================================
+// SEZIONE ORARIO — visualizzazione da pianificazione per periodo
+// ============================================================
+function renderOrario(){
+  const pane=$("pane-orario");
+  const r=_user.ruolo;
+  const isDocente=r==="DOCENTE";
+  const oggi=new Date();
+  // Default: settimana corrente (lunedì→domenica)
+  const lunedi=new Date(oggi);lunedi.setDate(oggi.getDate()-((oggi.getDay()+6)%7));
+  const domenica=new Date(lunedi);domenica.setDate(lunedi.getDate()+6);
+  const dalDef=lunedi.toISOString().split("T")[0];
+  const alDef=domenica.toISOString().split("T")[0];
+
+  // Prepara filtro docente automatico se utente è docente
+  const filtroDocDefault=isDocente&&_user.nome?_user.nome:"";
+
+  pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario</h2></div>
+    <div class="card" style="margin-bottom:.75rem;padding:.85rem 1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+        <div class="form-group" style="margin:0">
+          <label>Anno</label>
+          <select id="or-anno">
+            <option value="">Entrambi gli anni</option>
+            <option value="1">1° Anno</option>
+            <option value="2" selected>2° Anno</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Periodo</label>
+          <select id="or-periodo" onchange="_orAggiornaPeriodo()">
+            <option value="settimana">Questa settimana</option>
+            <option value="mese">Questo mese</option>
+            <option value="prossima">Prossima settimana</option>
+            <option value="personalizzato">Personalizzato…</option>
+          </select>
+        </div>
+      </div>
+      <div id="or-date-custom" style="display:none;display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+        <div class="form-group" style="margin:0"><label>Dal</label><input type="date" id="or-dal" value="${dalDef}"></div>
+        <div class="form-group" style="margin:0"><label>Al</label><input type="date" id="or-al" value="${alDef}"></div>
+      </div>
+      ${isDocente ? `<div class="form-group" style="margin:0 0 .6rem"><label>Docente</label><input type="text" id="or-docente" value="${esc(filtroDocDefault)}" placeholder="Filtra per docente"></div>` : ''}
+      <button class="btn btn-primary" style="width:100%" onclick="caricaOrarioPianifica()">&#128197; Mostra orario</button>
+    </div>
+    <div id="or-result"></div>`;
+
+  // Inizializza date nascoste
+  _orAggiornaPeriodo();
+  // Carica subito
+  caricaOrarioPianifica();
+}
+
+function _orAggiornaPeriodo(){
+  const sel=$("or-periodo");if(!sel)return;
+  const oggi=new Date();
+  const customDiv=$("or-date-custom");
+  if(sel.value==="personalizzato"){customDiv.style.display="grid";return;}
+  customDiv.style.display="none";
+  let dal,al;
+  if(sel.value==="settimana"){
+    const lun=new Date(oggi);lun.setDate(oggi.getDate()-((oggi.getDay()+6)%7));
+    const dom=new Date(lun);dom.setDate(lun.getDate()+6);
+    dal=lun.toISOString().split("T")[0];al=dom.toISOString().split("T")[0];
+  } else if(sel.value==="prossima"){
+    const lun=new Date(oggi);lun.setDate(oggi.getDate()+(7-((oggi.getDay()+6)%7)));
+    const dom=new Date(lun);dom.setDate(lun.getDate()+6);
+    dal=lun.toISOString().split("T")[0];al=dom.toISOString().split("T")[0];
+  } else if(sel.value==="mese"){
+    dal=new Date(oggi.getFullYear(),oggi.getMonth(),1).toISOString().split("T")[0];
+    al=new Date(oggi.getFullYear(),oggi.getMonth()+1,0).toISOString().split("T")[0];
+  }
+  if(!$("or-dal"))return;
+  $("or-dal").value=dal;$("or-al").value=al;
+}
+
+async function caricaOrarioPianifica(){
+  const res=$("or-result");if(!res)return;
+  const anno=$("or-anno")?$("or-anno").value:"";
+  const periodo=$("or-periodo")?$("or-periodo").value:"settimana";
+  // Calcola date se non personalizzato
+  if(periodo!=="personalizzato") _orAggiornaPeriodo();
+  const dal=$("or-dal")?$("or-dal").value:"";
+  const al=$("or-al")?$("or-al").value:"";
+  const filtroDoc=$("or-docente")?$("or-docente").value.trim():"";
+  if(!dal||!al){res.innerHTML=`<div class="alert alert-danger">Seleziona un periodo.</div>`;return;}
+  res.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const r=await api("getSlotsMese",{dal,al,annualita:anno,filtroDoc,soloLibere:false});
+  if(!r.success){res.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`;return;}
+  const giorni=r.giorni||[];
+  if(!giorni.length){res.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata per questo periodo.</div>`;return;}
+  const oggi=todayISO();
+  let html="";
+  giorni.forEach(g=>{
+    const isOggi=g.data===oggi;
+    const annoG=g.blocchi.length>0?(g.blocchi[0].annualita||anno||"2"):(anno||"2");
+    const colAnno=annoG==="1"?"var(--accent)":"var(--gold)";
+    const lezioni=g.blocchi.filter(b=>b.modulo);
+    if(!lezioni.length&&!g.blocchi.some(b=>!b.modulo))return;
+    html+=`<div class="schedule-day" style="${isOggi?'border-left:3px solid var(--gold)':''}">
+      <div class="day-label" style="display:flex;align-items:center;gap:.5rem">
+        ${isOggi?'<span style="color:var(--gold);font-size:.75rem;font-weight:700">OGGI</span>':''}
+        <span>${esc(g.dataIT)} · ${esc(g.giorno)}</span>
+        <span style="font-size:.65rem;background:${annoG==="1"?"rgba(59,130,246,.15)":"rgba(245,158,11,.15)"};color:${colAnno};border-radius:4px;padding:.05rem .3rem;font-weight:700;margin-left:auto">${annoG}° anno</span>
+      </div>`;
+    g.blocchi.forEach(b=>{
+      const colUF=b.modulo?_getUFColor(b.modulo):"var(--border)";
+      const confDot=b.confermato?`<span style="color:#34d399;font-size:.85rem" title="Confermato">●</span>`:`<span style="color:#f87171;font-size:.85rem" title="Non confermato">●</span>`;
+      if(!b.modulo){
+        html+=`<div class="lesson-card" style="opacity:.4;border-left:3px solid var(--border)">
+          <div class="lesson-time">⏰ ${esc(b.dalleStr)} – ${esc(b.alleStr)}</div>
+          <div class="lesson-uf" style="color:var(--muted);font-style:italic">Slot libero</div>
+        </div>`;
+      } else {
+        html+=`<div class="lesson-card ${isOggi?'today':''}" style="border-left:3px solid ${colUF};background:${_hexToRgba(colUF,0.07)}">
+          <div style="display:flex;align-items:flex-start;gap:.5rem">
+            <div style="flex:1">
+              <div class="lesson-time">⏰ ${esc(b.dalleStr)} – ${esc(b.alleStr)} <span style="font-size:.7rem;color:var(--muted)">(${b.ore}h)</span></div>
+              <div class="lesson-uf" style="color:${colUF}">${esc(b.modulo)}</div>
+              <div class="lesson-meta">
+                ${b.docente?`<span>👤 ${esc(b.docente)}</span>`:''}
+                ${b.ambiente?`<span>📍 ${esc(b.ambiente)}</span>`:''}
+                ${b.note?`<span>📝 ${esc(b.note)}</span>`:''}
+              </div>
+            </div>
+            <div style="padding-top:.2rem">${confDot}</div>
+          </div>
+        </div>`;
+      }
+    });
+    html+=`</div>`;
+  });
+  res.innerHTML=html||`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`;
+}
+
+// Legacy — mantenuta per compatibilità con altri tab che la usano ancora
 function _renderLezioni(lezioni){
   const oggi=todayISO(),perData={};lezioni.forEach(l=>{const key=l.data||l.giornoFull;if(!perData[key])perData[key]=[];perData[key].push(l);});
   if(!Object.keys(perData).length)return'<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>';
   return Object.keys(perData).sort().map(data=>{const isOggi=data===oggi,ls=perData[data];const label=ls[0]?`${ls[0].giorno} ${fmtData(data)}`:data;return`<div class="schedule-day"><div class="day-label">${isOggi?'<span style="color:var(--gold)">OGGI</span>':''} ${esc(label)}</div>${ls.map(l=>`<div class="lesson-card ${isOggi?'today':''}"><div class="lesson-time">&#9200; ${esc(l.oraInizio)} &ndash; ${esc(l.oraFine)}</div><div class="lesson-uf">${esc(l.uf||"&mdash;")}</div><div class="lesson-meta">${l.docente?`<span>&#128100; ${esc(l.docente)}</span>`:''} ${l.aula?`<span>&#128205; ${esc(l.aula)}</span>`:''}</div></div>`).join("")}</div>`;}).join("");
-}
-async function renderOrario(){
-  const pane=$("pane-orario");pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario</h2></div><div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
-  try{
-    const r=_user.ruolo,isDocente=r==="DOCENTE";
-    let tabsHtml="";if(!isDocente&&["COORDINATORE","TUTOR"].includes(r))tabsHtml=`<div class="tab-row" style="margin-bottom:1rem"><button class="tab-btn active" onclick="cambiaOrario('1',this)">1&deg; Anno</button><button class="tab-btn" onclick="cambiaOrario('2',this)">2&deg; Anno</button></div>`;
-    let lezioni=[];
-    if(isDocente){const[r1,r2]=await Promise.all([api("getOrario",{annualita:"1"}),api("getOrario",{annualita:"2"})]);lezioni=[...(r1.lezioni||[]),...(r2.lezioni||[])];lezioni=_filtraLezioniDocente(lezioni);}
-    else{const ann=_user.annualita||"1";const res=await api("getOrario",{annualita:ann});lezioni=res.lezioni||[];}
-    pane.innerHTML=`<div class="page-header"><h2>${isDocente?"&#128197; Il mio orario":"&#128197; Orario"}</h2></div>${tabsHtml}`+_renderLezioni(lezioni);
-  }catch(e){pane.innerHTML=`<div class="page-header"><h2>&#128197; Orario</h2></div><div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
 async function cambiaOrario(ann,btn){document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");const pane=$("pane-orario"),tabs=pane.querySelector(".tab-row");const loader=document.createElement("div");loader.style.cssText="text-align:center;padding:2rem";loader.innerHTML='<div class="spinner"></div>';while(pane.lastChild!==tabs)pane.removeChild(pane.lastChild);pane.appendChild(loader);try{const res=await api("getOrario",{annualita:ann});loader.outerHTML=_renderLezioni(res.lezioni||[]);}catch(e){}}
 let _votiData=null,_selectedStudenteVoti=null,_materieList=[];
