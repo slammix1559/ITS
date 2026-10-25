@@ -557,26 +557,40 @@ async function renderVoti(){
     var _consultaPane = r==="COORDINATORE" ? '<div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>' : '';
     var _insertBtn = r==="COORDINATORE" ? '<button class="tab-btn active" id="tab-inserisci" onclick="switchVotiTab(\'inserisci\',this)">&#128221; Inserisci</button>' : '';
     var _consultaBtn = r==="COORDINATORE" ? '<button class="tab-btn" id="tab-consulta" onclick="switchVotiTab(\'consulta\',this)">&#128269; Consulta</button>' : '';
-    pane.innerHTML = '<div class="page-header"><h2>&#128202; Registro voti</h2></div>'
-      + '<div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">'
+    // barra tab (riutilizzata sopra E sotto il tabellone)
+    var _tabBar = '<div class="tab-row" style="gap:.5rem;margin-bottom:1rem">'
       + _insertBtn
       + '<button class="tab-btn ' + _tabActive + '" id="tab-tabellone" onclick="switchVotiTab(\'tabellone\',this)">&#128203; Tabellone</button>'
-      + _consultaBtn + '</div>' + _insertPane
+      + _consultaBtn + '</div>';
+    var _tabBarBottom = '<div class="tab-row" style="gap:.5rem;margin-top:1rem">'
+      + (_insertBtn ? _insertBtn.replace('id="tab-inserisci"','id="tab-inserisci-b"') : '')
+      + '<button class="tab-btn ' + _tabActive + '" id="tab-tabellone-b" onclick="switchVotiTab(\'tabellone\',this)">&#128203; Tabellone</button>'
+      + (_consultaBtn ? _consultaBtn.replace('id="tab-consulta"','id="tab-consulta-b"') : '') + '</div>';
+    pane.innerHTML = '<div class="page-header"><h2>&#128202; Registro voti</h2></div>'
+      + _tabBar + _insertPane
       + '<div id="voti-tabellone-pane" class="' + _tabelloneClass + '">'
-      + '<div id="tab-filtro-top" style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap">'
+      + '<div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap">'
       + '<div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel" onchange="aggiornaTabellone()"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div>'
       + '<button class="btn btn-primary" onclick="aggiornaTabellone()">&#128260; Aggiorna</button></div>'
       + '<div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>'
-      + '<div id="tab-filtro-bottom" style="display:flex;gap:.5rem;align-items:flex-end;margin-top:1rem;flex-wrap:wrap">'
-      + '<div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel-b" onchange="document.getElementById(\'tab-anno-sel\').value=this.value;aggiornaTabellone()"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div>'
-      + '<button class="btn btn-primary" onclick="aggiornaTabellone()">&#128260; Aggiorna</button></div></div>'
+      + _tabBarBottom + '</div>'
       + _consultaPane;
     await _assicuraStudenti();await _assicuraMaterie();if(r==="COORDINATORE")await renderRegistro();await renderTabellone();return;
   }
   pane.innerHTML=`<div class="page-header"><h2>&#128202; Registro voti</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="tab-btn active" id="tab-registro" onclick="switchVotiTab('registro',this)">&#128221; Inserisci</button><button class="tab-btn" id="tab-consulta" onclick="switchVotiTab('consulta',this)">&#128269; Consulta</button></div><div id="voti-registro-pane"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div id="voti-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-consulta" onchange="cambiaStudenteVoti(this.value)"><option value="">-- Seleziona --</option></select></div><div id="voti-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>`;
   await _assicuraStudenti();await _assicuraMaterie();await renderRegistro();
 }
-function switchVotiTab(tab,btn){document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)HD("voti-"+p+"-pane");});const target=$("voti-"+tab+"-pane");if(target)SH("voti-"+tab+"-pane");if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"°)";sel.appendChild(o);});}}
+function switchVotiTab(tab,btn){
+  // attiva tutti i tab con lo stesso target (barra sopra e sotto)
+  document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));
+  // attiva il bottone cliccato + il suo gemello nella barra opposta
+  const twinId = btn.id ? (btn.id.endsWith("-b") ? btn.id.slice(0,-2) : btn.id+"-b") : null;
+  btn.classList.add("active");
+  if(twinId){const tw=$(twinId);if(tw)tw.classList.add("active");}
+  ["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)HD("voti-"+p+"-pane");});
+  const target=$("voti-"+tab+"-pane");if(target)SH("voti-"+tab+"-pane");
+  if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"°)";sel.appendChild(o);});}
+}
 async function aggiornaTabellone(){
   // sincronizza il select inferiore col superiore
   const top=$("tab-anno-sel"),bot=$("tab-anno-sel-b");
@@ -653,31 +667,41 @@ async function apriDettaglioStudenteVoti(email,nome){
   let html=`<div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Voti di</div><div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin-bottom:1rem">${esc(nome)}</div>`;
   if(!pm.length){html+='<div class="text-muted" style="text-align:center;padding:1rem">Nessun voto.</div>';}
   else{
+    function _colV(v){return v>=28?"var(--success)":v>=24?"var(--accent2)":v>=18?"var(--warning)":"var(--danger)";}
     pm.forEach(m=>{
-      const cls=m.media>=28?"var(--success)":m.media>=24?"var(--accent2)":m.media>=18?"var(--warning)":"var(--danger)";
-      html+=`<div style="margin-bottom:1rem;padding:.75rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">`;
-      html+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">`;
-      html+=`<div style="font-weight:700;font-size:.88rem">${esc(m.materia)}</div>`;
-      html+=`<div style="font-family:var(--font-head);font-weight:800;color:${cls};font-size:1rem">&#216; ${m.media}</div>`;
+      html+=`<div style="margin-bottom:1rem;border-radius:10px;border:1px solid var(--border);overflow:hidden">`;
+      // intestazione materia
+      const clsM=_colV(m.media);
+      html+=`<div style="background:var(--surface2);padding:.6rem .85rem;display:flex;align-items:center;justify-content:space-between">`;
+      html+=`<div style="font-weight:700;font-size:.85rem;flex:1;margin-right:.5rem">${esc(m.materia)}</div>`;
+      if(m.voti&&m.voti.length>1){
+        html+=`<div style="font-size:.7rem;color:var(--muted);margin-right:.5rem">media</div>`;
+        html+=`<div style="font-family:var(--font-head);font-weight:800;color:${clsM};font-size:1rem">&#216;&nbsp;${m.media}</div>`;
+      } else {
+        html+=`<div style="font-family:var(--font-head);font-weight:800;color:${clsM};font-size:1rem">${m.media}/30</div>`;
+      }
       html+=`</div>`;
+      // voti singoli separati
       if(m.voti&&m.voti.length){
-        html+=`<div style="display:flex;flex-wrap:wrap;gap:.4rem">`;
-        m.voti.forEach(v=>{
-          const vc=v.voto>=28?"var(--success)":v.voto>=24?"var(--accent2)":v.voto>=18?"var(--warning)":"var(--danger)";
-          html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.3rem .6rem;text-align:center;min-width:52px">`;
-          html+=`<div style="font-family:var(--font-head);font-weight:800;font-size:1rem;color:${vc}">${v.voto}</div>`;
-          if(v.data)html+=`<div style="font-size:.6rem;color:var(--muted)">${v.data}</div>`;
+        html+=`<div style="padding:.5rem .85rem .6rem;background:var(--surface)">`;
+        m.voti.forEach((v,i)=>{
+          const vc=_colV(v.voto);
+          html+=`<div style="display:flex;align-items:center;gap:.6rem;padding:.35rem 0${i<m.voti.length-1?";border-bottom:1px solid rgba(255,255,255,.06)":""}">`;
+          html+=`<span style="font-family:var(--font-head);font-weight:800;font-size:1.15rem;color:${vc};min-width:32px">${v.voto}</span>`;
+          html+=`<span style="font-size:.72rem;color:var(--muted);flex:1">${v.data||"—"}`;
+          if(v.note)html+=` · <em>${esc(v.note)}</em>`;
+          html+=`</span>`;
           html+=`</div>`;
         });
         html+=`</div>`;
       }
       html+=`</div>`;
     });
-    // media generale
+    // media generale su tutte le UF
     const somma=pm.reduce((a,m)=>a+m.media,0);const mg=pm.length?Math.round((somma/pm.length)*100)/100:null;
     if(mg!==null){
-      const cls2=mg>=28?"var(--success)":mg>=24?"var(--accent2)":mg>=18?"var(--warning)":"var(--danger)";
-      html+=`<div style="border-top:1px solid var(--border);padding-top:.75rem;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--muted)">Media generale</span><span style="font-family:var(--font-head);font-weight:800;font-size:1.2rem;color:${cls2}">${mg}</span></div>`;
+      const cls2=_colV(mg);
+      html+=`<div style="border-top:2px solid var(--border);padding-top:.75rem;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--muted)">Media generale (${pm.length} UF)</span><span style="font-family:var(--font-head);font-weight:800;font-size:1.2rem;color:${cls2}">${mg}</span></div>`;
     }
   }
   $("modal-voti-content").innerHTML=html;
