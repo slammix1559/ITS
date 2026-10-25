@@ -2133,6 +2133,10 @@ async function _salvaPopupSlot(rowStart, rowEnd, dataISO, annualita) {
       return;
     }
     if (!r.success) { msg.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`; return; }
+
+    // Aggiorna inline la riga nel DOM senza ricaricare
+    _aggiornaRigaDOM(rowStart, rowEnd||rowStart, dataISO, dalle, alle, uf, docente, ambiente, note, confermato, annualita);
+
   } else {
     // Inserisci
     const r = await api("inserisciLezione", { data:dataISO, dalle, alle, modulo:uf, docente, ambiente, note, ripeti:1, annualita, forza:false, confermato });
@@ -2145,10 +2149,89 @@ async function _salvaPopupSlot(rowStart, rowEnd, dataISO, annualita) {
       return;
     }
     if (!r.success) { msg.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`; return; }
+    // Per inserimento nuovo serve ricaricare (righe nuove nel DB)
+    document.getElementById("popup-slot").remove();
+    caricaSlotsMese();
+    return;
   }
 
   document.getElementById("popup-slot").remove();
-  caricaSlotsMese();
+}
+
+// Aggiorna le celle di una riga già presente nel DOM e ricalcola la cascata
+function _aggiornaRigaDOM(rowStart, rowEnd, dataISO, dalle, alle, modulo, docente, ambiente, note, confermato, annualita) {
+  function m2h(m) { return Math.floor(m/60).toString().padStart(2,"0")+":"+(m%60).toString().padStart(2,"0"); }
+  function hhmm2min(s) { const [h,m]=(s||"00:00").split(":"); return parseInt(h)*60+parseInt(m||0); }
+
+  const tbody = document.getElementById("go-tbody");
+  if (!tbody) return;
+
+  const dalleMin = hhmm2min(dalle);
+  const alleMin  = hhmm2min(alle);
+  const durMin   = alleMin - dalleMin;
+
+  // Aggiorna tutte le righe del blocco modificato (rowStart..rowEnd)
+  const righeBlk = [...tbody.querySelectorAll(`tr.go-row[data-date="${dataISO}"]`)]
+    .filter(r => { const ri=parseInt(r.dataset.row); return ri>=rowStart && ri<=rowEnd; });
+
+  // Calcola durata per singola riga (distribuzione uniforme se blocco multiplo)
+  const nRighe = righeBlk.length || 1;
+  const durPerRiga = Math.round(durMin / nRighe);
+
+  righeBlk.forEach((row, idx) => {
+    const rDalleMin = dalleMin + idx * durPerRiga;
+    const rAlleMin  = (idx === nRighe-1) ? alleMin : rDalleMin + durPerRiga;
+    row.dataset.dallemin = rDalleMin;
+    row.dataset.allemin  = rAlleMin;
+    row.dataset.dalle = m2h(rDalleMin);
+    row.dataset.alle  = m2h(rAlleMin);
+    row.dataset.modulo = modulo||"";
+    row.dataset.docente = docente||"";
+    row.dataset.ambiente = ambiente||"";
+    row.dataset.note = note||"";
+    row.dataset.confermato = confermato;
+
+    // Colonna orario
+    row.cells[1].textContent = m2h(rDalleMin) + "–" + m2h(rAlleMin);
+
+    // Colonna UF/Docente
+    const vuoto = !modulo;
+    const colUF = vuoto ? "transparent" : _getUFColor(modulo);
+    const bgUF  = vuoto ? "transparent" : _hexToRgba(colUF, 0.12);
+    row.style.background = bgUF;
+    row.style.borderLeft = `3px solid ${vuoto ? 'var(--border)' : colUF}`;
+    if (vuoto) {
+      row.cells[3].innerHTML = `<span style="color:var(--muted);font-style:italic;font-size:.75rem">🕐 Slot libero</span>`;
+    } else {
+      row.cells[3].innerHTML = `<div style="font-size:.78rem;font-weight:600;color:${colUF};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(modulo)}</div>
+        <div style="font-size:.68rem;color:var(--muted)">${docente?'👤 '+esc(docente):''}</div>`;
+    }
+    // Colonne ambiente/note
+    row.cells[4].textContent = ambiente||"";
+    row.cells[5].textContent = note||"";
+    // Pallino conferma
+    row.cells[6].innerHTML = confermato
+      ? `<span style="color:#34d399;font-size:1rem;cursor:pointer" onclick="toggleConfermaSlot(${parseInt(row.dataset.row)},'${annualita}',false,this)" title="Confermato">●</span>`
+      : `<span style="color:#f87171;font-size:1rem;cursor:pointer" onclick="toggleConfermaSlot(${parseInt(row.dataset.row)},'${annualita}',true,this)" title="Non confermato">●</span>`;
+  });
+
+  // Ricalcola cascata: tutti gli slot DOPO il blocco modificato nello stesso giorno
+  const tutteRigheGiorno = [...tbody.querySelectorAll(`tr.go-row[data-date="${dataISO}"]`)];
+  let curMin = alleMin; // parte dall'alle della lezione modificata
+  let doRicalcola = false;
+  tutteRigheGiorno.forEach(row => {
+    const ri = parseInt(row.dataset.row);
+    if (ri > rowEnd) doRicalcola = true; // siamo dopo il blocco
+    if (!doRicalcola) return;
+    const dur = parseInt(row.dataset.allemin) - parseInt(row.dataset.dallemin);
+    const nd = curMin, na = curMin + dur;
+    row.dataset.dallemin = nd;
+    row.dataset.allemin  = na;
+    row.dataset.dalle = m2h(nd);
+    row.dataset.alle  = m2h(na);
+    row.cells[1].textContent = m2h(nd) + "–" + m2h(na);
+    curMin = na;
+  });
 }
 
 async function _salvaPopupSlotForza(rowStart, rowEnd, dataISO, annualita) {
@@ -2160,7 +2243,10 @@ async function _salvaPopupSlotForza(rowStart, rowEnd, dataISO, annualita) {
   const note     = document.getElementById("ps-note").value.trim();
   const conf     = document.getElementById("ps-confermato").checked;
   const r = await api("modificaLezione", { rowIndex:rowStart, rowFine:rowEnd||rowStart, data:dataISO, dalle, alle, modulo:uf, docente, ambiente, note, confermato:conf, annualita, forza:true });
-  if (r.success) { document.getElementById("popup-slot").remove(); caricaSlotsMese(); }
+  if (r.success) {
+    _aggiornaRigaDOM(rowStart, rowEnd||rowStart, dataISO, dalle, alle, uf, docente, ambiente, note, conf, annualita);
+    document.getElementById("popup-slot").remove();
+  }
 }
 
 async function _inserisciForza(dataISO, dalle, alle, annualita) {
