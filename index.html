@@ -563,10 +563,13 @@ async function renderVoti(){
       + '<button class="tab-btn ' + _tabActive + '" id="tab-tabellone" onclick="switchVotiTab(\'tabellone\',this)">&#128203; Tabellone</button>'
       + _consultaBtn + '</div>' + _insertPane
       + '<div id="voti-tabellone-pane" class="' + _tabelloneClass + '">'
-      + '<div style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap">'
-      + '<div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div>'
-      + '<button class="btn btn-primary" onclick="aggiornaTabellone()">Aggiorna</button></div>'
-      + '<div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div></div>'
+      + '<div id="tab-filtro-top" style="display:flex;gap:.5rem;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap">'
+      + '<div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel" onchange="aggiornaTabellone()"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div>'
+      + '<button class="btn btn-primary" onclick="aggiornaTabellone()">&#128260; Aggiorna</button></div>'
+      + '<div id="tabellone-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>'
+      + '<div id="tab-filtro-bottom" style="display:flex;gap:.5rem;align-items:flex-end;margin-top:1rem;flex-wrap:wrap">'
+      + '<div style="flex:1;min-width:140px"><label>Anno</label><select id="tab-anno-sel-b" onchange="document.getElementById(\'tab-anno-sel\').value=this.value;aggiornaTabellone()"><option value="tutti">Tutti</option><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div>'
+      + '<button class="btn btn-primary" onclick="aggiornaTabellone()">&#128260; Aggiorna</button></div></div>'
       + _consultaPane;
     await _assicuraStudenti();await _assicuraMaterie();if(r==="COORDINATORE")await renderRegistro();await renderTabellone();return;
   }
@@ -574,7 +577,14 @@ async function renderVoti(){
   await _assicuraStudenti();await _assicuraMaterie();await renderRegistro();
 }
 function switchVotiTab(tab,btn){document.querySelectorAll("#pane-voti .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");["inserisci","tabellone","consulta","registro"].forEach(p=>{const el=$("voti-"+p+"-pane");if(el)HD("voti-"+p+"-pane");});const target=$("voti-"+tab+"-pane");if(target)SH("voti-"+tab+"-pane");if(tab==="consulta"){const sel=$("sel-studente-consulta");if(sel&&sel.options.length<=1)_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome+" ("+s.annualita+"°)";sel.appendChild(o);});}}
-async function aggiornaTabellone(){await renderTabellone();}
+async function aggiornaTabellone(){
+  // sincronizza il select inferiore col superiore
+  const top=$("tab-anno-sel"),bot=$("tab-anno-sel-b");
+  if(top&&bot)bot.value=top.value;
+  await renderTabellone();
+  // dopo il render, scorri in cima al tabellone
+  const el=$("voti-tabellone-pane");if(el)el.scrollIntoView({behavior:"smooth",block:"start"});
+}
 async function renderTabellone(){
   const cont=$("tabellone-content");if(!cont)return;cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
   const annoSel=$("tab-anno-sel")?$("tab-anno-sel").value:"tutti";const res=await api("getVoti",{emailStudente:null});if(!res.success){cont.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
@@ -585,11 +595,92 @@ async function renderTabellone(){
   const votiPerStudente={};votiRel.forEach(v=>{const em=String(v.EMAIL_STUDENTE||"").toLowerCase();const mat=v.MATERIA||"";if(!votiPerStudente[em])votiPerStudente[em]={};if(!votiPerStudente[em][mat])votiPerStudente[em][mat]=[];votiPerStudente[em][mat].push(parseFloat(v.VOTO)||0);});
   function colM(m){if(m>=28)return"var(--success)";if(m>=24)return"var(--accent2)";if(m>=18)return"var(--warning)";return"var(--danger)";}
   function fV(v){return v%1===0?String(v):v.toFixed(1);}
-  let html=`<div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border)"><table style="border-collapse:collapse;min-width:100%;font-size:.78rem"><thead><tr style="background:var(--surface2)"><th style="position:sticky;left:0;z-index:2;background:var(--surface2);padding:.6rem .8rem;text-align:left;border-bottom:2px solid var(--border);min-width:150px;font-size:.72rem;color:var(--muted);text-transform:uppercase">Studente</th>`;
-  materie.forEach(m=>{const abbr=m.length>11?m.substring(0,10)+"…":m;html+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;font-size:.68rem;color:var(--muted);text-transform:uppercase" title="${esc(m)}">${esc(abbr)}</th>`;});
-  html+=`<th style="padding:.5rem .7rem;border-bottom:2px solid var(--border);border-left:2px solid rgba(59,130,246,.5);text-align:center;font-size:.72rem;color:var(--accent2);text-transform:uppercase">Media</th></tr></thead><tbody>`;
-  studenti.forEach((s,idx)=>{const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";html+=`<tr class="tabellone-row"><td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.5rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;font-size:.84rem">${esc(s.nome)}</td>`;let somma=0,cnt=0;materie.forEach(m=>{const vals=votiSt[m]||[];const media=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:null;if(media!==null){somma+=media;cnt++;}html+=`<td style="background:${bgRow};padding:.4rem .3rem;border-bottom:1px solid var(--border);border-left:1px solid var(--border);text-align:center">${media!==null?`<span style="font-family:var(--font-head);font-weight:700;color:${colM(media)}">${fV(media)}</span>`:"<span style=\"color:rgba(255,255,255,.12)\">&mdash;</span>"}</td>`;});const mg=cnt?Math.round((somma/cnt)*100)/100:null;html+=`<td style="background:${bgRow};padding:.5rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center">${mg!==null?`<span style="font-family:var(--font-head);font-size:1rem;font-weight:800;color:${colM(mg)}">${fV(mg)}</span>`:"&mdash;"}</td></tr>`;});
-  html+=`</tbody></table></div>`;cont.innerHTML=html;
+  // intestazione colonne (riutilizzata sopra e sotto)
+  function _theadRow(){
+    let h=`<tr style="background:var(--surface2)"><th style="position:sticky;left:0;z-index:2;background:var(--surface2);padding:.6rem .8rem;text-align:left;border-bottom:2px solid var(--border);min-width:150px;font-size:.72rem;color:var(--muted);text-transform:uppercase">Studente</th>`;
+    materie.forEach(m=>{const abbr=m.length>11?m.substring(0,10)+"…":m;h+=`<th style="padding:.5rem .4rem;border-bottom:2px solid var(--border);border-left:1px solid var(--border);text-align:center;min-width:72px;font-size:.68rem;color:var(--muted);text-transform:uppercase" title="${esc(m)}">${esc(abbr)}</th>`;});
+    h+=`<th style="padding:.5rem .7rem;border-bottom:2px solid var(--border);border-left:2px solid rgba(59,130,246,.5);text-align:center;font-size:.72rem;color:var(--accent2);text-transform:uppercase">Media</th></tr>`;
+    return h;
+  }
+  let html=`<div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border)"><table style="border-collapse:collapse;min-width:100%;font-size:.78rem"><thead>${_theadRow()}</thead><tbody>`;
+  studenti.forEach((s,idx)=>{
+    const em=s.email.toLowerCase(),votiSt=votiPerStudente[em]||{};
+    const bgRow=idx%2===0?"var(--surface)":"rgba(18,32,64,.6)";
+    // clic sul nome → apre dettaglio studente
+    html+=`<tr class="tabellone-row" style="cursor:pointer" onclick="apriDettaglioStudenteVoti('${esc(s.email)}','${esc(s.nome)}')">`;
+    html+=`<td style="position:sticky;left:0;z-index:1;background:${bgRow};padding:.5rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;font-weight:600;font-size:.84rem">`;
+    html+=`<span style="color:var(--accent2);margin-right:.3rem;font-size:.75rem">&#128269;</span>${esc(s.nome)}</td>`;
+    let somma=0,cnt=0;
+    materie.forEach(m=>{
+      const vals=votiSt[m]||[];
+      // media della UF se ci sono più voti
+      const media=vals.length?Math.round((vals.reduce((a,b)=>a+b,0)/vals.length)*10)/10:null;
+      if(media!==null){somma+=media;cnt++;}
+      const cellTip=vals.length>1?` title="Media di ${vals.length} voti: ${vals.join(', ')}"` : (vals.length===1?` title="${vals[0]}/30"`:"");
+      html+=`<td${cellTip} style="background:${bgRow};padding:.4rem .3rem;border-bottom:1px solid var(--border);border-left:1px solid var(--border);text-align:center">`;
+      if(media!==null){
+        html+=`<span style="font-family:var(--font-head);font-weight:700;color:${colM(media)}">${fV(media)}`;
+        if(vals.length>1)html+=`<sup style="font-size:.6rem;opacity:.7">×${vals.length}</sup>`;
+        html+=`</span>`;
+      } else {
+        html+=`<span style="color:rgba(255,255,255,.12)">&mdash;</span>`;
+      }
+      html+=`</td>`;
+    });
+    const mg=cnt?Math.round((somma/cnt)*100)/100:null;
+    html+=`<td style="background:${bgRow};padding:.5rem;border-bottom:1px solid var(--border);border-left:2px solid rgba(59,130,246,.35);text-align:center">${mg!==null?`<span style="font-family:var(--font-head);font-size:1rem;font-weight:800;color:${colM(mg)}">${fV(mg)}</span>`:"&mdash;"}</td></tr>`;
+  });
+  // footer = ripete l'intestazione per scorrimento verticale lungo
+  html+=`</tbody><tfoot>${_theadRow()}</tfoot></table></div>`;
+  html+=`<div style="font-size:.72rem;color:var(--muted);margin-top:.5rem;text-align:right">&#128269; Clicca su uno studente per vedere il dettaglio voti &nbsp;|&nbsp; <sup>×N</sup> = media di N voti sulla stessa UF</div>`;
+  cont.innerHTML=html;
+}
+async function apriDettaglioStudenteVoti(email,nome){
+  // Apre un modale con i voti del singolo studente
+  let modal=$("modal-dettaglio-voti");
+  if(!modal){
+    modal=document.createElement("div");
+    modal.id="modal-dettaglio-voti";
+    modal.style.cssText="position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);display:flex;align-items:flex-start;justify-content:center;padding:1.5rem .75rem;overflow-y:auto";
+    modal.innerHTML=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:520px;padding:1.25rem;position:relative"><button onclick="$('modal-dettaglio-voti').remove()" style="position:absolute;top:.75rem;right:.75rem;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1">&#10005;</button><div id="modal-voti-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div></div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display="flex";
+    $("modal-voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  }
+  const res=await api("getVoti",{emailStudente:email});
+  const pm=res.perMateria||[];
+  let html=`<div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Voti di</div><div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin-bottom:1rem">${esc(nome)}</div>`;
+  if(!pm.length){html+='<div class="text-muted" style="text-align:center;padding:1rem">Nessun voto.</div>';}
+  else{
+    pm.forEach(m=>{
+      const cls=m.media>=28?"var(--success)":m.media>=24?"var(--accent2)":m.media>=18?"var(--warning)":"var(--danger)";
+      html+=`<div style="margin-bottom:1rem;padding:.75rem;background:var(--surface2);border-radius:10px;border:1px solid var(--border)">`;
+      html+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">`;
+      html+=`<div style="font-weight:700;font-size:.88rem">${esc(m.materia)}</div>`;
+      html+=`<div style="font-family:var(--font-head);font-weight:800;color:${cls};font-size:1rem">&#216; ${m.media}</div>`;
+      html+=`</div>`;
+      if(m.voti&&m.voti.length){
+        html+=`<div style="display:flex;flex-wrap:wrap;gap:.4rem">`;
+        m.voti.forEach(v=>{
+          const vc=v.voto>=28?"var(--success)":v.voto>=24?"var(--accent2)":v.voto>=18?"var(--warning)":"var(--danger)";
+          html+=`<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.3rem .6rem;text-align:center;min-width:52px">`;
+          html+=`<div style="font-family:var(--font-head);font-weight:800;font-size:1rem;color:${vc}">${v.voto}</div>`;
+          if(v.data)html+=`<div style="font-size:.6rem;color:var(--muted)">${v.data}</div>`;
+          html+=`</div>`;
+        });
+        html+=`</div>`;
+      }
+      html+=`</div>`;
+    });
+    // media generale
+    const somma=pm.reduce((a,m)=>a+m.media,0);const mg=pm.length?Math.round((somma/pm.length)*100)/100:null;
+    if(mg!==null){
+      const cls2=mg>=28?"var(--success)":mg>=24?"var(--accent2)":mg>=18?"var(--warning)":"var(--danger)";
+      html+=`<div style="border-top:1px solid var(--border);padding-top:.75rem;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;color:var(--muted)">Media generale</span><span style="font-family:var(--font-head);font-weight:800;font-size:1.2rem;color:${cls2}">${mg}</span></div>`;
+    }
+  }
+  $("modal-voti-content").innerHTML=html;
 }
 async function renderRegistro(){
   const pane=$("voti-inserisci-pane")||$("voti-registro-pane");if(!pane)return;
