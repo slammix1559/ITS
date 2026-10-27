@@ -2428,7 +2428,13 @@ function esportaPDFTabella() {
     }
   });
 
+  // Titolo file PDF: "Orario ITS · 14/09/2026 – 18/12/2026"
+  const dalIT = dal ? dal.split("-").reverse().join("/") : "";
+  const alIT  = al  ? al.split("-").reverse().join("/")  : "";
+  const pdfTitle = "Orario ITS" + (dalIT||alIT ? " · " + (dalIT||"") + (alIT?" – "+alIT:"") : "");
+
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>${pdfTitle}</title>
   <style>
     body{font-family:Arial,sans-serif;font-size:9px;margin:12mm 10mm}
     .header{display:flex;align-items:center;gap:14px;border-bottom:2px solid #0a3d8f;padding-bottom:8px;margin-bottom:12px}
@@ -2441,7 +2447,7 @@ function esportaPDFTabella() {
   <div class="header">
     <img class="logo" src="${logoUrl}" onerror="this.style.display='none'">
     <div class="titolo">
-      <h1>Orario ITS · ${dal} – ${al}</h1>
+      <h1>Orario ITS · ${dalIT} – ${alIT}</h1>
       <h2>ITS Meccanica e Meccatronica Lombardia</h2>
     </div>
   </div>
@@ -2971,6 +2977,14 @@ function esportaOrario() {
   const ufTitolo = filtroUF || (filtroDoc ? "Docente: "+filtroDoc : "Tutte le UF");
   const periodoStr = (da||a) ? ((da?da.split("-").reverse().join("/"):"")+(a?" – "+a.split("-").reverse().join("/"):"")) : "";
 
+  // Titolo PDF (usato come <title> → nome file suggerito dal browser)
+  // Formato: "Orario ITS · [UF] · [Docente] · [dal] – [al]"
+  let _pdfTitleParts = ["Orario ITS"];
+  if (filtroUF) _pdfTitleParts.push(filtroUF.replace(/[<>:"/\\|?*]/g,""));
+  if (filtroDoc) _pdfTitleParts.push(filtroDoc.replace(/[<>:"/\\|?*]/g,""));
+  if (periodoStr) _pdfTitleParts.push(periodoStr);
+  const pdfTitleOrario = _pdfTitleParts.join(" · ");
+
   // Raggruppa per data
   const perData = {};
   _lezioniCache.forEach(l => {
@@ -3000,7 +3014,7 @@ function esportaOrario() {
 
   const html = `<!DOCTYPE html><html lang="it"><head>
   <meta charset="UTF-8">
-  <title>Calendarizzazione ${ufTitolo}</title>
+  <title>${pdfTitleOrario}</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #1a1a2e; }
     .header { display: flex; align-items: center; gap: 20px; border-bottom: 3px solid #0a3d8f; padding-bottom: 15px; margin-bottom: 20px; }
@@ -3016,16 +3030,15 @@ function esportaOrario() {
   </style>
   </head><body>
   <div class="header">
-    <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Logo">
+    <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Logo" onerror="this.style.display='none'">
     <div class="titolo">
-      <h1>Calendarizzazione</h1>
-      <h2>${ufTitolo}</h2>
+      <h1>${filtroUF ? filtroUF : (filtroDoc ? "Docente: "+filtroDoc : "Orario ITS")}</h1>
+      <h2>ITS Meccanica e Meccatronica Lombardia${periodoStr?" &nbsp;·&nbsp; "+periodoStr:""}</h2>
     </div>
   </div>
   <div class="meta">
-    ${periodoStr ? "Periodo: <strong>"+periodoStr+"</strong> &nbsp;·&nbsp;" : ""}
     Totale: <strong>${_lezioniCache.length} lezioni</strong> · <strong>${totOre}h</strong>
-    ${filtroDoc?" &nbsp;·&nbsp; Docente: <strong>"+filtroDoc+"</strong>":""}
+    ${filtroDoc&&filtroUF?" &nbsp;·&nbsp; Docente: <strong>"+filtroDoc+"</strong>":""}
     &nbsp;·&nbsp; Generato il: <strong>${new Date().toLocaleDateString("it-IT")}</strong>
   </div>
   <table>
