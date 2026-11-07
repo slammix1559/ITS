@@ -1766,6 +1766,7 @@ function renderGOPianifica() {
       </div>
       <div style="display:flex;gap:.5rem;margin-top:.6rem">
         <button class="btn btn-primary" style="flex:1" onclick="caricaSlotsMese()">📅 Carica orario</button>
+        <button class="btn btn-outline" onclick="apriMonteOre()">📊 Monte ore</button>
         <button class="btn btn-outline" onclick="esportaPDFTabella()">📄 PDF</button>
       </div>
     </div>
@@ -2720,6 +2721,151 @@ async function aggiornaUFGlob() {
     const rim=Math.max(0,orePrev-orePian);
     info.innerHTML=`<span style="color:${rim>0?'var(--success)':'var(--danger)'}">📊 Pianificate: <b>${orePian}h</b> / ${orePrev}h previste &nbsp;·&nbsp; Rimanenti: <b>${rim}h</b></span>`;
   } catch(e){info.textContent="";}
+}
+
+// ============================================================
+// MONTE ORE — popup riepilogo ore pianificate vs previste
+// ============================================================
+async function apriMonteOre() {
+  // Mostra subito il popup con spinner
+  let modal = $("modal-monte-ore");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "modal-monte-ore";
+    modal.style.cssText = "position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.78);display:flex;align-items:flex-start;justify-content:center;padding:1.25rem .75rem;overflow-y:auto";
+    modal.innerHTML = `<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:580px;padding:1.25rem 1.25rem 1rem;position:relative">
+      <button onclick="$('modal-monte-ore').remove()" style="position:absolute;top:.75rem;right:.75rem;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1">&#10005;</button>
+      <div id="monte-ore-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
+    </div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = "flex";
+    $("monte-ore-content").innerHTML = `<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  }
+
+  const annoSel = $("go-anno") ? $("go-anno").value : "";
+
+  try {
+    // Scarica tutte le lezioni (senza filtro date, tutte)
+    const annoParam = annoSel || "";
+    const r = await api("getLezioni", { annualita: annoParam });
+    const lezioni = r.lezioni || [];
+
+    // Raggruppa ore pianificate per UF
+    const orePianMap = {};
+    lezioni.forEach(l => {
+      if (!l.modulo) return;
+      orePianMap[l.modulo] = (orePianMap[l.modulo] || 0) + (l.ore || 0);
+    });
+    // Arrotonda
+    Object.keys(orePianMap).forEach(k => {
+      orePianMap[k] = Math.round(orePianMap[k] * 10) / 10;
+    });
+
+    // Filtra _ufList per anno selezionato
+    const ufs = annoParam
+      ? _ufList.filter(u => u.anni && u.anni.includes(annoParam))
+      : _ufList;
+
+    // Costruisci righe
+    let totPrev = 0, totPian = 0;
+    function colBarra(perc) {
+      if (perc >= 100) return "var(--success)";
+      if (perc >= 60)  return "var(--accent2)";
+      if (perc >= 30)  return "var(--warning)";
+      return "var(--danger)";
+    }
+
+    let righe = "";
+    ufs.forEach(u => {
+      const orePrev = annoParam === "1" ? (u.ore1 || 0)
+                    : annoParam === "2" ? (u.ore2 || 0)
+                    : ((u.ore1 || 0) + (u.ore2 || 0));
+      const orePian = orePianMap[u.nome] || 0;
+      const rim     = Math.max(0, orePrev - orePian);
+      const eccesso = orePian > orePrev ? Math.round((orePian - orePrev) * 10) / 10 : 0;
+      const perc    = orePrev > 0 ? Math.min(100, Math.round(orePian / orePrev * 100)) : (orePian > 0 ? 100 : 0);
+      const col     = colBarra(perc);
+      totPrev += orePrev;
+      totPian += orePian;
+
+      // Nome breve UF (toglie prefisso tipo "UFS04 – ")
+      const nomeBreve = u.nome.replace(/^UFS?\d+\s*[–-]\s*/i, "");
+
+      righe += `<tr>
+        <td style="padding:.45rem .5rem;border-bottom:1px solid var(--border);font-size:.8rem;font-weight:600">${esc(u.nome.match(/^UFS?\d+/i)?.[0] || "")}</td>
+        <td style="padding:.45rem .5rem;border-bottom:1px solid var(--border);font-size:.78rem;color:var(--muted)">${esc(nomeBreve)}</td>
+        <td style="padding:.45rem .4rem;border-bottom:1px solid var(--border);text-align:center;font-size:.82rem;color:var(--muted)">${orePrev || "—"}</td>
+        <td style="padding:.45rem .4rem;border-bottom:1px solid var(--border);text-align:center">
+          <span style="font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${col}">${orePian}</span>
+        </td>
+        <td style="padding:.45rem .5rem;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:.4rem">
+            <div style="flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+              <div style="width:${perc}%;height:100%;background:${col};border-radius:3px;transition:width .3s"></div>
+            </div>
+            <span style="font-size:.7rem;min-width:28px;text-align:right;color:${col}">${perc}%</span>
+          </div>
+          ${eccesso > 0 ? `<div style="font-size:.65rem;color:var(--danger);margin-top:.1rem">+${eccesso}h eccesso</div>` : ""}
+          ${rim > 0     ? `<div style="font-size:.65rem;color:var(--muted);margin-top:.1rem">${rim}h rimanenti</div>` : ""}
+        </td>
+      </tr>`;
+    });
+
+    totPrev = Math.round(totPrev * 10) / 10;
+    totPian = Math.round(totPian * 10) / 10;
+    const totRim  = Math.max(0, Math.round((totPrev - totPian) * 10) / 10);
+    const totPerc = totPrev > 0 ? Math.min(100, Math.round(totPian / totPrev * 100)) : 0;
+    const titolo  = annoParam ? (annoParam + "° Anno") : "Tutti gli anni";
+    const colTot  = colBarra(totPerc);
+
+    const html = `
+      <div style="margin-bottom:1rem">
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.15rem">Riepilogo monte ore</div>
+        <div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin-bottom:.75rem">${titolo}</div>
+        <!-- Totale complessivo -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px">
+            <div style="font-size:.7rem;color:var(--muted);margin-bottom:.2rem">ORE TOTALI PIANIFICATE</div>
+            <div style="font-family:var(--font-head);font-weight:800;font-size:1.6rem;color:${colTot}">${totPian}<span style="font-size:.85rem;font-weight:400;color:var(--muted)"> / ${totPrev}h</span></div>
+          </div>
+          <div style="flex:1;min-width:120px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;font-size:.72rem"><span style="color:var(--muted)">Avanzamento</span><span style="font-weight:700;color:${colTot}">${totPerc}%</span></div>
+            <div style="height:8px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden">
+              <div style="width:${totPerc}%;height:100%;background:${colTot};border-radius:4px"></div>
+            </div>
+            ${totRim > 0 ? `<div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">${totRim}h ancora da pianificare</div>` : `<div style="font-size:.7rem;color:var(--success);margin-top:.3rem">✓ Monte ore completato</div>`}
+          </div>
+        </div>
+      </div>
+      <!-- Tabella dettaglio UF -->
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border)">
+        <table style="border-collapse:collapse;min-width:100%;font-size:.78rem;width:100%">
+          <thead>
+            <tr style="background:var(--surface2)">
+              <th style="padding:.4rem .5rem;border-bottom:2px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase;white-space:nowrap">UF</th>
+              <th style="padding:.4rem .5rem;border-bottom:2px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase">Descrizione</th>
+              <th style="padding:.4rem .4rem;border-bottom:2px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase;text-align:center;white-space:nowrap">Prev.</th>
+              <th style="padding:.4rem .4rem;border-bottom:2px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase;text-align:center;white-space:nowrap">Pian.</th>
+              <th style="padding:.4rem .5rem;border-bottom:2px solid var(--border);font-size:.7rem;color:var(--muted);text-transform:uppercase;min-width:120px">Avanzamento</th>
+            </tr>
+          </thead>
+          <tbody>${righe}</tbody>
+          <tfoot>
+            <tr style="background:var(--surface2)">
+              <td colspan="2" style="padding:.5rem .5rem;font-weight:700;font-size:.82rem">TOTALE</td>
+              <td style="padding:.5rem .4rem;text-align:center;font-weight:700;font-size:.82rem;color:var(--muted)">${totPrev}h</td>
+              <td style="padding:.5rem .4rem;text-align:center;font-family:var(--font-head);font-weight:800;font-size:.9rem;color:${colTot}">${totPian}h</td>
+              <td style="padding:.5rem .5rem;font-size:.75rem;color:${colTot};font-weight:700">${totPerc}% completato</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>`;
+
+    $("monte-ore-content").innerHTML = html;
+  } catch(e) {
+    $("monte-ore-content").innerHTML = `<div class="alert alert-danger">Errore nel caricamento: ${esc(String(e))}</div>`;
+  }
 }
 
 function parseOra(s) {
