@@ -1648,7 +1648,20 @@ async function renderGestioneOrario() {
   const uf1 = (ruf1.uf||[]).map(u=>({...u,anni:"1"}));
   const uf2 = (ruf2.uf||[]).map(u=>({...u,anni:"2"}));
   const ufMap = {};
-  [...uf1,...uf2].forEach(u=>{ if(!ufMap[u.nome]) ufMap[u.nome]={...u,anni:[]}; if(!ufMap[u.nome].anni.includes(u.anni)) ufMap[u.nome].anni.push(u.anni); });
+  // Per ogni UF salva ore distinte per anno: ore1_a1/ore2_a1 (1° Anno = scansione 2026-28)
+  // e ore1_a2/ore2_a2 (2° Anno = scansione 2024-26), così apriMonteOre legge i valori giusti.
+  uf1.forEach(u=>{
+    if(!ufMap[u.nome]) ufMap[u.nome]={...u, anni:[], ore1_a1:0, ore2_a1:0, ore1_a2:0, ore2_a2:0};
+    if(!ufMap[u.nome].anni.includes("1")) ufMap[u.nome].anni.push("1");
+    ufMap[u.nome].ore1_a1 = u.ore1||0;
+    ufMap[u.nome].ore2_a1 = u.ore2||0;
+  });
+  uf2.forEach(u=>{
+    if(!ufMap[u.nome]) ufMap[u.nome]={...u, anni:[], ore1_a1:0, ore2_a1:0, ore1_a2:0, ore2_a2:0};
+    if(!ufMap[u.nome].anni.includes("2")) ufMap[u.nome].anni.push("2");
+    ufMap[u.nome].ore1_a2 = u.ore1||0;
+    ufMap[u.nome].ore2_a2 = u.ore2||0;
+  });
   _ufList = Object.values(ufMap).sort((a,b)=>a.nome.localeCompare(b.nome));
   const docSet = new Set([...(rdoc1.docenti||[]),...(rdoc2.docenti||[])]);
   _docentiOrario = [...docSet].sort();
@@ -2717,7 +2730,8 @@ async function aggiornaUFGlob() {
     const r=await api("getLezioni",{filtroUF:uf,annualita:anno});
     const orePian=r.lezioni?Math.round(r.lezioni.reduce((s,l)=>s+(l.ore||0),0)*10)/10:0;
     const ufObj=_ufList.find(u=>u.nome===uf);
-    const orePrev=ufObj?(anno==="1"?ufObj.ore1:ufObj.ore2):0;
+    // ore previste per anno: 1°Anno = scansione 2026-28 (ore1_a1+ore2_a1), 2°Anno = 2024-26 (ore1_a2+ore2_a2)
+    const orePrev=ufObj?(anno==="1"?((ufObj.ore1_a1||0)+(ufObj.ore2_a1||0)):((ufObj.ore1_a2||0)+(ufObj.ore2_a2||0))):0;
     const rim=Math.max(0,orePrev-orePian);
     info.innerHTML=`<span style="color:${rim>0?'var(--success)':'var(--danger)'}">📊 Pianificate: <b>${orePian}h</b> / ${orePrev}h previste &nbsp;·&nbsp; Rimanenti: <b>${rim}h</b></span>`;
   } catch(e){info.textContent="";}
@@ -2778,9 +2792,10 @@ async function apriMonteOre() {
 
     let righe = "";
     ufs.forEach(u => {
-      const orePrev = annoParam === "1" ? (u.ore1 || 0)
-                    : annoParam === "2" ? (u.ore2 || 0)
-                    : ((u.ore1 || 0) + (u.ore2 || 0));
+      // ore previste: 1°Anno usa scansione 2026-28 (ore1_a1/ore2_a1), 2°Anno usa 2024-26 (ore1_a2/ore2_a2)
+      const orePrev = annoParam === "1" ? ((u.ore1_a1||0) + (u.ore2_a1||0))
+                    : annoParam === "2" ? ((u.ore1_a2||0) + (u.ore2_a2||0))
+                    : ((u.ore1_a1||0) + (u.ore2_a1||0) + (u.ore1_a2||0) + (u.ore2_a2||0));
       const orePian = orePianMap[u.nome] || 0;
       const rim     = Math.max(0, orePrev - orePian);
       const eccesso = orePian > orePrev ? Math.round((orePian - orePrev) * 10) / 10 : 0;
