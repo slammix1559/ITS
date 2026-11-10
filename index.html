@@ -2409,8 +2409,12 @@ async function toggleConfermaSlot(rowIndex, annualita, nuovoStato, btn) {
 function esportaPDFTabella() {
   const tbody = document.getElementById("go-tbody");
   if (!tbody) return;
-  const dal = $("go-dal") ? $("go-dal").value : "";
-  const al  = $("go-al")  ? $("go-al").value  : "";
+  const dal       = $("go-dal")   ? $("go-dal").value         : "";
+  const al        = $("go-al")    ? $("go-al").value          : "";
+  const filtroUF  = $("go-filtro-uf")  ? $("go-filtro-uf").value.trim()  : "";
+  const filtroDoc = $("go-filtro-doc") ? $("go-filtro-doc").value.trim() : "";
+  const filtroAnno= $("go-anno")       ? $("go-anno").value.trim()       : "";
+  const annoLabel = filtroAnno === "1" ? "1° Anno" : filtroAnno === "2" ? "2° Anno" : "";
   const logoUrl = "https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png";
 
   let rows = "";
@@ -2442,10 +2446,16 @@ function esportaPDFTabella() {
     }
   });
 
-  // Titolo file PDF: "Orario ITS · 14/09/2026 – 18/12/2026"
+  // Titolo file PDF: "Orario ITS · [Anno] · [UF] · [Docente] · [dal] – [al]"
   const dalIT = dal ? dal.split("-").reverse().join("/") : "";
   const alIT  = al  ? al.split("-").reverse().join("/")  : "";
-  const pdfTitle = "Orario ITS" + (dalIT||alIT ? " · " + (dalIT||"") + (alIT?" – "+alIT:"") : "");
+  const periodoStr = (dalIT||alIT) ? (dalIT||"") + (alIT?" – "+alIT:"") : "";
+  let _pdfParts = ["Orario ITS"];
+  if (annoLabel)  _pdfParts.push(annoLabel);
+  if (filtroUF)   _pdfParts.push(filtroUF.replace(/[<>:"/\\|?*]/g,""));
+  if (filtroDoc)  _pdfParts.push(filtroDoc.replace(/[<>:"/\\|?*]/g,""));
+  if (periodoStr) _pdfParts.push(periodoStr);
+  const pdfTitle = _pdfParts.join(" · ");
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
   <title>${pdfTitle}</title>
@@ -2461,8 +2471,8 @@ function esportaPDFTabella() {
   <div class="header">
     <img class="logo" src="${logoUrl}" onerror="this.style.display='none'">
     <div class="titolo">
-      <h1>Orario ITS · ${dalIT} – ${alIT}</h1>
-      <h2>ITS Meccanica e Meccatronica Lombardia</h2>
+      <h1>${filtroUF ? filtroUF : "Orario ITS"}${annoLabel?" · "+annoLabel:""}</h1>
+      <h2>ITS Meccanica e Meccatronica Lombardia${periodoStr?" · "+periodoStr:""}${filtroDoc?" · <strong>"+filtroDoc+"</strong>":""}</h2>
     </div>
   </div>
   <table>
