@@ -3132,20 +3132,21 @@ async function salvaModificaLezione() {
 function esportaOrario() {
   if (!_lezioniCache.length) { alert("Nessuna lezione da esportare. Prima esegui una ricerca."); return; }
 
-  const filtroUF  = $("go-vis-uf")  ? $("go-vis-uf").value.trim()  : "";
-  const filtroDoc = $("go-vis-doc") ? $("go-vis-doc").value.trim() : "";
+  const filtroUF   = $("go-vis-uf")   ? $("go-vis-uf").value.trim()   : "";
+  const filtroDoc  = $("go-vis-doc")  ? $("go-vis-doc").value.trim()  : "";
+  const filtroAnno = $("go-vis-anno") ? $("go-vis-anno").value.trim() : "";
   const da = $("go-vis-da") ? $("go-vis-da").value : "";
   const a  = $("go-vis-a")  ? $("go-vis-a").value  : "";
 
-  // Titolo calendarizzazione
-  const ufTitolo = filtroUF || (filtroDoc ? "Docente: "+filtroDoc : "Tutte le UF");
+  const annoLabel  = filtroAnno === "1" ? "1° Anno" : filtroAnno === "2" ? "2° Anno" : "";
   const periodoStr = (da||a) ? ((da?da.split("-").reverse().join("/"):"")+(a?" – "+a.split("-").reverse().join("/"):"")) : "";
 
   // Titolo PDF (usato come <title> → nome file suggerito dal browser)
-  // Formato: "Orario ITS · [UF] · [Docente] · [dal] – [al]"
+  // Formato: "Orario ITS · [Anno] · [UF] · [Docente] · [periodo]"
   let _pdfTitleParts = ["Orario ITS"];
-  if (filtroUF) _pdfTitleParts.push(filtroUF.replace(/[<>:"/\\|?*]/g,""));
-  if (filtroDoc) _pdfTitleParts.push(filtroDoc.replace(/[<>:"/\\|?*]/g,""));
+  if (annoLabel)  _pdfTitleParts.push(annoLabel);
+  if (filtroUF)   _pdfTitleParts.push(filtroUF.replace(/[<>:"/\\|?*]/g,""));
+  if (filtroDoc)  _pdfTitleParts.push(filtroDoc.replace(/[<>:"/\\|?*]/g,""));
   if (periodoStr) _pdfTitleParts.push(periodoStr);
   const pdfTitleOrario = _pdfTitleParts.join(" · ");
 
@@ -3196,13 +3197,12 @@ function esportaOrario() {
   <div class="header">
     <img class="logo" src="https://raw.githubusercontent.com/slammix1559/ITS/main/logoITS.png" alt="ITS Logo" onerror="this.style.display='none'">
     <div class="titolo">
-      <h1>${filtroUF ? filtroUF : (filtroDoc ? "Docente: "+filtroDoc : "Orario ITS")}</h1>
-      <h2>ITS Meccanica e Meccatronica Lombardia${periodoStr?" &nbsp;·&nbsp; "+periodoStr:""}</h2>
+      <h1>${filtroUF ? filtroUF : "Orario ITS"}${annoLabel?" &nbsp;·&nbsp; "+annoLabel:""}</h1>
+      <h2>ITS Meccanica e Meccatronica Lombardia${periodoStr?" &nbsp;·&nbsp; "+periodoStr:""}${filtroDoc?" &nbsp;·&nbsp; <strong>"+filtroDoc+"</strong>":""}</h2>
     </div>
   </div>
   <div class="meta">
     Totale: <strong>${_lezioniCache.length} lezioni</strong> · <strong>${totOre}h</strong>
-    ${filtroDoc&&filtroUF?" &nbsp;·&nbsp; Docente: <strong>"+filtroDoc+"</strong>":""}
     &nbsp;·&nbsp; Generato il: <strong>${new Date().toLocaleDateString("it-IT")}</strong>
   </div>
   <table>
