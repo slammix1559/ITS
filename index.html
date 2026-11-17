@@ -117,6 +117,18 @@ h1,h2,h3,h4,h5{font-family:var(--font-head);font-weight:700}
 .contatto-row:last-child{border-bottom:none}
 .tabellone-row:hover td{background:rgba(59,130,246,.06)!important}
 @media(max-width:420px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}.stat-val{font-size:1.5rem}.navbar-brand span{display:none}.main{padding:1rem .875rem 5.5rem}}
+/* ── Mobile: tabella Pianifica ── */
+@media(max-width:600px){
+  #go-tabella .col-sede,#go-tabella .col-note,#go-tabella .col-anno,
+  #go-tabella th.col-sede,#go-tabella th.col-note,#go-tabella th.col-anno,
+  #go-tabella td.col-sede,#go-tabella td.col-note,#go-tabella td.col-anno{display:none}
+  #go-tabella{font-size:.74rem}
+  #go-tabella td,#go-tabella th{padding:3px 3px!important}
+  .go-filter-grid{display:flex!important;flex-direction:column!important;gap:.5rem!important}
+  .go-filter-grid .form-group{margin:0}
+  .go-filter-actions{flex-wrap:wrap!important}
+  .go-filter-actions button{flex:1;min-width:0}
+}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 </style>
@@ -267,6 +279,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4 id="comm-detail-title" style="flex:1;padding-right:1rem"></h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-comm-detail')">&#10005;</button></div>
   <div class="text-muted" id="comm-detail-meta" style="font-size:.78rem;margin-bottom:.75rem"></div>
   <div id="comm-detail-testo" style="font-size:.92rem;line-height:1.7;white-space:pre-wrap"></div>
+  <div id="comm-detail-actions" style="margin-top:1.25rem;display:flex;justify-content:flex-end"></div>
 </div></div>
 <div id="modal-evento" class="modal-overlay hide"><div class="modal-box">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem"><h4>Nuovo evento</h4><button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-evento')">&#10005;</button></div>
@@ -275,6 +288,17 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div class="form-group"><label>Data</label><input type="date" id="ev-data"></div>
   <div class="form-group"><label style="display:flex;align-items:center;gap:.5rem;text-transform:none;font-size:.88rem;color:var(--text)"><input type="checkbox" id="ev-allday" style="width:auto" onchange="evToggleAllday()"> Tutto il giorno</label></div>
   <div class="grid-2" id="ev-times"><div class="form-group"><label>Ora inizio</label><input type="time" id="ev-ini"></div><div class="form-group"><label>Ora fine</label><input type="time" id="ev-fin"></div></div>
+  <div class="form-group">
+    <label>Pubblica sui calendari team</label>
+    <div id="ev-cal-chips" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem">
+      <span class="chip ev-cal-chip" data-cal="tutti" onclick="toggleEvCalChip(this)">Tutti</span>
+      <span class="chip ev-cal-chip" data-cal="tutor" onclick="toggleEvCalChip(this)">Tutor</span>
+      <span class="chip ev-cal-chip" data-cal="orientatori" onclick="toggleEvCalChip(this)">Orientatori</span>
+      <span class="chip ev-cal-chip" data-cal="studenti" onclick="toggleEvCalChip(this)">Studenti</span>
+      <span class="chip ev-cal-chip" data-cal="docenti" onclick="toggleEvCalChip(this)">Docenti</span>
+    </div>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Seleziona nessuno per non pubblicare su alcun calendario.</div>
+  </div>
   <div class="form-group"><label style="display:flex;align-items:center;gap:.5rem;text-transform:none;font-size:.88rem;color:var(--text)"><input type="checkbox" id="ev-needpers" style="width:auto" onchange="evToggleNeed()"> L'evento richiede personale</label></div>
   <div id="ev-pers-wrap" style="display:none">
     <div id="ne-fig-list" style="margin-bottom:.75rem"></div>
@@ -804,7 +828,28 @@ async function renderComunicazioni(){
 function renderListaComm(){const cont=$("comm-list");if(!_comunicazioni.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessuna comunicazione.</div>';return;}
   const DL={tutti:"Tutti",studenti:"Studenti","1anno":"1\u00b0 Anno","2anno":"2\u00b0 Anno",docenti:"Docenti",team:"Tutor",orientatrici:"Orientatrici"};
   cont.innerHTML=_comunicazioni.map(c=>`<div class="comm-card ${c.letta?'':'unread'}" onclick="apriComm('${esc(c.ID)}')"><div class="comm-title">${esc(c.TITOLO)}${!c.letta?' <span class="badge badge-blue" style="font-size:.65rem">NUOVO</span>':''}</div><div class="comm-meta"><span>${fmtData(c.DATA_CREAZIONE)}</span><span class="badge badge-gray">${DL[c.DESTINATARI]||esc(c.DESTINATARI)}</span></div><div class="comm-preview">${esc(c.TESTO)}</div></div>`).join("");}
-function apriComm(id){const c=_comunicazioni.find(x=>x.ID===id);if(!c)return;$("comm-detail-title").textContent=c.TITOLO;$("comm-detail-meta").textContent=fmtData(c.DATA_CREAZIONE)+" - "+c.DESTINATARI;$("comm-detail-testo").textContent=c.TESTO;openModal("modal-comm-detail");if(!c.letta){api("segnaComunicazioneLetta",{id}).then(()=>{c.letta=true;renderListaComm();checkNotifiche();});}}
+function apriComm(id){
+  const c=_comunicazioni.find(x=>x.ID===id);if(!c)return;
+  $("comm-detail-title").textContent=c.TITOLO;
+  $("comm-detail-meta").textContent=fmtData(c.DATA_CREAZIONE)+" · "+c.DESTINATARI+(c.AUTORE_EMAIL?" · "+c.AUTORE_EMAIL:"");
+  $("comm-detail-testo").textContent=c.TESTO;
+  // Mostra bottone elimina solo all'autore o al coordinatore
+  const actDiv=$("comm-detail-actions");
+  const isAutore=_user.email&&c.AUTORE_EMAIL&&_user.email.toLowerCase()===c.AUTORE_EMAIL.toLowerCase();
+  const isCoord=_user.ruolo==="COORDINATORE";
+  actDiv.innerHTML=(isAutore||isCoord)
+    ?`<button class="btn btn-outline" style="color:var(--danger);border-color:var(--danger);font-size:.82rem" onclick="eliminaComm('${esc(c.ID)}')">🗑 Elimina</button>`
+    :"";
+  openModal("modal-comm-detail");
+  if(!c.letta){api("segnaComunicazioneLetta",{id}).then(()=>{c.letta=true;renderListaComm();checkNotifiche();});}
+}
+async function eliminaComm(id){
+  if(!confirm("Eliminare questa comunicazione?"))return;
+  const res=await api("eliminaComunicazione",{id});
+  if(!res.success){alert(res.message||"Errore.");return;}
+  chiudiModal("modal-comm-detail");
+  renderComunicazioni();
+}
 function apriNuovaComunicazione(){$("comm-titolo").value=$("comm-testo").value="";document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));hideErr("comm-err");openModal("modal-nuova-comm");}
 function toggleChip(el){document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
 async function inviaComunicazione(){hideErr("comm-err");const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();const destEl=document.querySelector("#chip-dest .chip.selected");const DM={"Tutti":"tutti","Studenti (tutti)":"studenti","1\u00b0 anno":"1anno","2\u00b0 anno":"2anno","Docenti":"docenti","Tutor":"team","Orientatrici":"orientatrici"};const d=DM[destEl?.textContent]||"";if(!titolo)return showErr("comm-err","Titolo.");if(!testo)return showErr("comm-err","Testo.");if(!d)return showErr("comm-err","Destinatari.");const res=await api("creaComunicazione",{titolo,testo,destinatari:d});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();}
@@ -829,7 +874,17 @@ function _renderListaEventi(){
     html+=`<div class="evento-card" style="${isPast?'opacity:.5':''}"><div class="evento-data"><div class="ed-num">${d.getDate()}</div><div class="ed-gg">${MESI_SHORT[d.getMonth()]}</div><div class="ed-gg">${GG_SHORT[d.getDay()]}</div></div><div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem"><div style="font-weight:700;font-size:.95rem">${esc(ev.titolo)}</div>${_canEditEventi()?`<div style="display:flex;gap:4px;flex-shrink:0"><button class="btn btn-icon btn-sm" style="width:26px;height:26px;font-size:.7rem;color:var(--accent)" onclick="apriPersonaleEvento('${ev.id}')" title="Personale">&#128101;</button><button class="btn btn-icon btn-sm" style="width:26px;height:26px;font-size:.7rem;color:var(--danger)" onclick="eliminaEvento('${ev.id}')" title="Elimina">&#10005;</button></div>`:''}</div>${ev.descrizione?`<div style="font-size:.8rem;color:var(--muted);margin-top:.15rem">${esc(ev.descrizione)}</div>`:''}<div style="font-size:.78rem;color:var(--muted);margin-top:.25rem">${ev.tuttoGiorno?'Tutto il giorno':esc(ev.oraInizio)+' &ndash; '+esc(ev.oraFine)}</div>${figs?`<div style="margin-top:.35rem;display:flex;flex-wrap:wrap">${figs}</div>`:''}</div></div>`;
   });cont.innerHTML=html;
 }
-function apriModalEvento(){$("ev-titolo").value=$("ev-descr").value="";$("ev-data").value=todayISO();$("ev-allday").checked=false;$("ev-needpers").checked=false;$("ev-times").style.display="";$("ev-pers-wrap").style.display="none";$("ev-ini").value="09:00";$("ev-fin").value="17:00";_neFigure=[];_renderNeFigs();hideErr("ev-err");openModal("modal-evento");}
+function apriModalEvento(){$("ev-titolo").value=$("ev-descr").value="";$("ev-data").value=todayISO();$("ev-allday").checked=false;$("ev-needpers").checked=false;$("ev-times").style.display="";$("ev-pers-wrap").style.display="none";$("ev-ini").value="09:00";$("ev-fin").value="17:00";_neFigure=[];_renderNeFigs();hideErr("ev-err");document.querySelectorAll(".ev-cal-chip").forEach(c=>c.classList.remove("selected"));openModal("modal-evento");}
+function toggleEvCalChip(el){
+  if(el.dataset.cal==="tutti"){
+    const wasSelected=el.classList.contains("selected");
+    document.querySelectorAll(".ev-cal-chip").forEach(c=>c.classList.remove("selected"));
+    if(!wasSelected)el.classList.add("selected");
+  } else {
+    $("ev-cal-chips").querySelector('[data-cal="tutti"]').classList.remove("selected");
+    el.classList.toggle("selected");
+  }
+}
 function evToggleAllday(){$("ev-times").style.display=$("ev-allday").checked?"none":"";}
 function evToggleNeed(){$("ev-pers-wrap").style.display=$("ev-needpers").checked?"":"none";if($("ev-needpers").checked)_renderNeBuilder("ne-builder");}
 function _renderNeBuilder(contId){
@@ -866,9 +921,25 @@ async function salvaEvento(){
   hideErr("ev-err");const titolo=$("ev-titolo").value.trim(),descr=$("ev-descr").value.trim(),data=$("ev-data").value,allday=$("ev-allday").checked,ini=$("ev-ini").value,fin=$("ev-fin").value;
   if(!titolo)return showErr("ev-err","Titolo obbligatorio.");if(!data)return showErr("ev-err","Data obbligatoria.");
   if(!allday&&(!ini||!fin||fin<=ini))return showErr("ev-err","Orario non valido.");
-  const payload={titolo,descrizione:descr,data,tuttoGiorno:allday,oraInizio:allday?"":ini,oraFine:allday?"":fin};
+  const calChips=[...document.querySelectorAll(".ev-cal-chip.selected")].map(c=>c.dataset.cal);
+  const payload={titolo,descrizione:descr,data,tuttoGiorno:allday,oraInizio:allday?"":ini,oraFine:allday?"":fin,calendari:calChips};
   if($("ev-needpers").checked&&_neFigure.length)payload.personale=_neFigure;
-  const res=await api("creaEvento",payload);if(!res.success)return showErr("ev-err",res.message);chiudiModal("modal-evento");renderEventi();
+  const res=await api("creaEvento",payload);
+  if(!res.success)return showErr("ev-err",res.message);
+  chiudiModal("modal-evento");
+  renderEventi();
+  // Feedback calendari
+  if(calChips.length){
+    const pub=res.calendariPubblicati||[];
+    const sal=res.calendariSaltati||[];
+    if(pub.length) console.log("Calendari pubblicati:",pub.join(", "));
+    if(sal.length){
+      const msg="Pubblicato sui calendari: "+(pub.length?pub.join(", "):"nessuno")+
+        (sal.length?"\nNon pubblicato: "+sal.join(", "):"");
+      if(sal.some(s=>s.includes("non configurato")))
+        console.warn("Alcuni calendari non sono configurati nel backend:",sal);
+    }
+  }
 }
 async function eliminaEvento(id){if(!confirm("Eliminare evento?"))return;await api("eliminaEvento",{id});renderEventi();}
 let _peEventoId=null;
@@ -1629,7 +1700,7 @@ async function renderGestioneOrario() {
     </div>
     <div class="tab-row" style="margin-bottom:1.25rem">
       <button class="tab-btn active" id="got-pianifica" onclick="switchGOTab('pianifica',this)">📅 Pianifica orario</button>
-      <button class="tab-btn" id="got-abbinamenti" onclick="switchGOTab('abbinamenti',this)">🔗 Abbinamenti UF-Docente</button>
+      <!-- Abbinamenti UF-Docente nascosti: i docenti ora vengono dall'orario reale -->
       <button class="tab-btn" id="got-analisi" onclick="switchGOTab('analisi',this)">📊 Analisi</button>
     </div>
     <div id="go-pane-pianifica"></div>
@@ -1637,12 +1708,10 @@ async function renderGestioneOrario() {
     <div id="go-pane-analisi" class="hide"></div>
     `;
 
-  // Carica UF, docenti e abbinamenti in parallelo
-  const [ruf1, ruf2, rdoc1, rdoc2, rabb] = await Promise.all([
+  // Carica UF e abbinamenti in parallelo (i docenti si caricano live da caricaSlotsMese)
+  const [ruf1, ruf2, rabb] = await Promise.all([
     api("getUF", {annualita:"1"}),
     api("getUF", {annualita:"2"}),
-    api("getDocentiOrario", {annualita:"1"}),
-    api("getDocentiOrario", {annualita:"2"}),
     api("getAbbinamenti", {})
   ]);
   // getUF restituisce per ogni anno le UF con ore = colonna corretta:
@@ -1663,8 +1732,7 @@ async function renderGestioneOrario() {
     ufMap[k].oreAnno2 = u.ore||0;
   });
   _ufList = Object.values(ufMap).sort((a,b)=>a.nome.localeCompare(b.nome));
-  const docSet = new Set([...(rdoc1.docenti||[]),...(rdoc2.docenti||[])]);
-  _docentiOrario = [...docSet].sort();
+  _docentiOrario = []; // si popola automaticamente al primo caricaSlotsMese
   _abbinamenti = rabb.abbinamenti || [];
 
   renderGOPianifica();
@@ -1726,6 +1794,20 @@ function _hexToRgba(hex, alpha) {
 function renderGOPianifica() {
   const pane = document.getElementById("go-pane-pianifica");
   if (!pane) return;
+
+  // Se il pannello filtri è già costruito, aggiorna solo UF e docenti senza distruggere lo stato
+  if (document.getElementById("go-anno")) {
+    // Aggiorna solo le options di UF (docenti si aggiornano dopo caricaSlotsMese)
+    const selUF = document.getElementById("go-filtro-uf");
+    if (selUF) {
+      const valUF = selUF.value;
+      selUF.innerHTML = `<option value="">Tutte le UF</option>` +
+        _ufList.map(u=>`<option value="${esc(u.nome)}"${u.nome===valUF?' selected':''}>${esc(u.nome)}</option>`).join("");
+    }
+    caricaSlotsMese();
+    return;
+  }
+
   const oggi = new Date();
   const ufOpts = _ufList.map(u=>`<option value="${esc(u.nome)}">${esc(u.nome)}</option>`).join("");
   const docOpts = _docentiOrario.map(d=>`<option value="${esc(d)}">${esc(d)}</option>`).join("");
@@ -1736,7 +1818,7 @@ function renderGOPianifica() {
 
   pane.innerHTML = `
     <div class="card" style="margin-bottom:.75rem;padding:.85rem 1rem">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
+      <div class="go-filter-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
         <div class="form-group" style="margin:0">
           <label>Anno</label>
           <select id="go-anno">
@@ -1749,8 +1831,6 @@ function renderGOPianifica() {
           <label>Dal</label>
           <input type="date" id="go-dal" value="${dalDef}">
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.6rem">
         <div class="form-group" style="margin:0">
           <label>Al</label>
           <input type="date" id="go-al" value="${alDef}">
@@ -1762,8 +1842,6 @@ function renderGOPianifica() {
             ${ufOpts}
           </select>
         </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:.6rem;align-items:center">
         <div class="form-group" style="margin:0">
           <label>Filtra Docente</label>
           <select id="go-filtro-doc">
@@ -1771,13 +1849,13 @@ function renderGOPianifica() {
             ${docOpts}
           </select>
         </div>
-        <div style="display:flex;gap:.5rem;align-items:flex-end;padding-bottom:.05rem">
-          <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.78rem;color:var(--muted);text-transform:none;letter-spacing:0;margin:0;padding-bottom:.35rem">
+        <div class="form-group" style="margin:0;display:flex;align-items:flex-end;padding-bottom:.15rem">
+          <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.78rem;color:var(--muted);text-transform:none;letter-spacing:0;margin:0">
             <input type="checkbox" id="go-filtro-libere" style="width:auto"> Solo libere
           </label>
         </div>
       </div>
-      <div style="display:flex;gap:.5rem;margin-top:.6rem">
+      <div class="go-filter-actions" style="display:flex;gap:.5rem;margin-top:.6rem">
         <button class="btn btn-primary" style="flex:1" onclick="caricaSlotsMese()">📅 Carica orario</button>
         <button class="btn btn-outline" onclick="apriMonteOre()">📊 Monte ore</button>
         <button class="btn btn-outline" onclick="esportaPDFTabella()">📄 PDF</button>
@@ -1807,6 +1885,18 @@ async function caricaSlotsMese() {
   const r = await api("getSlotsMese", { dal, al, annualita, filtroUF, filtroDoc, soloLibere });
   if (!r.success) { pane.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`; return; }
   _slotsCache = r.giorni || [];
+
+  // Aggiorna lista docenti dal risultato reale (preservando la selezione corrente)
+  if (r.docenti && r.docenti.length) {
+    _docentiOrario = r.docenti;
+    const selDoc = $("go-filtro-doc");
+    if (selDoc) {
+      const valCorrente = selDoc.value;
+      selDoc.innerHTML = `<option value="">Tutti i docenti</option>` +
+        r.docenti.map(d=>`<option value="${esc(d)}"${d===valCorrente?' selected':''}>${esc(d)}</option>`).join("");
+    }
+  }
+
   if (!_slotsCache.length) { pane.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuno slot trovato per questo periodo/filtro.</div>`; return; }
 
   // Calcola totali
@@ -1834,10 +1924,10 @@ async function caricaSlotsMese() {
     <colgroup>
       <col style="width:28px">
       <col style="width:70px">
-      <col style="width:42px">
+      <col class="col-anno" style="width:42px">
       <col style="width:auto">
-      <col style="width:120px">
-      <col style="width:90px">
+      <col class="col-sede" style="width:110px">
+      <col class="col-note" style="width:80px">
       <col style="width:18px">
       <col style="width:22px">
     </colgroup>
@@ -1845,10 +1935,10 @@ async function caricaSlotsMese() {
       <tr style="background:var(--surface2);color:var(--muted);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">
         <th style="padding:4px 2px;border-bottom:1px solid var(--border);text-align:center">#</th>
         <th style="padding:4px 6px;border-bottom:1px solid var(--border)">Orario</th>
-        <th style="padding:4px 2px;border-bottom:1px solid var(--border);text-align:center">Anno</th>
+        <th class="col-anno" style="padding:4px 2px;border-bottom:1px solid var(--border);text-align:center">Anno</th>
         <th style="padding:4px 6px;border-bottom:1px solid var(--border)">UF / Docente</th>
-        <th style="padding:4px 6px;border-bottom:1px solid var(--border)">Sede</th>
-        <th style="padding:4px 6px;border-bottom:1px solid var(--border)">Note</th>
+        <th class="col-sede" style="padding:4px 6px;border-bottom:1px solid var(--border)">Sede</th>
+        <th class="col-note" style="padding:4px 6px;border-bottom:1px solid var(--border)">Note</th>
         <th style="padding:4px 2px;border-bottom:1px solid var(--border);text-align:center">✓</th>
         <th style="padding:4px 2px;border-bottom:1px solid var(--border)"></th>
       </tr>
@@ -1906,7 +1996,7 @@ async function caricaSlotsMese() {
         ondragend="goRowDragEnd(event,this)">
         <td style="padding:3px 2px;border-bottom:1px solid var(--border);text-align:center;color:var(--muted);font-size:.68rem">${vuoto?'':'<span style="font-size:.65rem;color:'+colUF+'">'+oreProgStr+'</span>'}</td>
         <td style="padding:3px 6px;border-bottom:1px solid var(--border);font-weight:600;color:var(--accent2);white-space:nowrap;font-size:.78rem">${esc(b.dalleStr)}–${esc(b.alleStr)}</td>
-        <td style="padding:3px 2px;border-bottom:1px solid var(--border);text-align:center">
+        <td class="col-anno" style="padding:3px 2px;border-bottom:1px solid var(--border);text-align:center">
           <span style="font-size:.62rem;font-weight:700;color:${colAnno}">${annoGruppo}°</span>
         </td>
         <td style="padding:3px 6px;border-bottom:1px solid var(--border);overflow:hidden">
@@ -1916,8 +2006,8 @@ async function caricaSlotsMese() {
                <div style="font-size:.68rem;color:var(--muted)">${b.docente?'👤 '+esc(b.docente):''}</div>`
           }
         </td>
-        <td style="padding:3px 6px;border-bottom:1px solid var(--border);font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.ambiente||'')}</td>
-        <td style="padding:3px 6px;border-bottom:1px solid var(--border);font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.note||'')}</td>
+        <td class="col-sede" style="padding:3px 6px;border-bottom:1px solid var(--border);font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.ambiente||'')}</td>
+        <td class="col-note" style="padding:3px 6px;border-bottom:1px solid var(--border);font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.note||'')}</td>
         <td style="padding:3px 2px;border-bottom:1px solid var(--border);text-align:center">${confDot}</td>
         <td style="padding:3px 2px;border-bottom:1px solid var(--border);text-align:center">
           <button onclick="apriPopupSlot(${b.rowIndex},${b.rowIndexFine||b.rowIndex},'${esc(g.data)}','${esc(b.dalleStr)}','${esc(b.alleStr)}',${b.dalleMin},${b.alleMin},'${esc(b.modulo||'').replace(/'/g,"\\'")}','${esc(b.docente||'').replace(/'/g,"\\'")}','${esc(b.ambiente||'').replace(/'/g,"\\'")}','${esc(b.note||'').replace(/'/g,"\\'")}',${b.confermato},'${esc(annoGruppo)}')"
