@@ -209,6 +209,7 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <div id="pane-eventi" class="fade-in hide"></div>
     <div id="pane-contatti" class="fade-in hide"></div>
     <div id="pane-note" class="fade-in hide"></div>
+    <div id="pane-materiali" class="fade-in hide"></div>
   </div>
 </div>
 <nav id="bottom-nav" class="bottom-nav hide"></nav><!-- MODALI -->
@@ -406,19 +407,19 @@ async function avviaDashboard(){
 function buildBottomNav(){
   const r=_user.ruolo;
   const items=[{id:"home",icon:"&#127968;",label:"Home"}];
-  if(r==="STUDENTE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"eventi",icon:"&#128198;",label:"Eventi"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
-  else if(r==="COORDINATORE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"gestione-orario",icon:"&#9998;",label:"Pianifica"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"eventi",icon:"&#128198;",label:"Eventi"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
-  else if(r==="TUTOR") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"eventi",icon:"&#128198;",label:"Eventi"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
-  else if(r==="DOCENTE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"eventi",icon:"&#128198;",label:"Eventi"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."});
+  if(r==="STUDENTE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"materiali",icon:"&#128193;",label:"Materiali"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
+  else if(r==="COORDINATORE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"gestione-orario",icon:"&#9998;",label:"Pianifica"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"materiali",icon:"&#128193;",label:"Materiali"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
+  else if(r==="TUTOR") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"presenze",icon:"&#9989;",label:"Presenze"},{id:"materiali",icon:"&#128193;",label:"Materiali"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
+  else if(r==="DOCENTE") items.push({id:"orario",icon:"&#128197;",label:"Orario"},{id:"voti",icon:"&#128202;",label:"Voti"},{id:"materiali",icon:"&#128193;",label:"Materiali"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true},{id:"disponibilita-docente",icon:"&#128198;",label:"Disponib."});
   else if(r==="ORIENTATRICE"||r==="ORIENTATORE") items.push({id:"eventi",icon:"&#128198;",label:"Eventi"},{id:"contatti",icon:"&#128222;",label:"Contatti"},{id:"note",icon:"&#128214;",label:"Note"},{id:"comunicazioni",icon:"&#128226;",label:"Bacheca",notif:true});
   $("bottom-nav").innerHTML=items.map(it=>`<button class="bnav-item${it.id==="home"?" active":""}" onclick="switchPane('${it.id}')" id="bnav-${it.id}"><span class="bicon">${it.icon}</span>${esc(it.label)}${it.notif?`<span class="bnav-dot hide" id="bnav-dot-${it.id}"></span>`:""}</button>`).join("");
 }
 
-const ALL_PANES=["home","orario","gestione-orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente","disponibilita-coord","eventi","contatti","note"];
+const ALL_PANES=["home","orario","gestione-orario","voti","presenze","comunicazioni","disponibilita","disponibilita-docente","disponibilita-coord","eventi","contatti","note","materiali"];
 function switchPane(name){
   ALL_PANES.forEach(p=>{HD("pane-"+p);const b=$("bnav-"+p);if(b)b.classList.remove("active");});
   SH("pane-"+name);const b=$("bnav-"+name);if(b)b.classList.add("active");_currentPane=name;
-  if(name==="home")renderHome();else if(name==="orario")renderOrario();else if(name==="gestione-orario")renderGestioneOrario();else if(name==="voti")renderVoti();else if(name==="presenze")renderPresenze();else if(name==="comunicazioni")renderComunicazioni();else if(name==="disponibilita")renderDisponibilita();else if(name==="disponibilita-docente")renderDisponibilitaDocente();else if(name==="disponibilita-coord")renderDisponibilitaCoord();else if(name==="eventi")renderEventi();else if(name==="contatti")renderContatti();else if(name==="note")renderNote();
+  if(name==="home")renderHome();else if(name==="orario")renderOrario();else if(name==="gestione-orario")renderGestioneOrario();else if(name==="voti")renderVoti();else if(name==="presenze")renderPresenze();else if(name==="comunicazioni")renderComunicazioni();else if(name==="disponibilita")renderDisponibilita();else if(name==="disponibilita-docente")renderDisponibilitaDocente();else if(name==="disponibilita-coord")renderDisponibilitaCoord();else if(name==="eventi")renderEventi();else if(name==="contatti")renderContatti();else if(name==="note")renderNote();else if(name==="materiali")renderMateriali();
 }
 async function renderHome(){
   const pane=$("pane-home");pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
@@ -3445,6 +3446,35 @@ function esportaOrario() {
   w.document.write(html);
   w.document.close();
   w.onload = function() { w.focus(); w.print(); };
+}
+
+// ======================== MATERIALI DRIVE ========================
+async function renderMateriali(){
+  const pane=$("pane-materiali"),r=_user.ruolo;
+  const isCoord=r==="COORDINATORE";
+  const initBtn=isCoord?`<button class="btn btn-outline btn-sm" onclick="apriInitDrive()" style="margin-bottom:1rem">&#128196; Inizializza cartelle Drive</button>`:"";
+  pane.innerHTML=`<div class="page-header"><h2>&#128193; Materiali</h2></div>${initBtn}<div id="mat-list"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;
+  const res=await api("getMateriali",{});
+  if(!res.success){$("mat-list").innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
+  const cart=res.cartelle||[];
+  if(!cart.length){$("mat-list").innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">${isCoord?"Nessuna cartella configurata. Clicca 'Inizializza' per creare la struttura Drive.":"Nessun materiale disponibile."}</div>`;return;}
+  const ann1=cart.filter(c=>c.annualita==="1");
+  const ann2=cart.filter(c=>c.annualita==="2");
+  function _rowUF(c){return`<a href="${esc(c.url)}" target="_blank" style="display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--text);padding:.6rem .75rem;border-radius:8px;background:var(--card);margin-bottom:.4rem"><span style="font-size:1.2rem">&#128193;</span><span style="flex:1;font-size:.88rem">${esc(c.nomeUF)}</span><span style="color:var(--accent);font-size:.8rem">&#8599;</span></a>`;}
+  function _grp(list,tit){return list.length?`<div class="section-title" style="margin-top:1rem">${tit}</div>`+list.map(_rowUF).join(""):"";}
+  let html="";
+  if(r==="STUDENTE"||r==="DOCENTE"){html=cart.map(_rowUF).join("")||`<div class="text-muted" style="text-align:center;padding:2rem">Nessun materiale assegnato.</div>`;}
+  else{html=_grp(ann1,"1° Anno VAIND")+_grp(ann2,"2° Anno VAIND");}
+  $("mat-list").innerHTML=html||`<div class="text-muted" style="text-align:center;padding:2rem">Nessun materiale.</div>`;
+}
+function apriInitDrive(){
+  const anno=prompt("Anno scolastico (es. 2024-26):");
+  if(!anno||!anno.trim())return;
+  $("mat-list").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div><div style="margin-top:.5rem;font-size:.82rem;color:var(--muted)">Creazione cartelle in corso…</div></div>`;
+  api("inizializzaCartelleDrive",{annoScolastico:anno.trim()}).then(res=>{
+    alert(res.success?"✅ "+res.message+(res.linkAnno?"\n\nLink anno: "+res.linkAnno:""):"❌ "+res.message);
+    renderMateriali();
+  });
 }
 
 </script>
