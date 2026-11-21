@@ -495,8 +495,14 @@ async function renderOrario(){
     <div id="or-result"></div>`;
 
   if(periodoAttivo){
-    // Carica orario per tutti
-    await _caricaOrarioVisibile(periodoR.dal, periodoR.al, periodoR.anno||"", isDocente);
+    // Studenti vedono solo il loro anno; team/coord vedono entrambi
+    const isTeam=(ruolo==="COORDINATORE"||ruolo==="TUTOR"||ruolo==="DOCENTE"||_isOrientamento(ruolo));
+    if(isTeam&&!periodoR.anno){
+      await _caricaOrarioVisibile(periodoR.dal, periodoR.al, "1", isDocente, "2");
+    } else {
+      const annoVis=periodoR.anno||_user.annualita||"2";
+      await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
+    }
   } else {
     $("or-result").innerHTML=`<div class="text-muted" style="text-align:center;padding:2.5rem;font-size:.9rem">
       ${isCoord?"Imposta il periodo di visualizzazione per renderlo visibile a tutti.":"Il coordinatore non ha ancora impostato il periodo dell'orario."}
@@ -518,41 +524,48 @@ async function salvaPeriodoOrario(){
   setTimeout(()=>renderOrario(),800);
 }
 
-async function _caricaOrarioVisibile(dal, al, anno, isDocente){
+async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
   const res=$("or-result");if(!res)return;
   const filtroDoc=isDocente&&_user.nome?_user.nome:"";
   res.innerHTML=`<div style="text-align:center;padding:1.5rem"><div class="spinner"></div></div>`;
-  const r=await api("getSlotsMesePublic",{filtroDoc});
-  if(!r.success){res.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`;return;}
-  const giorni=r.giorni||[];
-  if(!giorni.length){res.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata per questo periodo.</div>`;return;}
+  // Se annoExtra è definito carichiamo entrambi gli anni in parallelo
+  const anni=annoExtra?[anno,annoExtra]:[anno];
+  const risposte=await Promise.all(anni.map(a=>api("getSlotsMesePublic",{filtroDoc,annualita:a})));
+  if(!risposte[0].success){res.innerHTML=`<div class="alert alert-danger">${esc(risposte[0].message||"Errore")}</div>`;return;}
   const oggi=todayISO();
   let html="";
-  giorni.forEach(g=>{
-    const isOggi=g.data===oggi;
-    const annoG=g.blocchi.length>0?(g.blocchi[0].annualita||anno||"2"):(anno||"2");
-    const colAnno=annoG==="1"?"var(--accent)":"var(--gold)";
-    if(!g.blocchi.some(b=>b.modulo))return; // salta giorni solo liberi
-    html+=`<div class="schedule-day" style="${isOggi?'border-left:3px solid var(--gold);background:rgba(245,158,11,.04)':''}">
-      <div class="day-label" style="display:flex;align-items:center;gap:.5rem">
-        ${isOggi?'<span style="color:var(--gold);font-size:.7rem;font-weight:700">OGGI</span>':''}
-        <span>${esc(g.dataIT)} · ${esc(g.giorno)}</span>
-        <span style="font-size:.65rem;background:${annoG==="1"?"rgba(59,130,246,.15)":"rgba(245,158,11,.15)"};color:${colAnno};border-radius:4px;padding:.05rem .3rem;font-weight:700;margin-left:auto">${annoG}°</span>
-      </div>`;
-    g.blocchi.forEach(b=>{
-      if(!b.modulo)return; // nascondi slot liberi agli utenti finali
-      const colUF=_getUFColor(b.modulo);
-      html+=`<div class="lesson-card ${isOggi?'today':''}" style="border-left:3px solid ${colUF};background:${_hexToRgba(colUF,0.07)}">
-        <div class="lesson-time">⏰ ${esc(b.dalleStr)} – ${esc(b.alleStr)} <span style="font-size:.68rem;color:var(--muted)">(${b.ore}h)</span></div>
-        <div class="lesson-uf" style="color:${colUF};font-weight:700">${esc(b.modulo)}</div>
-        <div class="lesson-meta">
-          ${b.docente?`<span>👤 ${esc(b.docente)}</span>`:''}
-          ${b.ambiente?`<span>📍 ${esc(b.ambiente)}</span>`:''}
-          ${b.note?`<span>📝 ${esc(b.note)}</span>`:''}
-        </div>
-      </div>`;
+  risposte.forEach((r,idx)=>{
+    const annoCorrente=anni[idx];
+    const giorni=r.giorni||[];
+    if(!giorni.length)return;
+    const colAnno=annoCorrente==="1"?"var(--accent)":"var(--gold)";
+    if(annoExtra){
+      html+=`<div style="font-size:.78rem;font-weight:700;color:${colAnno};text-transform:uppercase;letter-spacing:.06em;margin:${idx===0?'0':'1.25rem'} 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid ${colAnno}33">${annoCorrente}° Anno</div>`;
+    }
+    giorni.forEach(g=>{
+      const isOggi=g.data===oggi;
+      if(!g.blocchi.some(b=>b.modulo))return;
+      html+=`<div class="schedule-day" style="${isOggi?'border-left:3px solid var(--gold);background:rgba(245,158,11,.04)':''}">
+        <div class="day-label" style="display:flex;align-items:center;gap:.5rem">
+          ${isOggi?'<span style="color:var(--gold);font-size:.7rem;font-weight:700">OGGI</span>':''}
+          <span>${esc(g.dataIT)} · ${esc(g.giorno)}</span>
+          <span style="font-size:.65rem;background:${annoCorrente==="1"?"rgba(59,130,246,.15)":"rgba(245,158,11,.15)"};color:${colAnno};border-radius:4px;padding:.05rem .3rem;font-weight:700;margin-left:auto">${annoCorrente}°</span>
+        </div>`;
+      g.blocchi.forEach(b=>{
+        if(!b.modulo)return;
+        const colUF=_getUFColor(b.modulo);
+        html+=`<div class="lesson-card ${isOggi?'today':''}" style="border-left:3px solid ${colUF};background:${_hexToRgba(colUF,0.07)}">
+          <div class="lesson-time">⏰ ${esc(b.dalleStr)} – ${esc(b.alleStr)} <span style="font-size:.68rem;color:var(--muted)">(${b.ore}h)</span></div>
+          <div class="lesson-uf" style="color:${colUF};font-weight:700">${esc(b.modulo)}</div>
+          <div class="lesson-meta">
+            ${b.docente?`<span>👤 ${esc(b.docente)}</span>`:''}
+            ${b.ambiente?`<span>📍 ${esc(b.ambiente)}</span>`:''}
+            ${b.note?`<span>📝 ${esc(b.note)}</span>`:''}
+          </div>
+        </div>`;
+      });
+      html+=`</div>`;
     });
-    html+=`</div>`;
   });
   res.innerHTML=html||`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`;
 }
@@ -771,10 +784,10 @@ async function renderPresenze(){
   const pane=$("pane-presenze");
   const isCoord=r==="COORDINATORE";
   const pregressoTab=isCoord?`<button class="tab-btn" id="ptab-pregresso" onclick="switchPresTab('pregresso',this)">&#128229; Pregresso</button>`:"";
-  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap"><button class="tab-btn active" id="ptab-appello" onclick="switchPresTab('appello',this)">&#128221; Appello</button><button class="tab-btn" id="ptab-consulta" onclick="switchPresTab('consulta',this)">&#128269; Consulta</button>${pregressoTab}</div><div id="pres-appello-pane"></div><div id="pres-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona --</option></select></div><div id="presenze-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div><div id="pres-pregresso-pane" class="hide"></div>`;
+  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap"><button class="tab-btn active" id="ptab-appello" onclick="switchPresTab('appello',this)">&#128221; Appello</button><button class="tab-btn" id="ptab-consulta" onclick="switchPresTab('consulta',this)">&#128269; Consulta</button>${pregressoTab}</div><div id="pres-appello-pane"></div><div id="pres-consulta-pane" class="hide"></div><div id="pres-pregresso-pane" class="hide"></div>`;
   await _assicuraStudenti();const sel=$("sel-studente-pres");_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome;sel.appendChild(o);});await renderAppello();
 }
-function switchPresTab(tab,btn){document.querySelectorAll("#pane-presenze .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");HD("pres-appello-pane");HD("pres-consulta-pane");HD("pres-pregresso-pane");if(tab==="appello"){SH("pres-appello-pane");}else if(tab==="consulta"){SH("pres-consulta-pane");}else if(tab==="pregresso"){SH("pres-pregresso-pane");renderPregresso();}}
+function switchPresTab(tab,btn){document.querySelectorAll("#pane-presenze .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");HD("pres-appello-pane");HD("pres-consulta-pane");HD("pres-pregresso-pane");if(tab==="appello"){SH("pres-appello-pane");}else if(tab==="consulta"){SH("pres-consulta-pane");renderConsultaPresenze();}else if(tab==="pregresso"){SH("pres-pregresso-pane");renderPregresso();}}
 
 async function renderPregresso(){
   const pane=$("pres-pregresso-pane");if(!pane)return;
@@ -865,6 +878,66 @@ async function confermaAppello(){
 }
 async function cambiaStudentePresenze(email){_selectedStudentePresenze=email||null;if(!email){$("presenze-content").innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}await caricaPresenze(email);}
 async function caricaPresenze(emailStudente){$("presenze-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getPresenze",{emailStudente});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],null,true);}
+
+// --- CONSULTA RIEPILOGATIVA ---
+let _consultaPresenzeCache=null;
+async function renderConsultaPresenze(){
+  const pane=$("pres-consulta-pane");if(!pane)return;
+  pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  await _assicuraStudenti();
+  // Carica presenze di tutti gli studenti in parallelo
+  const tuttiStudenti=_studenti.slice();
+  if(!tuttiStudenti.length){pane.innerHTML='<div class="alert alert-danger">Nessuno studente trovato.</div>';return;}
+  const risultati=await Promise.all(tuttiStudenti.map(s=>api("getPresenze",{emailStudente:s.email})));
+  // Raggruppa per anno
+  const per1=[];const per2=[];
+  tuttiStudenti.forEach((s,i)=>{
+    const res=risultati[i];const st=res.success?(res.stats||{}):{};
+    const oreEr=ORE_EROGATE_JS[String(s.annualita)||"2"]||219;
+    const perc=st.percPresenza!==undefined?st.percPresenza:Math.min(100,Math.round(((st.orePresenti||0)/oreEr)*100*10)/10)||0;
+    const row={nome:s.nome,email:s.email,ann:s.annualita,oreP:st.orePresenti||0,oreA:st.oreAssenza||0,nAss:st.nAssenze||0,nRit:st.nRitardi||0,nUsc:st.nUscite||0,perc};
+    if(String(s.annualita)==="1")per1.push(row);else per2.push(row);
+  });
+  const _tbl=(rows,titolo)=>{
+    if(!rows.length)return'';
+    const hdr=`<div style="font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .4rem">${titolo}</div>`;
+    const righe=rows.map(r=>{
+      const pCol=r.perc>=75?'var(--success)':r.perc>=50?'var(--warning)':'var(--danger)';
+      return`<tr onclick="apriDettaglioStudente('${r.email}','${esc(r.nome)}')" style="cursor:pointer">
+        <td style="font-weight:600;font-size:.83rem;white-space:nowrap">${esc(r.nome)}</td>
+        <td style="text-align:right;font-size:.82rem">${r.oreP}h</td>
+        <td style="text-align:right;font-size:.82rem;color:var(--danger)">${r.oreA}h</td>
+        <td style="text-align:center;font-size:.8rem">${r.nAss}</td>
+        <td style="text-align:center;font-size:.8rem;color:var(--warning)">${r.nRit}</td>
+        <td style="text-align:center;font-size:.8rem;color:#a78bfa">${r.nUsc}</td>
+        <td style="text-align:right;font-weight:700;color:${pCol};font-size:.85rem">${r.perc}%</td>
+      </tr>`;
+    }).join('');
+    return hdr+`<div class="card" style="padding:.3rem .5rem;overflow-x:auto"><table style="width:100%;border-collapse:collapse">
+      <thead><tr style="font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--border)">
+        <th style="text-align:left;padding:.35rem .3rem">Studente</th>
+        <th style="text-align:right;padding:.35rem .3rem">Pres.</th>
+        <th style="text-align:right;padding:.35rem .3rem">Ass.</th>
+        <th style="text-align:center;padding:.35rem .3rem">N.Ass</th>
+        <th style="text-align:center;padding:.35rem .3rem">Rit.</th>
+        <th style="text-align:center;padding:.35rem .3rem">Usc.</th>
+        <th style="text-align:right;padding:.35rem .3rem">%</th>
+      </tr></thead>
+      <tbody>${righe}</tbody></table></div>`;
+  };
+  pane.innerHTML=_tbl(per1,'1° Anno')+_tbl(per2,'2° Anno')
+    +`<div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.75rem">Tocca una riga per vedere il dettaglio</div>`;
+}
+
+// Modal dettaglio studente da consulta
+async function apriDettaglioStudente(email,nome){
+  let md=$("modal-studente-dettaglio");
+  if(!md){md=document.createElement("div");md.id="modal-studente-dettaglio";md.className="modal-overlay";md.innerHTML=`<div class="modal-box" style="max-width:420px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem"><h3 id="msd-nome" style="margin:0;font-size:1rem"></h3><button class="btn btn-icon" onclick="closeModal('modal-studente-dettaglio')">✕</button></div><div id="msd-content"></div></div>`;document.body.appendChild(md);}
+  $("msd-nome").textContent=nome;$("msd-content").innerHTML=`<div style="text-align:center;padding:1.5rem"><div class="spinner"></div></div>`;openModal("modal-studente-dettaglio");
+  const res=await api("getPresenze",{emailStudente:email});
+  if(!res.success){$("msd-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}
+  $("msd-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],null,true);
+}
 async function renderPresenzeStudente(){const pane=$("pane-presenze");pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;_filtroPresTipo=null;const res=await api("getPresenze",{});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}window._presCache=res;_renderPresContent();}
 function _renderPresContent(){const res=window._presCache;if(!res)return;$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],_filtroPresTipo,false);}
 function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo;_renderPresContent();}
