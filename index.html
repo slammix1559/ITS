@@ -426,7 +426,12 @@ async function renderHome(){
   try{
     const res=await api("getDashboard",{});if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
-    if(r==="STUDENTE"){const s=res.stats||{};html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.percPresenza||0}%</div><div class="stat-lbl">Presenze</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${s.percPresenza||0}%"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0} / ${s.oreTotali||500} ore</div></div><div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?"var(--warning)":"var(--text)"}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
+    if(r==="STUDENTE"){const s=res.stats||{};const ann=res.user&&res.user.annualita?String(res.user.annualita):"2";
+// Blocco percentuale dinamico in base all'anno
+let percHtml="";
+if(ann==="1"){const p=s.percAnn1!=null?s.percAnn1:(s.percPresenza||0);const col=p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";percHtml=`<div class="stat-card" onclick="switchPane('presenze')" style="cursor:pointer"><div class="stat-val" style="color:${col}">${p}%</div><div class="stat-lbl">Frequenza 1° Anno</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${p}%;background:${col}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0}h / ${s.ore1Erogate||s.oreTotali||0}h erogate</div></div>`;}
+else{const p2=s.percAnn2!=null?s.percAnn2:(s.percPresenza||0);const pt=s.percTotale!=null?s.percTotale:0;const col2=p2>=75?"var(--success)":p2>=50?"var(--warning)":"var(--danger)";const colT=pt>=75?"var(--success)":pt>=50?"var(--warning)":"var(--danger)";percHtml=`<div class="stat-card" onclick="switchPane('presenze')" style="cursor:pointer"><div class="stat-val" style="color:${col2}">${p2}%</div><div class="stat-lbl">Frequenza 2° Anno</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${p2}%;background:${col2}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0}h / ${s.ore2Erogate||s.oreTotali||0}h erogate</div></div><div class="stat-card" onclick="switchPane('presenze')" style="cursor:pointer"><div class="stat-val" style="color:${colT};font-size:1.1rem">${pt}%</div><div class="stat-lbl">% Totale Percorso</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${pt}%;background:${colT}"></div></div></div>`;}
+html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem">${percHtml}<div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?"var(--warning)":"var(--text)"}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
     else if(r==="COORDINATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.presenze||0}</div><div class="stat-lbl">Registrazioni</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilit&agrave;</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128198; Eventi</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('note')">&#128214; Note orientatori</button></div>`;}
     else if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Disponib.</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilit&agrave;</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
     else if(r==="DOCENTE"){const materie=res.materie||[];html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):"<div class=\"text-muted\">Nessuna materia.</div>"}</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
@@ -779,7 +784,7 @@ async function cambiaStudenteVoti(email){_selectedStudenteVoti=email||null;const
 async function eliminaVotoById(id){if(!confirm("Eliminare voto?"))return;await api("eliminaVoto",{id});if(_currentPane==="voti")renderVoti();}
 let _selectedStudentePresenze=null,_presenzeAll=[],_appelloStato={},_filtroPresTipo=null;
 const ORE_TOTALI_JS={"1":700,"2":1100}; // ore totali biennio (non usato per %)
-const ORE_EROGATE_JS={"1":700,"2":219}; // ore erogate fino ad oggi (fonte: Presenze.xlsx 20/11/2026)
+// Le ore erogate vengono ora calcolate dinamicamente dal backend (getPresenze/getDashboard restituisce ore1Erogate, ore2Erogate)
 async function renderPresenze(){
   const r=_user.ruolo;if(r==="STUDENTE"){await renderPresenzeStudente();return;}
   const pane=$("pane-presenze");
@@ -894,16 +899,22 @@ async function renderConsultaPresenze(){
   const per1=[];const per2=[];
   tuttiStudenti.forEach((s,i)=>{
     const res=risultati[i];const st=res.success?(res.stats||{}):{};
-    const oreEr=ORE_EROGATE_JS[String(s.annualita)||"2"]||219;
-    const perc=st.percPresenza!==undefined?st.percPresenza:Math.min(100,Math.round(((st.orePresenti||0)/oreEr)*100*10)/10)||0;
-    const row={nome:s.nome,email:s.email,ann:s.annualita,oreP:st.orePresenti||0,oreA:st.oreAssenza||0,nAss:st.nAssenze||0,nRit:st.nRitardi||0,nUsc:st.nUscite||0,perc};
-    if(String(s.annualita)==="1")per1.push(row);else per2.push(row);
+    // usa le percentuali calcolate dal backend dinamicamente
+    const ann=String(s.annualita||"2");
+    const perc=ann==="1"
+      ?(st.percAnn1!==null&&st.percAnn1!==undefined?st.percAnn1:(st.percPresenza||0))
+      :(st.percAnn2!==null&&st.percAnn2!==undefined?st.percAnn2:(st.percPresenza||0));
+    const percTot=st.percTotale!==null&&st.percTotale!==undefined?st.percTotale:null;
+    const row={nome:s.nome,email:s.email,ann,oreP:st.orePresenti||0,oreA:st.oreAssenza||0,nAss:st.nAssenze||0,nRit:st.nRitardi||0,nUsc:st.nUscite||0,perc,percTot};
+    if(ann==="1")per1.push(row);else per2.push(row);
   });
-  const _tbl=(rows,titolo)=>{
+  const _tbl=(rows,titolo,mostraPercTot)=>{
     if(!rows.length)return'';
     const hdr=`<div style="font-size:.78rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .4rem">${titolo}</div>`;
     const righe=rows.map(r=>{
       const pCol=r.perc>=75?'var(--success)':r.perc>=50?'var(--warning)':'var(--danger)';
+      const ptCol=r.percTot!=null?(r.percTot>=75?'var(--success)':r.percTot>=50?'var(--warning)':'var(--danger)'):'var(--muted)';
+      const percTotCell=mostraPercTot?`<td style="text-align:right;font-weight:700;color:${ptCol};font-size:.85rem">${r.percTot!=null?r.percTot+'%':'—'}</td>`:'';
       return`<tr onclick="apriDettaglioStudente('${r.email}','${esc(r.nome)}')" style="cursor:pointer">
         <td style="font-weight:600;font-size:.83rem;white-space:nowrap">${esc(r.nome)}</td>
         <td style="text-align:right;font-size:.82rem">${r.oreP}h</td>
@@ -912,8 +923,10 @@ async function renderConsultaPresenze(){
         <td style="text-align:center;font-size:.8rem;color:var(--warning)">${r.nRit}</td>
         <td style="text-align:center;font-size:.8rem;color:#a78bfa">${r.nUsc}</td>
         <td style="text-align:right;font-weight:700;color:${pCol};font-size:.85rem">${r.perc}%</td>
+        ${percTotCell}
       </tr>`;
     }).join('');
+    const thPercTot=mostraPercTot?`<th style="text-align:right;padding:.35rem .3rem">% Tot</th>`:'';
     return hdr+`<div class="card" style="padding:.3rem .5rem;overflow-x:auto"><table style="width:100%;border-collapse:collapse">
       <thead><tr style="font-size:.72rem;color:var(--muted);border-bottom:1px solid var(--border)">
         <th style="text-align:left;padding:.35rem .3rem">Studente</th>
@@ -922,11 +935,12 @@ async function renderConsultaPresenze(){
         <th style="text-align:center;padding:.35rem .3rem">N.Ass</th>
         <th style="text-align:center;padding:.35rem .3rem">Rit.</th>
         <th style="text-align:center;padding:.35rem .3rem">Usc.</th>
-        <th style="text-align:right;padding:.35rem .3rem">%</th>
+        <th style="text-align:right;padding:.35rem .3rem">% Anno</th>
+        ${thPercTot}
       </tr></thead>
       <tbody>${righe}</tbody></table></div>`;
   };
-  pane.innerHTML=_tbl(per1,'1° Anno')+_tbl(per2,'2° Anno')
+  pane.innerHTML=_tbl(per1,'1° Anno',false)+_tbl(per2,'2° Anno',true)
     +`<div style="font-size:.72rem;color:var(--muted);text-align:center;margin-top:.75rem">Tocca una riga per vedere il dettaglio</div>`;
 }
 
@@ -942,7 +956,30 @@ async function apriDettaglioStudente(email,nome){
 async function renderPresenzeStudente(){const pane=$("pane-presenze");pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>`;_filtroPresTipo=null;const res=await api("getPresenze",{});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}window._presCache=res;_renderPresContent();}
 function _renderPresContent(){const res=window._presCache;if(!res)return;$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],_filtroPresTipo,false);}
 function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo;_renderPresContent();}
-function _htmlStats(res){const s=res.stats||{};const ot=ORE_EROGATE_JS[_user.annualita||"2"]||933;const perc=s.percPresenza!==undefined?s.percPresenza:Math.min(100,Math.round((s.orePresenti/ot)*100*10)/10)||0;return`<div class="grid-3" style="margin-bottom:1rem"><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('ASSENZA')"><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('RITARDO')"><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('USCITA')"><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div></div></div><div class="card" style="margin-bottom:1rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza</span><span style="font-family:var(--font-head);font-weight:700">${perc}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${perc}%"></div></div></div>`;}
+function _htmlStats(res){
+  const s=res.stats||{};
+  const ann=_user.annualita||"2";
+  // Costruisci blocchi percentuale in base all'anno
+  let percBlocks="";
+  if(ann==="1"){
+    const p=s.percAnn1!==null&&s.percAnn1!==undefined?s.percAnn1:(s.percPresenza||0);
+    const col=p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";
+    percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 1° Anno</span><span style="font-family:var(--font-head);font-weight:700;color:${col}">${p}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p}%;background:${col}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||s.oreTotali||0}h erogate</div></div>`;
+  } else {
+    if(s.percAnn1!==null&&s.percAnn1!==undefined){
+      const p1=s.percAnn1;const col1=p1>=75?"var(--success)":p1>=50?"var(--warning)":"var(--danger)";
+      percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 1° Anno (storico)</span><span style="font-family:var(--font-head);font-weight:700;color:${col1}">${p1}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p1}%;background:${col1}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||960}h</div></div>`;
+    }
+    const p2=s.percAnn2!==null&&s.percAnn2!==undefined?s.percAnn2:(s.percPresenza||0);
+    const col2=p2>=75?"var(--success)":p2>=50?"var(--warning)":"var(--danger)";
+    percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 2° Anno</span><span style="font-family:var(--font-head);font-weight:700;color:${col2}">${p2}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p2}%;background:${col2}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore2Erogate||s.oreTotali||0}h erogate</div></div>`;
+    if(s.percTotale!==null&&s.percTotale!==undefined){
+      const pt=s.percTotale;const colT=pt>=75?"var(--success)":pt>=50?"var(--warning)":"var(--danger)";
+      percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem;font-weight:700">% Totale Percorso</span><span style="font-family:var(--font-head);font-weight:800;color:${colT};font-size:1.05rem">${pt}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pt}%;background:${colT}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${(s.ore1Erogate||0)+(s.ore2Erogate||0)}h totali erogate</div></div>`;
+    }
+  }
+  return`<div class="grid-3" style="margin-bottom:1rem"><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('ASSENZA')"><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('RITARDO')"><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('USCITA')"><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div></div></div>${percBlocks}`;
+}
 function _htmlLista(presenze,filtro,conElimina){let lista=presenze.slice();if(filtro)lista=lista.filter(p=>p.TIPO===filtro);const TL={PRESENZA:"P",ASSENZA:"A",RITARDO:"R",USCITA:"U"},TC={PRESENZA:"var(--success)",ASSENZA:"var(--danger)",RITARDO:"var(--warning)",USCITA:"#a78bfa"};if(!lista.length)return'<div class="text-muted" style="text-align:center;padding:1rem">Nessuna registrazione.</div>';let html='<div class="card" style="padding:.3rem .6rem">';lista.slice().reverse().forEach(p=>{const col=TC[p.TIPO]||"var(--muted)";html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .2rem;border-bottom:1px solid var(--border)"><span style="width:24px;height:24px;border-radius:6px;background:${col};color:${p.TIPO==='RITARDO'?'#000':'#fff'};display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.75rem;flex-shrink:0">${TL[p.TIPO]||"?"}</span><div style="flex:1"><span style="font-size:.82rem">${esc(p.dataIT||fmtData(p.DATA))}</span></div><div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>${conElimina&&["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.7rem;width:24px;height:24px" onclick="eliminaPresenzaById('${p.ID}')">&#10005;</button>`:''}</div>`;});html+='</div>';return html;}
 async function eliminaPresenzaById(id){if(!confirm("Eliminare?"))return;await api("eliminaPresenza",{id});await caricaPresenze(_selectedStudentePresenze);}
 
