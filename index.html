@@ -768,10 +768,63 @@ const ORE_TOTALI_JS={"1":500,"2":500};
 async function renderPresenze(){
   const r=_user.ruolo;if(r==="STUDENTE"){await renderPresenzeStudente();return;}
   const pane=$("pane-presenze");
-  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem"><button class="tab-btn active" id="ptab-appello" onclick="switchPresTab('appello',this)">&#128221; Appello</button><button class="tab-btn" id="ptab-consulta" onclick="switchPresTab('consulta',this)">&#128269; Consulta</button></div><div id="pres-appello-pane"></div><div id="pres-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona --</option></select></div><div id="presenze-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div>`;
+  const isCoord=r==="COORDINATORE";
+  const pregressoTab=isCoord?`<button class="tab-btn" id="ptab-pregresso" onclick="switchPresTab('pregresso',this)">&#128229; Pregresso</button>`:"";
+  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap"><button class="tab-btn active" id="ptab-appello" onclick="switchPresTab('appello',this)">&#128221; Appello</button><button class="tab-btn" id="ptab-consulta" onclick="switchPresTab('consulta',this)">&#128269; Consulta</button>${pregressoTab}</div><div id="pres-appello-pane"></div><div id="pres-consulta-pane" class="hide"><div class="form-group"><label>Studente</label><select id="sel-studente-pres" onchange="cambiaStudentePresenze(this.value)"><option value="">-- Seleziona --</option></select></div><div id="presenze-content"><div class="text-muted" style="text-align:center;padding:2rem">Seleziona uno studente.</div></div></div><div id="pres-pregresso-pane" class="hide"></div>`;
   await _assicuraStudenti();const sel=$("sel-studente-pres");_studenti.forEach(s=>{const o=document.createElement("option");o.value=s.email;o.textContent=s.nome;sel.appendChild(o);});await renderAppello();
 }
-function switchPresTab(tab,btn){document.querySelectorAll("#pane-presenze .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(tab==="appello"){SH("pres-appello-pane");HD("pres-consulta-pane");}else{HD("pres-appello-pane");SH("pres-consulta-pane");}}
+function switchPresTab(tab,btn){document.querySelectorAll("#pane-presenze .tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");HD("pres-appello-pane");HD("pres-consulta-pane");HD("pres-pregresso-pane");if(tab==="appello"){SH("pres-appello-pane");}else if(tab==="consulta"){SH("pres-consulta-pane");}else if(tab==="pregresso"){SH("pres-pregresso-pane");renderPregresso();}}
+
+async function renderPregresso(){
+  const pane=$("pres-pregresso-pane");if(!pane)return;
+  pane.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  await _assicuraStudenti();
+  const [resPre]=await Promise.all([api("getPregresso",{})]);
+  const preMap=(resPre.success&&resPre.pregresso)||{};
+  const stud2=_studenti.filter(s=>String(s.annualita)==="2");
+  if(!stud2.length){pane.innerHTML='<div class="alert alert-danger">Nessuno studente del 2° anno.</div>';return;}
+  let rows=stud2.map(s=>{
+    const em=s.email.toLowerCase();
+    const pre=preMap[em]||{orePresenza:0,oreAssenza:0};
+    return`<tr>
+      <td style="font-weight:600;font-size:.85rem">${esc(s.nome)}</td>
+      <td><input type="number" class="preg-inp" data-email="${esc(em)}" data-campo="orePresenza" value="${pre.orePresenza||""}" placeholder="0" min="0" step="0.5" style="width:80px;padding:.3rem .4rem;border:1px solid var(--border);border-radius:6px;font-size:.85rem;text-align:right"></td>
+      <td><input type="number" class="preg-inp" data-email="${esc(em)}" data-campo="oreAssenza" value="${pre.oreAssenza||""}" placeholder="0" min="0" step="0.5" style="width:80px;padding:.3rem .4rem;border:1px solid var(--border);border-radius:6px;font-size:.85rem;text-align:right"></td>
+    </tr>`;
+  }).join("");
+  pane.innerHTML=`
+    <div class="card" style="margin-bottom:1rem;padding:.9rem 1rem">
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:.5rem">Inserisci le ore di presenza e assenza maturate <strong>prima dell'avvio</strong> del registro digitale. Verranno sommate ai dati futuri per ogni studente.</div>
+      <div style="font-size:.78rem;color:var(--muted)">⚠️ Solo studenti 2° anno. Salvare risovrascrive i valori precedenti.</div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:1rem">
+      <table style="width:100%;border-collapse:collapse;font-size:.83rem">
+        <thead><tr style="background:var(--bg-secondary,#f4f6fa)">
+          <th style="padding:.5rem .7rem;text-align:left;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Studente</th>
+          <th style="padding:.5rem .7rem;text-align:right;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Ore presenti</th>
+          <th style="padding:.5rem .7rem;text-align:right;font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Ore assenti</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="salvaPregresso()">💾 Salva pregresso</button>
+    <div id="pregresso-msg" style="margin-top:.5rem"></div>`;
+}
+
+async function salvaPregresso(){
+  const msg=$("pregresso-msg");msg.innerHTML='<div style="text-align:center"><div class="spinner"></div></div>';
+  const righe=[];
+  document.querySelectorAll(".preg-inp[data-campo='orePresenza']").forEach(inp=>{
+    const em=inp.dataset.email;
+    const oreP=parseFloat(inp.value)||0;
+    const oreA=parseFloat(document.querySelector(`.preg-inp[data-email="${em}"][data-campo="oreAssenza"]`)?.value)||0;
+    if(oreP>0||oreA>0)righe.push({emailStudente:em,orePresenza:oreP,oreAssenza:oreA});
+  });
+  if(!righe.length){msg.innerHTML='<div class="alert alert-danger">Nessun dato da salvare (inserisci almeno un valore &gt; 0).</div>';return;}
+  const res=await api("importaPregresso",{righe});
+  if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}
+  msg.innerHTML=`<div class="alert alert-success">✅ Pregresso salvato per ${res.salvate} student${res.salvate===1?"e":"i"}.</div>`;
+}
 async function renderAppello(){
   const pane=$("pres-appello-pane");if(!pane)return;
   pane.innerHTML=`<div class="card" style="margin-bottom:1rem;padding:1rem"><div class="grid-2" style="gap:.6rem;margin-bottom:.6rem"><div class="form-group" style="margin-bottom:0"><label>Data</label><input type="date" id="app-data" value="${todayISO()}"></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div></div><div class="grid-2" style="gap:.6rem"><div class="form-group" style="margin-bottom:0"><label>Inizio</label><input type="time" id="app-ini" value="14:30"></div><div class="form-group" style="margin-bottom:0"><label>Fine</label><input type="time" id="app-fin" value="19:30"></div></div></div><div id="appello-lista"></div><button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="confermaAppello()" id="btn-conferma-appello">Conferma appello</button><div id="appello-msg" style="margin-top:.5rem"></div>`;
