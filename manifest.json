@@ -1,25 +1,23 @@
-{
+ {
   "name": "ITSApp – Meccanica e Meccatronica Lombardia",
-  "short_name": "ITSApp",
+  "short_name": "Libretto Digitale",
   "description": "App per studenti, docenti e staff ITS Meccanica e Meccatronica Lombardia",
-  "id": "/ITS/",
-  "start_url": "/ITS/",
-  "scope": "/ITS/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#070e1c",
   "theme_color": "#0a1628",
   "orientation": "portrait-primary",
-  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/ITS/icon-192.png",
-      "sizes": "192x192",
+      "src": "ITS_academy_logo.png",
+      "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/ITS/icon-512.png",
-      "sizes": "512x512",
+      "src": "ITS_academy_logo.png",
+      "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
     }
