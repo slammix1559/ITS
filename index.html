@@ -886,12 +886,7 @@ async function gestisciRichiesta(id,stato){
   if(!res.success){alert(res.message||"Errore nella gestione.");return;}
   renderRichiesteOrario();
 }
-async function eliminaRichiestaStudente(id){
-  if(!confirm("Eliminare la richiesta?"))return;
-  const res=await api("eliminaRichiestaOrario",{id});
-  if(!res.success){alert(res.message||"Errore nell'eliminazione.");return;}
-  renderRichiesteOrario();
-}
+
 
 async function salvaPregresso(){
   const msg=$("pregresso-msg");msg.innerHTML='<div style="text-align:center"><div class="spinner"></div></div>';
@@ -1015,7 +1010,36 @@ async function apriDettaglioStudente(email,nome){
   if(!res.success){$("msd-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}
   $("msd-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],null,true);
 }
-async function renderPresenzeStudente(){const pane=$("pane-presenze");pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div style="margin-top:1.25rem"><div class="section-title" style="margin-bottom:.6rem">&#128337; Richiesta ingresso/uscita</div><div class="card"><div class="form-group"><label>Tipo</label><select id="rich-tipo"><option value="RITARDO">Ingresso posticipato (Ritardo)</option><option value="USCITA_ANT">Uscita anticipata</option></select></div><div class="grid-2"><div class="form-group"><label>Data</label><input type="date" id="rich-data" value="${todayISO()}"></div><div class="form-group"><label>Ora</label><input type="time" id="rich-ora"></div></div><div class="form-group"><label>Nota (opzionale)</label><textarea id="rich-nota" rows="2" placeholder="Es. visita medica..."></textarea></div><button class="btn btn-primary" style="width:100%" onclick="inviaRichiestaOrario()">&#128228; Invia richiesta</button><div id="rich-msg" style="margin-top:.5rem"></div></div></div>`;_filtroPresTipo=null;const res=await api("getPresenze",{});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}window._presCache=res;_renderPresContent();}
+async function renderPresenzeStudente(){
+  const pane=$("pane-presenze");
+  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div style="margin-top:1.25rem"><div class="section-title" style="margin-bottom:.6rem">&#128337; Nuova richiesta ingresso/uscita</div><div class="card"><div class="form-group"><label>Tipo</label><select id="rich-tipo"><option value="RITARDO">Ingresso posticipato (Ritardo)</option><option value="USCITA_ANT">Uscita anticipata</option></select></div><div class="grid-2"><div class="form-group"><label>Data</label><input type="date" id="rich-data" value="${todayISO()}"></div><div class="form-group"><label>Ora</label><input type="time" id="rich-ora"></div></div><div class="form-group"><label>Nota (opzionale)</label><textarea id="rich-nota" rows="2" placeholder="Es. visita medica..."></textarea></div><button class="btn btn-primary" style="width:100%" onclick="inviaRichiestaOrario()">&#128228; Invia richiesta</button><div id="rich-msg" style="margin-top:.5rem"></div></div></div><div style="margin-top:1.25rem"><div class="section-title" style="margin-bottom:.6rem">&#128204; Le mie richieste</div><div id="mie-richieste-content"><div style="text-align:center;padding:1rem"><div class="spinner"></div></div></div></div>`;
+  _filtroPresTipo=null;
+  const [resP, resR]=await Promise.all([api("getPresenze",{}), api("getRichiesteOrario",{})]);
+  if(!resP.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';}
+  else{window._presCache=resP;_renderPresContent();}
+  _renderMieRichieste(resR);
+}
+function _renderMieRichieste(res){
+  const cont=$("mie-richieste-content");if(!cont)return;
+  if(!res||!res.success){cont.innerHTML='<div class="alert alert-danger">Errore nel caricamento richieste.</div>';return;}
+  const richieste=(res.richieste||[]).slice().sort((a,b)=>new Date(b.DATA)-new Date(a.DATA));
+  if(!richieste.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:.75rem">Nessuna richiesta inviata.</div>';return;}
+  const TL={RITARDO:"Ingresso posticipato",USCITA_ANT:"Uscita anticipata"};
+  let html=richieste.map(r=>{
+    const isPend=r.STATO==="PENDING";
+    const badge=isPend?'<span class="badge badge-yellow">In attesa</span>':(r.STATO==="ACCETTATA"?'<span class="badge badge-green">Accettata</span>':'<span class="badge badge-red">Rifiutata</span>');
+    const btnElim=isPend?`<button class="btn btn-danger btn-sm" style="width:100%;margin-top:.5rem" onclick="eliminaRichiestaStudente('${esc(r.ID)}')">&#128465; Elimina richiesta</button>`:"";
+    return`<div class="card card-sm" style="margin-bottom:.6rem"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem"><div><div style="font-weight:600;font-size:.88rem">${TL[r.TIPO]||r.TIPO}</div><div style="font-size:.78rem;color:var(--muted);margin-top:.2rem">${fmtData(r.DATA)} alle ${esc(r.ORA_RICHIESTA||"")}</div>${r.NOTA?`<div style="font-size:.75rem;color:var(--muted);font-style:italic;margin-top:.2rem">"${esc(r.NOTA)}"</div>`:""}</div><div>${badge}</div></div>${btnElim}</div>`;
+  }).join("");
+  cont.innerHTML=html;
+}
+async function eliminaRichiestaStudente(id){
+  if(!confirm("Eliminare la richiesta?"))return;
+  const res=await api("eliminaRichiestaOrario",{id});
+  if(!res.success){alert(res.message||"Errore nell'eliminazione.");return;}
+  // Ricarica lista richieste
+  const resR=await api("getRichiesteOrario",{});_renderMieRichieste(resR);
+}
 function _renderPresContent(){const res=window._presCache;if(!res)return;$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],_filtroPresTipo,false);}
 function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo;_renderPresContent();}
 async function inviaRichiestaOrario(){const msg=$("rich-msg");const tipo=$("rich-tipo").value,data=$("rich-data").value,ora=$("rich-ora").value,nota=$("rich-nota")?$("rich-nota").value.trim():"";if(!data||!ora){msg.innerHTML='<div class="alert alert-danger">Inserisci data e ora.</div>';return;}msg.innerHTML='<div style="text-align:center"><div class="spinner"></div></div>';const res=await api("inviaRichiestaOrario",{tipo,data,ora,nota});if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}msg.innerHTML='<div class="alert alert-success">&#10003; Richiesta inviata! Attendi l\'approvazione del tutor.</div>';if($("rich-ora"))$("rich-ora").value="";if($("rich-nota"))$("rich-nota").value="";}
