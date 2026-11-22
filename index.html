@@ -503,10 +503,23 @@ async function renderOrario(){
   if(periodoAttivo){
     // Studenti vedono solo il loro anno; team/coord vedono entrambi
     const isTeam=(ruolo==="COORDINATORE"||ruolo==="TUTOR"||ruolo==="DOCENTE"||_isOrientamento(ruolo));
-    if(isTeam&&!periodoR.anno){
+    // "Entrambi" = anno impostato come "" o "entrambi"
+    const periodoEntrambi=(!periodoR.anno||periodoR.anno===""||periodoR.anno==="entrambi");
+    if(isTeam&&periodoEntrambi){
+      // Team/coord: carica entrambi gli anni
       await _caricaOrarioVisibile(periodoR.dal, periodoR.al, "1", isDocente, "2");
+    } else if(!isTeam&&periodoEntrambi){
+      // Studente con periodo "entrambi": mostra il suo anno (o entrambi se annualita non nota)
+      const annStudente=_user&&_user.annualita?String(_user.annualita):"";
+      if(annStudente){
+        await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annStudente, false);
+      } else {
+        // annualita non nota: mostra entrambi
+        await _caricaOrarioVisibile(periodoR.dal, periodoR.al, "1", false, "2");
+      }
     } else {
-      const annoVis=periodoR.anno||_user.annualita||"2";
+      // Anno specifico impostato dal coordinatore
+      const annoVis=periodoR.anno||(_user&&_user.annualita?String(_user.annualita):"1");
       await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
     }
   } else {
@@ -525,9 +538,11 @@ async function salvaPeriodoOrario(){
   msg.innerHTML=`<div style="text-align:center"><div class="spinner" style="width:20px;height:20px"></div></div>`;
   const r=await api("setOrarioPeriodo",{dal,al,anno});
   if(!r.success){msg.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`;return;}
-  msg.innerHTML=`<div class="alert" style="background:rgba(52,211,153,.1);border-color:#34d399;color:#34d399">✓ Periodo salvato!</div>`;
+  const er=r.emailResult||{};
+  const emailInfo=er.inviata?`<br><small style="opacity:.8">📧 Email inviata a ${er.destinatari} docenti</small>`:er.message?`<br><small style="opacity:.7">ℹ️ ${esc(er.message)}</small>`:"";
+  msg.innerHTML=`<div class="alert" style="background:rgba(52,211,153,.1);border-color:#34d399;color:#34d399">✓ Periodo salvato!${emailInfo}</div>`;
   // Ricarica la vista
-  setTimeout(()=>renderOrario(),800);
+  setTimeout(()=>renderOrario(),1200);
 }
 
 async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
