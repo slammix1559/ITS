@@ -227,13 +227,13 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
   <div class="form-group"><label>Titolo</label><input type="text" id="comm-titolo" placeholder="Oggetto"></div>
   <div class="form-group"><label>Destinatari</label>
     <div class="chip-group" id="chip-dest">
-      <div class="chip" onclick="toggleChip(this,'tutti')">Tutti</div>
-      <div class="chip" onclick="toggleChip(this,'studenti')">Studenti (tutti)</div>
-      <div class="chip" onclick="toggleChip(this,'1anno')">1&#176; anno</div>
-      <div class="chip" onclick="toggleChip(this,'2anno')">2&#176; anno</div>
-      <div class="chip" onclick="toggleChip(this,'docenti')">Docenti</div>
-      <div class="chip" onclick="toggleChip(this,'team')">Tutor</div>
-      <div class="chip" onclick="toggleChip(this,'orientatrici')">Orientatrici</div>
+      <div class="chip" data-dest="tutti" onclick="toggleChip(this)">Tutti</div>
+      <div class="chip" data-dest="studenti" onclick="toggleChip(this)">Studenti (tutti)</div>
+      <div class="chip" data-dest="1anno" onclick="toggleChip(this)">1&#176; anno</div>
+      <div class="chip" data-dest="2anno" onclick="toggleChip(this)">2&#176; anno</div>
+      <div class="chip" data-dest="docenti" onclick="toggleChip(this)">Docenti</div>
+      <div class="chip" data-dest="team" onclick="toggleChip(this)">Tutor</div>
+      <div class="chip" data-dest="orientatrici" onclick="toggleChip(this)">Orientatrici</div>
     </div>
   </div>
   <div class="form-group"><label>Testo</label><textarea id="comm-testo" rows="5" placeholder="Scrivi qui il messaggio..." style="resize:vertical"></textarea></div>
@@ -293,11 +293,12 @@ firebase.initializeApp({apiKey:"AIzaSyCRMdHMu41u0UEgUvT3SNfQF1BlvdZwfC8",authDom
     <label>Pubblica sui calendari team</label>
     <div id="ev-cal-chips" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem">
       <span class="chip ev-cal-chip" data-cal="tutti" onclick="toggleEvCalChip(this)">Tutti</span>
+      <span class="chip ev-cal-chip" data-cal="coordinatore" onclick="toggleEvCalChip(this)">Coordinatore</span>
       <span class="chip ev-cal-chip" data-cal="tutor" onclick="toggleEvCalChip(this)">Tutor</span>
       <span class="chip ev-cal-chip" data-cal="orientatori" onclick="toggleEvCalChip(this)">Orientatori</span>
+      <span class="chip ev-cal-chip" data-cal="docenti" onclick="toggleEvCalChip(this)">Docenti</span>
       <span class="chip ev-cal-chip" data-cal="studenti1" onclick="toggleEvCalChip(this)">Studenti 1° anno</span>
       <span class="chip ev-cal-chip" data-cal="studenti2" onclick="toggleEvCalChip(this)">Studenti 2° anno</span>
-      <span class="chip ev-cal-chip" data-cal="docenti" onclick="toggleEvCalChip(this)">Docenti</span>
     </div>
     <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">Seleziona nessuno per non pubblicare su alcun calendario.</div>
   </div>
@@ -1133,8 +1134,32 @@ async function eliminaComm(id){
   renderComunicazioni();
 }
 function apriNuovaComunicazione(){$("comm-titolo").value=$("comm-testo").value="";document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));hideErr("comm-err");openModal("modal-nuova-comm");}
-function toggleChip(el){document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));el.classList.add("selected");}
-async function inviaComunicazione(){hideErr("comm-err");const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();const destEl=document.querySelector("#chip-dest .chip.selected");const DM={"Tutti":"tutti","Studenti (tutti)":"studenti","1\u00b0 anno":"1anno","2\u00b0 anno":"2anno","Docenti":"docenti","Tutor":"team","Orientatrici":"orientatrici"};const d=DM[destEl?.textContent]||"";if(!titolo)return showErr("comm-err","Titolo.");if(!testo)return showErr("comm-err","Testo.");if(!d)return showErr("comm-err","Destinatari.");const res=await api("creaComunicazione",{titolo,testo,destinatari:d});if(!res.success)return showErr("comm-err",res.message);chiudiModal("modal-nuova-comm");renderComunicazioni();}
+function toggleChip(el){
+  if(el.dataset.dest==="tutti"){
+    const wasOn=el.classList.contains("selected");
+    document.querySelectorAll("#chip-dest .chip").forEach(c=>c.classList.remove("selected"));
+    if(!wasOn)el.classList.add("selected");
+  } else {
+    document.querySelector("#chip-dest [data-dest='tutti']")?.classList.remove("selected");
+    el.classList.toggle("selected");
+  }
+}
+async function inviaComunicazione(){
+  hideErr("comm-err");
+  const titolo=$("comm-titolo").value.trim(),testo=$("comm-testo").value.trim();
+  const selChips=[...document.querySelectorAll("#chip-dest .chip.selected")];
+  const destinatari=selChips.map(c=>c.dataset.dest).filter(Boolean);
+  if(!titolo)return showErr("comm-err","Titolo obbligatorio.");
+  if(!testo)return showErr("comm-err","Testo obbligatorio.");
+  if(!destinatari.length)return showErr("comm-err","Seleziona almeno un gruppo destinatario.");
+  // Invia una comunicazione per ogni destinatario selezionato (o una sola se "tutti")
+  const listaInvii=destinatari.includes("tutti")?["tutti"]:destinatari;
+  for(const d of listaInvii){
+    const res=await api("creaComunicazione",{titolo,testo,destinatari:d});
+    if(!res.success)return showErr("comm-err",res.message||"Errore invio a "+d);
+  }
+  chiudiModal("modal-nuova-comm");renderComunicazioni();
+}
 
 const MESI_SHORT=["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"];
 const GG_SHORT=["Dom","Lun","Mar","Mer","Gio","Ven","Sab"];
@@ -1223,7 +1248,12 @@ async function salvaEvento(){
     }
   }
 }
-async function eliminaEvento(id){if(!confirm("Eliminare evento?"))return;await api("eliminaEvento",{id});renderEventi();}
+async function eliminaEvento(id){
+  if(!confirm("Eliminare questo evento?"))return;
+  const res=await api("eliminaEvento",{id});
+  if(!res||!res.success){alert("Errore: "+(res?.message||"impossibile eliminare l'evento."));return;}
+  renderEventi();
+}
 let _peEventoId=null;
 async function apriPersonaleEvento(evId){
   _peEventoId=evId;const ev=_eventiCache.find(e=>e.id===evId);if(!ev)return;
