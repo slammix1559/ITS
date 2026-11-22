@@ -530,15 +530,19 @@ async function renderOrario(){
       }
     } else {
       // Anno specifico impostato dal coordinatore
-      // Team vede l'anno che ha impostato il coord; lo studente vede SEMPRE il suo anno
-      let annoVis;
       if(isTeam){
-        annoVis = periodoR.anno || "1";
+        // Team/coord: vede l'anno impostato dal coordinatore
+        await _caricaOrarioVisibile(periodoR.dal, periodoR.al, periodoR.anno||"1", isDocente);
       } else {
-        // Studente: usa la propria annualita, ignorando quella del coordinatore
-        annoVis = (_user&&_user.annualita ? String(_user.annualita) : "") || periodoR.anno || "1";
+        // Studente: usa la propria annualita; se non nota, carica ENTRAMBI gli anni
+        const annStudente2 = _user&&_user.annualita ? String(_user.annualita) : "";
+        if(annStudente2){
+          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annStudente2, false);
+        } else {
+          // annualita non nota: mostra entrambi così lo studente vede sicuramente le proprie lezioni
+          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, "1", false, "2");
+        }
       }
-      await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
     }
   } else {
     $("or-result").innerHTML=`<div class="text-muted" style="text-align:center;padding:2.5rem;font-size:.9rem">
