@@ -1,4 +1,4 @@
-// sw.js – ITSApp Service Worker v8 — UNIFICATO con Firebase
+// sw.js – ITSApp Service Worker v9 — UNIFICATO con Firebase
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
@@ -13,10 +13,9 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-const CACHE_NAME = "itsapp-v8";
+const CACHE_NAME = "itsapp-v9";
 
 self.addEventListener("install", function(e) {
-  // Salta l'attesa e diventa attivo subito
   self.skipWaiting();
 });
 
@@ -24,17 +23,12 @@ self.addEventListener("activate", function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(
-        keys.map(function(k) { return caches.delete(k); }) // Cancella TUTTE le cache
+        keys.filter(function(k){ return k !== CACHE_NAME; })
+            .map(function(k) { return caches.delete(k); })
       );
     }).then(function() {
-      return self.clients.claim(); // Prende controllo di tutte le tab aperte
-    }).then(function() {
-      // Forza il reload di tutte le tab aperte
-      return self.clients.matchAll({ type: "window" }).then(function(clients) {
-        clients.forEach(function(client) {
-          client.navigate(client.url);
-        });
-      });
+      return self.clients.claim();
+      // RIMOSSO: client.navigate che causava reload e interrompeva registraDevice
     })
   );
 });
@@ -62,7 +56,7 @@ self.addEventListener("fetch", function(e) {
     return;
   }
 
-  // Network-first per tutto (nessuna cache old)
+  // Network-first per tutto
   e.respondWith(
     fetch(e.request).catch(function() {
       return caches.match(e.request);
@@ -70,7 +64,7 @@ self.addEventListener("fetch", function(e) {
   );
 });
 
-// ── NOTIFICHE FCM IN BACKGROUND ──
+// NOTIFICHE FCM IN BACKGROUND
 messaging.onBackgroundMessage(function(payload) {
   const n = payload.notification || {};
   const title = n.title || "Libretto digitale";
