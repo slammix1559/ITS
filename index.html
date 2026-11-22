@@ -1424,7 +1424,7 @@ document.addEventListener("DOMContentLoaded",function(){
   if(_token&&_user){api("checkSession",{}).then(function(res){if(res&&res.success)avviaDashboard();}).catch(function(){});}
 });
 if("serviceWorker" in navigator){
-  var SW_VERSION="itsapp-sw-v8";
+  var SW_VERSION="itsapp-sw-v9";
   window.addEventListener("load",function(){
     var alreadyClean=localStorage.getItem("sw_clean_version")===SW_VERSION;
     if(!alreadyClean){
