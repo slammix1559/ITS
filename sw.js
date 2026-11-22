@@ -1,4 +1,4 @@
-// sw.js – ITSApp Service Worker v7 — UNIFICATO con Firebase
+// sw.js – ITSApp Service Worker v8 — UNIFICATO con Firebase
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
@@ -13,7 +13,7 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-const CACHE_NAME = "itsapp-v7";
+const CACHE_NAME = "itsapp-v8";
 
 self.addEventListener("install", function(e) {
   // Salta l'attesa e diventa attivo subito
