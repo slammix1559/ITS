@@ -1,4 +1,4 @@
-// sw.js – ITSApp Service Worker v6 — UNIFICATO con Firebase
+// sw.js – ITSApp Service Worker v7 — UNIFICATO con Firebase
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
@@ -14,7 +14,7 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // ── CACHE PWA ──
-const CACHE_NAME = "itsapp-v6";
+const CACHE_NAME = "itsapp-v7";
 const STATIC_ASSETS = ["./", "./index.html"];
 
 self.addEventListener("install", function(e) {
@@ -43,6 +43,23 @@ self.addEventListener("fetch", function(e) {
   if (e.request.url.includes("googleapis.com")) return;
   if (e.request.url.includes("firebase")) return;
   if (e.request.url.includes("gstatic.com")) return;
+
+  // Network-first per index.html: prova sempre la rete, fallback sulla cache
+  if (e.request.url.endsWith("/ITS/") || e.request.url.endsWith("/ITS/index.html") || e.request.url.endsWith("index.html")) {
+    e.respondWith(
+      fetch(e.request).then(function(networkResponse) {
+        caches.open(CACHE_NAME).then(function(c) { c.put(e.request, networkResponse.clone()); });
+        return networkResponse;
+      }).catch(function() {
+        return caches.match(e.request).then(function(cached) {
+          return cached || caches.match("./index.html");
+        });
+      })
+    );
+    return;
+  }
+
+  // Cache-first per tutto il resto
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       return cached || fetch(e.request).catch(function() {
