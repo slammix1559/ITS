@@ -505,7 +505,7 @@ async function renderOrario(){
 
   if(periodoAttivo){
     // Studenti vedono solo il loro anno; team/coord vedono entrambi
-    const isTeam=(ruolo==="COORDINATORE"||ruolo==="TUTOR"||ruolo==="DOCENTE"||_isOrientamento(ruolo));
+    const isTeam=(ruolo==="COORDINATORE"||ruolo==="TUTOR"||ruolo==="DOCENTE"||ruolo==="ORIENTATRICE"||ruolo==="ORIENTATORE");
     // "Entrambi" = anno impostato come "" o "entrambi"
     const periodoEntrambi=(!periodoR.anno||periodoR.anno===""||periodoR.anno==="entrambi");
     if(isTeam&&periodoEntrambi){
