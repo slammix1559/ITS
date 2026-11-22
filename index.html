@@ -575,6 +575,11 @@ async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
   const anni=annoExtra?[anno,annoExtra]:[anno];
   const risposte=await Promise.all(anni.map(a=>api("getSlotsMesePublic",{filtroDoc,annualita:a})));
   if(!risposte[0].success){res.innerHTML=`<div class="alert alert-danger">${esc(risposte[0].message||"Errore")}</div>`;return;}
+  // DEBUG TEMPORANEO
+  res.innerHTML=`<div style="font-size:.7rem;color:var(--muted);padding:.5rem;background:rgba(0,0,0,.3);border-radius:6px;margin-bottom:.5rem">
+    DEBUG: anni=${JSON.stringify(anni)} | ann=${_user&&_user.annualita} | r0.giorni=${(risposte[0].giorni||[]).length} r0.blocchi_con_modulo=${(risposte[0].giorni||[]).reduce((s,g)=>s+(g.blocchi||[]).filter(b=>b.modulo).length,0)}
+    ${risposte[1]?`| r1.giorni=${(risposte[1].giorni||[]).length} r1.blocchi_con_modulo=${(risposte[1].giorni||[]).reduce((s,g)=>s+(g.blocchi||[]).filter(b=>b.modulo).length,0)}`:''}
+  </div>`;
   const oggi=todayISO();
   let html="";
   risposte.forEach((r,idx)=>{
