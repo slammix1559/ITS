@@ -13,16 +13,10 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ── CACHE PWA ──
 const CACHE_NAME = "itsapp-v7";
-const STATIC_ASSETS = ["./", "./index.html"];
 
 self.addEventListener("install", function(e) {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(function(c) {
-      return c.addAll(STATIC_ASSETS);
-    })
-  );
+  // Salta l'attesa e diventa attivo subito
   self.skipWaiting();
 });
 
@@ -30,12 +24,19 @@ self.addEventListener("activate", function(e) {
   e.waitUntil(
     caches.keys().then(function(keys) {
       return Promise.all(
-        keys.filter(function(k) { return k !== CACHE_NAME; })
-            .map(function(k) { return caches.delete(k); })
+        keys.map(function(k) { return caches.delete(k); }) // Cancella TUTTE le cache
       );
+    }).then(function() {
+      return self.clients.claim(); // Prende controllo di tutte le tab aperte
+    }).then(function() {
+      // Forza il reload di tutte le tab aperte
+      return self.clients.matchAll({ type: "window" }).then(function(clients) {
+        clients.forEach(function(client) {
+          client.navigate(client.url);
+        });
+      });
     })
   );
-  self.clients.claim();
 });
 
 self.addEventListener("fetch", function(e) {
@@ -44,27 +45,27 @@ self.addEventListener("fetch", function(e) {
   if (e.request.url.includes("firebase")) return;
   if (e.request.url.includes("gstatic.com")) return;
 
-  // Network-first per index.html: prova sempre la rete, fallback sulla cache
-  if (e.request.url.endsWith("/ITS/") || e.request.url.endsWith("/ITS/index.html") || e.request.url.endsWith("index.html")) {
+  // Network-first per index.html
+  if (e.request.mode === "navigate" ||
+      e.request.url.endsWith("/ITS/") ||
+      e.request.url.endsWith("/ITS/index.html") ||
+      e.request.url.endsWith("index.html")) {
     e.respondWith(
       fetch(e.request).then(function(networkResponse) {
-        caches.open(CACHE_NAME).then(function(c) { c.put(e.request, networkResponse.clone()); });
+        var clone = networkResponse.clone();
+        caches.open(CACHE_NAME).then(function(c) { c.put(e.request, clone); });
         return networkResponse;
       }).catch(function() {
-        return caches.match(e.request).then(function(cached) {
-          return cached || caches.match("./index.html");
-        });
+        return caches.match(e.request);
       })
     );
     return;
   }
 
-  // Cache-first per tutto il resto
+  // Network-first per tutto (nessuna cache old)
   e.respondWith(
-    caches.match(e.request).then(function(cached) {
-      return cached || fetch(e.request).catch(function() {
-        return caches.match("./index.html");
-      });
+    fetch(e.request).catch(function() {
+      return caches.match(e.request);
     })
   );
 });
@@ -85,7 +86,6 @@ messaging.onBackgroundMessage(function(payload) {
   });
 });
 
-// ── CLIC SULLA NOTIFICA ──
 self.addEventListener("notificationclick", function(e) {
   e.notification.close();
   const target = (e.notification.data && e.notification.data.url)
