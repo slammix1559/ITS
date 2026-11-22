@@ -904,26 +904,53 @@ async function salvaPregresso(){
 }
 async function renderAppello(){
   const pane=$("pres-appello-pane");if(!pane)return;
-  pane.innerHTML=`<div class="card" style="margin-bottom:1rem;padding:1rem"><div class="grid-2" style="gap:.6rem;margin-bottom:.6rem"><div class="form-group" style="margin-bottom:0"><label>Data</label><input type="date" id="app-data" value="${todayISO()}"></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div></div><div class="grid-2" style="gap:.6rem"><div class="form-group" style="margin-bottom:0"><label>Inizio</label><input type="time" id="app-ini" value="14:30"></div><div class="form-group" style="margin-bottom:0"><label>Fine</label><input type="time" id="app-fin" value="19:30"></div></div></div><div id="appello-lista"></div><button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="confermaAppello()" id="btn-conferma-appello">Conferma appello</button><div id="appello-msg" style="margin-top:.5rem"></div>`;
+  pane.innerHTML=`<div class="card" style="margin-bottom:1rem;padding:1rem"><div class="grid-2" style="gap:.6rem;margin-bottom:.6rem"><div class="form-group" style="margin-bottom:0"><label>Data</label><input type="date" id="app-data" value="${todayISO()}" onchange="buildAppelloList()"></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div></div><div class="grid-2" style="gap:.6rem"><div class="form-group" style="margin-bottom:0"><label>Inizio</label><input type="time" id="app-ini" value="14:30"></div><div class="form-group" style="margin-bottom:0"><label>Fine</label><input type="time" id="app-fin" value="19:30"></div></div></div><div id="appello-lista"></div><button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="confermaAppello()" id="btn-conferma-appello">Conferma appello</button><div id="appello-msg" style="margin-top:.5rem"></div>`;
   const res=await api("getPresenze",{emailStudente:null});_presenzeAll=res.success?(res.presenze||[]):[];buildAppelloList();
 }
-function buildAppelloList(){
+async function buildAppelloList(){
   const cont=$("appello-lista");if(!cont)return;const anno=$("app-anno")?$("app-anno").value:"1";
+  const data=$("app-data")?$("app-data").value:todayISO();
   const stud=_studenti.filter(s=>String(s.annualita)===anno);if(!stud.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:1rem">Nessuno studente.</div>';return;}
-  _appelloStato={};stud.forEach(s=>{_appelloStato[s.email.toLowerCase()]={tipo:"P",ora:""};});
+  // Carica richieste per la data selezionata (pre-compilazione)
+  let richMap={};
+  try{const rr=await api("getRichiestePerData",{data});if(rr&&rr.success)richMap=rr.mappa||{};}catch(e){}
+  _appelloStato={};
+  stud.forEach(s=>{
+    const em=s.email.toLowerCase();
+    const rich=richMap[em];
+    if(rich){
+      const tipoApp=rich.tipo==="RITARDO"?"R":(rich.tipo==="USCITA_ANT"?"U":"P");
+      _appelloStato[em]={tipo:tipoApp,ora:rich.ora,richiestaId:rich.id,richiestaStato:rich.stato};
+    } else {
+      _appelloStato[em]={tipo:"P",ora:""};
+    }
+  });
   let html='<div class="card" style="padding:.25rem .5rem">';
-  stud.forEach((s,i)=>{const em=s.email.toLowerCase();
-    html+=`<div style="padding:.5rem .3rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap"><div style="flex:1;min-width:120px;font-weight:600;font-size:.84rem">${esc(s.nome)}</div><div style="display:flex;gap:3px" id="app-btns-${i}"><button class="app-btn sel" data-tipo="P" onclick="selAppello('${em}',${i},'P')" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--success);background:var(--success);color:#fff;font-weight:800;cursor:pointer;font-family:var(--font-head)">P</button><button class="app-btn" data-tipo="A" onclick="selAppello('${em}',${i},'A')" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--danger);background:transparent;color:var(--danger);font-weight:800;cursor:pointer;font-family:var(--font-head)">A</button><button class="app-btn" data-tipo="R" onclick="selAppello('${em}',${i},'R')" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--warning);background:transparent;color:var(--warning);font-weight:800;cursor:pointer;font-family:var(--font-head)">R</button><button class="app-btn" data-tipo="U" onclick="selAppello('${em}',${i},'U')" style="width:32px;height:32px;border-radius:8px;border:1px solid #a78bfa;background:transparent;color:#a78bfa;font-weight:800;cursor:pointer;font-family:var(--font-head)">U</button></div></div><div id="app-extra-${i}" style="display:none;margin-top:.4rem"></div></div>`;});
+  const C={P:"var(--success)",A:"var(--danger)",R:"var(--warning)",U:"#a78bfa"};
+  stud.forEach((s,i)=>{
+    const em=s.email.toLowerCase();
+    const st=_appelloStato[em];
+    const tipoSel=st.tipo;
+    const haRichiesta=!!(st.richiestaId);
+    const badgeStato=haRichiesta?`<span style="font-size:.62rem;padding:.15rem .4rem;border-radius:6px;background:${st.richiestaStato==="ACCETTATA"?"var(--success)":"var(--warning)"};color:${st.richiestaStato==="ACCETTATA"?"#fff":"#000"};font-weight:700;flex-shrink:0">${st.richiestaStato==="ACCETTATA"?"✓ ACC":"● PEND"}</span>`:""
+    const btnStyle=t=>`width:32px;height:32px;border-radius:8px;border:1px solid ${C[t]};background:${t===tipoSel?C[t]:"transparent"};color:${t===tipoSel?(t==="R"?"#000":"#fff"):C[t]};font-weight:800;cursor:pointer;font-family:var(--font-head)`;
+    const extraHtml=()=>{
+      if(tipoSel==="R")return `<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem"><span style="font-size:.72rem;color:var(--warning);font-weight:600">Ora ingresso:</span><input type="time" value="${st.ora}" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${em}'].ora=this.value">${haRichiesta?`<span style="font-size:.7rem;color:var(--muted)">da richiesta</span>`:""}</div>`;
+      if(tipoSel==="U")return `<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem"><span style="font-size:.72rem;color:#a78bfa;font-weight:600">Ora uscita:</span><input type="time" value="${st.ora}" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${em}'].ora=this.value">${haRichiesta?`<span style="font-size:.7rem;color:var(--muted)">da richiesta</span>`:""}</div>`;
+      return "";
+    };
+    html+=`<div style="padding:.5rem .3rem;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap"><div style="flex:1;min-width:120px;font-weight:600;font-size:.84rem">${esc(s.nome)}</div>${badgeStato}<div style="display:flex;gap:3px" id="app-btns-${i}"><button class="app-btn" data-tipo="P" onclick="selAppello('${em}',${i},'P')" style="${btnStyle("P")}">P</button><button class="app-btn" data-tipo="A" onclick="selAppello('${em}',${i},'A')" style="${btnStyle("A")}">A</button><button class="app-btn" data-tipo="R" onclick="selAppello('${em}',${i},'R')" style="${btnStyle("R")}">R</button><button class="app-btn" data-tipo="U" onclick="selAppello('${em}',${i},'U')" style="${btnStyle("U")}">U</button></div></div><div id="app-extra-${i}">${extraHtml()}</div></div>`;
+  });
   html+='</div>';cont.innerHTML=html;
 }
 function selAppello(email,i,tipo){
-  const stato=_appelloStato[email];if(!stato)return;stato.tipo=tipo;stato.ora="";
+  const stato=_appelloStato[email];if(!stato)return;stato.tipo=tipo;if(tipo==="P"||tipo==="A")stato.ora="";
   const C={P:"var(--success)",A:"var(--danger)",R:"var(--warning)",U:"#a78bfa"};
   document.querySelectorAll(`#app-btns-${i} .app-btn`).forEach(b=>{const t=b.getAttribute("data-tipo");if(t===tipo){b.style.background=C[t];b.style.color=t==="R"?"#000":"#fff";}else{b.style.background="transparent";b.style.color=C[t];}});
   const extra=$("app-extra-"+i);
-  if(tipo==="R"){extra.style.display="block";extra.innerHTML=`<div style="display:flex;align-items:center;gap:.5rem"><span style="font-size:.72rem;color:var(--warning);font-weight:600">Ora ingresso:</span><input type="time" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${email}'].ora=this.value"></div>`;}
-  else if(tipo==="U"){extra.style.display="block";extra.innerHTML=`<div style="display:flex;align-items:center;gap:.5rem"><span style="font-size:.72rem;color:#a78bfa;font-weight:600">Ora uscita:</span><input type="time" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${email}'].ora=this.value"></div>`;}
-  else{extra.style.display="none";extra.innerHTML="";}
+  if(tipo==="R"){extra.innerHTML=`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem"><span style="font-size:.72rem;color:var(--warning);font-weight:600">Ora ingresso:</span><input type="time" value="${stato.ora}" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${email}'].ora=this.value"></div>`;}
+  else if(tipo==="U"){extra.innerHTML=`<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem"><span style="font-size:.72rem;color:#a78bfa;font-weight:600">Ora uscita:</span><input type="time" value="${stato.ora}" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${email}'].ora=this.value"></div>`;}
+  else{extra.innerHTML="";}
 }
 async function confermaAppello(){
   const msg=$("appello-msg"),data=$("app-data").value,ini=$("app-ini").value,fin=$("app-fin").value;
