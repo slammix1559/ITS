@@ -530,7 +530,14 @@ async function renderOrario(){
       }
     } else {
       // Anno specifico impostato dal coordinatore
-      const annoVis=periodoR.anno||(_user&&_user.annualita?String(_user.annualita):"1");
+      // Team vede l'anno che ha impostato il coord; lo studente vede SEMPRE il suo anno
+      let annoVis;
+      if(isTeam){
+        annoVis = periodoR.anno || "1";
+      } else {
+        // Studente: usa la propria annualita, ignorando quella del coordinatore
+        annoVis = (_user&&_user.annualita ? String(_user.annualita) : "") || periodoR.anno || "1";
+      }
       await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
     }
   } else {
