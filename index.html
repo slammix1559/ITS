@@ -399,17 +399,6 @@ function apriModalePwd(){$("pwd-old").value=$("pwd-new").value=$("pwd-new2").val
 
 async function avviaDashboard(){
   HD("view-login");SH("view-dashboard");SH("navbar");SH("bottom-nav");
-  // Se lo studente ha annualita vuota nel localStorage, forza un relogin silenzioso
-  // per aggiornare _user.annualita dal backend (dove ora la recuperiamo da 1anno/2anno)
-  if(_user&&_user.ruolo==="STUDENTE"&&!_user.annualita){
-    try{
-      const rr=await api("refreshProfilo",{});
-      if(rr&&rr.success&&rr.annualita){
-        _user.annualita=String(rr.annualita);
-        localStorage.setItem("its_user",JSON.stringify(_user));
-      }
-    }catch(e){}
-  }
   $("dash-nome").textContent=_user.displayName||_user.email;
   $("dash-ruolo-badge").innerHTML=`<span class="badge role-${_user.ruolo}">${ruoloLabel(_user.ruolo)}</span>`;
   buildBottomNav();switchPane("home");avviaNotifiche();
@@ -438,6 +427,9 @@ async function renderHome(){
     const res=await api("getDashboard",{});if(!res.success){pane.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
     const r=_user.ruolo;let html="";
     if(r==="STUDENTE"){const s=res.stats||{};const ann=res.user&&res.user.annualita?String(res.user.annualita):"2";
+// Aggiorna _user.annualita dal server e salva nel localStorage
+if(res.user&&res.user.annualita&&_user.annualita!==String(res.user.annualita)){_user.annualita=String(res.user.annualita);try{localStorage.setItem("its_user",JSON.stringify(_user));}catch(e){}}
+
 // Blocco percentuale dinamico in base all'anno
 let percHtml="";
 if(ann==="1"){const p=s.percAnn1!=null?s.percAnn1:(s.percPresenza||0);const col=p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";percHtml=`<div class="stat-card" onclick="switchPane('presenze')" style="cursor:pointer"><div class="stat-val" style="color:${col}">${p}%</div><div class="stat-lbl">Frequenza 1° Anno</div><div class="progress-bar-wrap" style="margin-top:.5rem"><div class="progress-bar-fill" style="width:${p}%;background:${col}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">${s.orePresenti||0}h / ${s.ore1Erogate||s.oreTotali||0}h erogate</div></div>`;}
@@ -530,19 +522,8 @@ async function renderOrario(){
       }
     } else {
       // Anno specifico impostato dal coordinatore
-      if(isTeam){
-        // Team/coord: vede l'anno impostato dal coordinatore
-        await _caricaOrarioVisibile(periodoR.dal, periodoR.al, periodoR.anno||"1", isDocente);
-      } else {
-        // Studente: usa la propria annualita; se non nota, carica ENTRAMBI gli anni
-        const annStudente2 = _user&&_user.annualita ? String(_user.annualita) : "";
-        if(annStudente2){
-          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annStudente2, false);
-        } else {
-          // annualita non nota: mostra entrambi così lo studente vede sicuramente le proprie lezioni
-          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, "1", false, "2");
-        }
-      }
+      const annoVis=periodoR.anno||(_user&&_user.annualita?String(_user.annualita):"1");
+      await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
     }
   } else {
     $("or-result").innerHTML=`<div class="text-muted" style="text-align:center;padding:2.5rem;font-size:.9rem">
@@ -575,11 +556,6 @@ async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
   const anni=annoExtra?[anno,annoExtra]:[anno];
   const risposte=await Promise.all(anni.map(a=>api("getSlotsMesePublic",{filtroDoc,annualita:a})));
   if(!risposte[0].success){res.innerHTML=`<div class="alert alert-danger">${esc(risposte[0].message||"Errore")}</div>`;return;}
-  // DEBUG TEMPORANEO
-  res.innerHTML=`<div style="font-size:.7rem;color:var(--muted);padding:.5rem;background:rgba(0,0,0,.3);border-radius:6px;margin-bottom:.5rem">
-    DEBUG: anni=${JSON.stringify(anni)} | ann=${_user&&_user.annualita} | r0.giorni=${(risposte[0].giorni||[]).length} r0.blocchi_con_modulo=${(risposte[0].giorni||[]).reduce((s,g)=>s+(g.blocchi||[]).filter(b=>b.modulo).length,0)}
-    ${risposte[1]?`| r1.giorni=${(risposte[1].giorni||[]).length} r1.blocchi_con_modulo=${(risposte[1].giorni||[]).reduce((s,g)=>s+(g.blocchi||[]).filter(b=>b.modulo).length,0)}`:''}
-  </div>`;
   const oggi=todayISO();
   let html="";
   risposte.forEach((r,idx)=>{
@@ -615,17 +591,7 @@ async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
       html+=`</div>`;
     });
   });
-  if(!html){
-    // Nessuna lezione nel periodo: mostra messaggio con il periodo
-    const fmtD=d=>{const p=d.split("-");return p[2]+"/"+p[1]+"/"+p[0];};
-    res.innerHTML=`<div style="text-align:center;padding:2.5rem;color:var(--muted)">
-      <div style="font-size:2rem;margin-bottom:.5rem">📭</div>
-      <div style="font-size:.88rem">Nessuna lezione pianificata nel periodo<br>
-      <b style="color:var(--text)">${fmtD(dal)} – ${fmtD(al)}</b></div>
-    </div>`;
-  } else {
-    res.innerHTML=html;
-  }
+  res.innerHTML=html||`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata.</div>`;
 }
 
 // Legacy — mantenuta per compatibilità
@@ -1041,151 +1007,33 @@ async function apriDettaglioStudente(email,nome){
   if(!res.success){$("msd-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}
   $("msd-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],null,true);
 }
-async function renderPresenzeStudente(){
-  const pane=$("pane-presenze");
-  pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div>
-    <div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div>
-    <div style="margin-top:1.25rem">
-      <div class="section-title" style="margin-bottom:.6rem">&#128337; Richiesta ingresso/uscita</div>
-      <div class="card">
-        <div class="form-group"><label>Tipo</label><select id="rich-tipo"><option value="RITARDO">Ingresso posticipato (Ritardo)</option><option value="USCITA_ANT">Uscita anticipata</option></select></div>
-        <div class="grid-2"><div class="form-group"><label>Data</label><input type="date" id="rich-data" value="${todayISO()}"></div><div class="form-group"><label>Ora</label><input type="time" id="rich-ora"></div></div>
-        <div class="form-group"><label>Nota (opzionale)</label><textarea id="rich-nota" rows="2" placeholder="Es. visita medica..."></textarea></div>
-        <button class="btn btn-primary" style="width:100%" onclick="inviaRichiestaOrario()">&#128228; Invia richiesta</button>
-        <div id="rich-msg" style="margin-top:.5rem"></div>
-      </div>
-      <div id="richieste-pendenti-wrap" style="margin-top:.85rem"></div>
-    </div>`;
-  _filtroPresTipo=null;
-  const [res, resRich] = await Promise.all([api("getPresenze",{}), api("getRichiesteOrario",{})]);
-  if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}
-  window._presCache=res;
-  _renderPresContent();
-  _renderRichiestePendenti(resRich.richieste||[]);
-}
-function _renderPresContent(){
-  const res=window._presCache;if(!res)return;
-  $("presenze-content").innerHTML=_htmlStats(res);
-}
+async function renderPresenzeStudente(){const pane=$("pane-presenze");pane.innerHTML=`<div class="page-header"><h2>&#9989; Presenze</h2></div><div id="presenze-content"><div style="text-align:center;padding:2rem"><div class="spinner"></div></div></div><div style="margin-top:1.25rem"><div class="section-title" style="margin-bottom:.6rem">&#128337; Richiesta ingresso/uscita</div><div class="card"><div class="form-group"><label>Tipo</label><select id="rich-tipo"><option value="RITARDO">Ingresso posticipato (Ritardo)</option><option value="USCITA_ANT">Uscita anticipata</option></select></div><div class="grid-2"><div class="form-group"><label>Data</label><input type="date" id="rich-data" value="${todayISO()}"></div><div class="form-group"><label>Ora</label><input type="time" id="rich-ora"></div></div><div class="form-group"><label>Nota (opzionale)</label><textarea id="rich-nota" rows="2" placeholder="Es. visita medica..."></textarea></div><button class="btn btn-primary" style="width:100%" onclick="inviaRichiestaOrario()">&#128228; Invia richiesta</button><div id="rich-msg" style="margin-top:.5rem"></div></div></div>`;_filtroPresTipo=null;const res=await api("getPresenze",{});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}window._presCache=res;_renderPresContent();}
+function _renderPresContent(){const res=window._presCache;if(!res)return;$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],_filtroPresTipo,false);}
 function filtraPresStudente(tipo){_filtroPresTipo=(_filtroPresTipo===tipo)?null:tipo;_renderPresContent();}
-
-function _renderRichiestePendenti(richieste){
-  const wrap=$("richieste-pendenti-wrap");if(!wrap)return;
-  const pending=richieste.filter(r=>r.STATO==="PENDING");
-  if(!pending.length){wrap.innerHTML="";return;}
-  const TL={RITARDO:"Ingresso posticipato",USCITA_ANT:"Uscita anticipata"};
-  let html=`<div class="section-title" style="margin-bottom:.5rem">&#9203; Richieste in attesa</div>`;
-  pending.forEach(r=>{
-    const tipo=TL[r.TIPO]||r.TIPO;
-    const data=r.DATA?r.DATA.split("T")[0].split("-").reverse().join("/"):"-";
-    html+=`<div class="card card-sm" style="margin-bottom:.5rem;display:flex;align-items:center;gap:.7rem">
-      <div style="flex:1">
-        <div style="font-size:.85rem;font-weight:600">${esc(tipo)}</div>
-        <div style="font-size:.75rem;color:var(--muted)">${data} · ${esc(r.ORA||"")}</div>
-        ${r.NOTA?`<div style="font-size:.72rem;color:var(--muted);margin-top:.2rem">${esc(r.NOTA)}</div>`:""}
-      </div>
-      <span class="badge badge-yellow">In attesa</span>
-      <button class="btn btn-danger btn-sm" onclick="eliminaRichiestaStudente('${esc(r.ID)}')">&#10006;</button>
-    </div>`;
-  });
-  wrap.innerHTML=html;
-}
-
-async function eliminaRichiestaStudente(id){
-  if(!confirm("Eliminare la richiesta?"))return;
-  const res=await api("eliminaRichiesta",{id});
-  if(!res.success){alert(res.message||"Errore");return;}
-  // Ricarica
-  const resRich=await api("getRichiesteOrario",{});
-  _renderRichiestePendenti(resRich.richieste||[]);
-}
-
-async function inviaRichiestaOrario(){
-  const msg=$("rich-msg");
-  const tipo=$("rich-tipo").value,data=$("rich-data").value,ora=$("rich-ora").value,nota=$("rich-nota")?$("rich-nota").value.trim():"";
-  if(!data||!ora){msg.innerHTML='<div class="alert alert-danger">Inserisci data e ora.</div>';return;}
-  msg.innerHTML='<div style="text-align:center"><div class="spinner"></div></div>';
-  const res=await api("inviaRichiestaOrario",{tipo,data,ora,nota});
-  if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}
-  msg.innerHTML='<div class="alert alert-success">&#10003; Richiesta inviata! Attendi l\'approvazione.</div>';
-  if($("rich-ora"))$("rich-ora").value="";
-  if($("rich-nota"))$("rich-nota").value="";
-  // Aggiorna lista richieste pendenti
-  const resRich=await api("getRichiesteOrario",{});
-  _renderRichiestePendenti(resRich.richieste||[]);
-}
+async function inviaRichiestaOrario(){const msg=$("rich-msg");const tipo=$("rich-tipo").value,data=$("rich-data").value,ora=$("rich-ora").value,nota=$("rich-nota")?$("rich-nota").value.trim():"";if(!data||!ora){msg.innerHTML='<div class="alert alert-danger">Inserisci data e ora.</div>';return;}msg.innerHTML='<div style="text-align:center"><div class="spinner"></div></div>';const res=await api("inviaRichiestaOrario",{tipo,data,ora,nota});if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message||"Errore")}</div>`;return;}msg.innerHTML='<div class="alert alert-success">&#10003; Richiesta inviata! Attendi l\'approvazione del tutor.</div>';if($("rich-ora"))$("rich-ora").value="";if($("rich-nota"))$("rich-nota").value="";}
 function _htmlStats(res){
   const s=res.stats||{};
-  const ann=String(_user.annualita||"2");
-  // Contatori assenze/ritardi/uscite cliccabili
-  const contatori=`<div class="grid-3" style="margin-bottom:1rem">
-    <div class="stat-card card-sm" style="cursor:pointer" onclick="_toggleDettaglioPresenze('ASSENZA')"><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div></div>
-    <div class="stat-card card-sm" style="cursor:pointer" onclick="_toggleDettaglioPresenze('RITARDO')"><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div></div>
-    <div class="stat-card card-sm" style="cursor:pointer" onclick="_toggleDettaglioPresenze('USCITA')"><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div></div>
-  </div>`;
-  // Barra solo anno corrente — se 2° anno mostra anche storico 1° anno (sola lettura, no dettaglio)
+  const ann=_user.annualita||"2";
+  // Costruisci blocchi percentuale in base all'anno
   let percBlocks="";
   if(ann==="1"){
-    const p=s.percAnn1!=null?s.percAnn1:(s.percPresenza||0);
+    const p=s.percAnn1!==null&&s.percAnn1!==undefined?s.percAnn1:(s.percPresenza||0);
     const col=p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";
-    percBlocks=`<div class="card" style="margin-bottom:.6rem;padding:.9rem;cursor:pointer" onclick="_toggleDettaglioPresenze(null)">
-      <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-        <span style="font-size:.82rem">Frequenza 1° Anno</span>
-        <span style="font-family:var(--font-head);font-weight:700;color:${col}">${p}%</span>
-      </div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p}%;background:${col}"></div></div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||s.oreTotali||0}h erogate · tocca per il dettaglio</div>
-    </div>`;
+    percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 1° Anno</span><span style="font-family:var(--font-head);font-weight:700;color:${col}">${p}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p}%;background:${col}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||s.oreTotali||0}h erogate</div></div>`;
   } else {
-    // 2° anno: barra corrente (2° anno) + storico 1° anno collassato
-    const p2=s.percAnn2!=null?s.percAnn2:(s.percPresenza||0);
-    const col2=p2>=75?"var(--success)":p2>=50?"var(--warning)":"var(--danger)";
-    percBlocks=`<div class="card" style="margin-bottom:.6rem;padding:.9rem;cursor:pointer" onclick="_toggleDettaglioPresenze(null)">
-      <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-        <span style="font-size:.82rem">Frequenza 2° Anno</span>
-        <span style="font-family:var(--font-head);font-weight:700;color:${col2}">${p2}%</span>
-      </div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p2}%;background:${col2}"></div></div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore2Erogate||s.oreTotali||0}h erogate · tocca per il dettaglio</div>
-    </div>`;
-    if(s.percAnn1!=null){
+    if(s.percAnn1!==null&&s.percAnn1!==undefined){
       const p1=s.percAnn1;const col1=p1>=75?"var(--success)":p1>=50?"var(--warning)":"var(--danger)";
-      percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem;opacity:.7">
-        <div style="display:flex;justify-content:space-between;margin-bottom:.4rem">
-          <span style="font-size:.78rem;color:var(--muted)">1° Anno (storico)</span>
-          <span style="font-family:var(--font-head);font-weight:700;color:${col1};font-size:.85rem">${p1}%</span>
-        </div>
-        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p1}%;background:${col1}"></div></div>
-        <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||0}h erogate</div>
-      </div>`;
+      percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 1° Anno (storico)</span><span style="font-family:var(--font-head);font-weight:700;color:${col1}">${p1}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p1}%;background:${col1}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore1Erogate||960}h</div></div>`;
+    }
+    const p2=s.percAnn2!==null&&s.percAnn2!==undefined?s.percAnn2:(s.percPresenza||0);
+    const col2=p2>=75?"var(--success)":p2>=50?"var(--warning)":"var(--danger)";
+    percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem">Frequenza 2° Anno</span><span style="font-family:var(--font-head);font-weight:700;color:${col2}">${p2}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${p2}%;background:${col2}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${s.ore2Erogate||s.oreTotali||0}h erogate</div></div>`;
+    if(s.percTotale!==null&&s.percTotale!==undefined){
+      const pt=s.percTotale;const colT=pt>=75?"var(--success)":pt>=50?"var(--warning)":"var(--danger)";
+      percBlocks+=`<div class="card" style="margin-bottom:.6rem;padding:.9rem"><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span style="font-size:.82rem;font-weight:700">% Totale Percorso</span><span style="font-family:var(--font-head);font-weight:800;color:${colT};font-size:1.05rem">${pt}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pt}%;background:${colT}"></div></div><div style="font-size:.72rem;color:var(--muted);margin-top:.3rem">su ${(s.ore1Erogate||0)+(s.ore2Erogate||0)}h totali erogate</div></div>`;
     }
   }
-  return contatori+percBlocks+`<div id="pres-dettaglio-wrap"></div>`;
-}
-
-let _presDettaglioFiltro=null;
-function _toggleDettaglioPresenze(tipo){
-  const res=window._presCache;if(!res)return;
-  const wrap=$("pres-dettaglio-wrap");if(!wrap)return;
-  // Se stessa tipologia → chiudi (toggle)
-  if(_presDettaglioFiltro===tipo&&wrap.innerHTML!==""){wrap.innerHTML="";_presDettaglioFiltro=null;return;}
-  _presDettaglioFiltro=tipo;
-  // Filtra: solo assenze/ritardi/uscite (escludi PRESENZA)
-  let lista=(res.presenze||[]).filter(p=>p.TIPO!=="PRESENZA");
-  if(tipo)lista=lista.filter(p=>p.TIPO===tipo);
-  if(!lista.length){wrap.innerHTML=`<div class="text-muted" style="text-align:center;padding:.8rem;font-size:.82rem">Nessun evento registrato.</div>`;return;}
-  const TL={ASSENZA:"A",RITARDO:"R",USCITA:"U"},TC={ASSENZA:"var(--danger)",RITARDO:"var(--warning)",USCITA:"#a78bfa"};
-  let html=`<div class="card" style="padding:.3rem .6rem;margin-bottom:.5rem">`;
-  lista.slice().reverse().forEach(p=>{
-    const col=TC[p.TIPO]||"var(--muted)";
-    html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .2rem;border-bottom:1px solid var(--border)">
-      <span style="width:22px;height:22px;border-radius:5px;background:${col};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.7rem;flex-shrink:0">${TL[p.TIPO]||"?"}</span>
-      <div style="flex:1"><span style="font-size:.8rem">${esc(p.dataIT||fmtData(p.DATA))}</span></div>
-      <div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>
-    </div>`;
-  });
-  html+=`</div>`;
-  wrap.innerHTML=html;
+  return`<div class="grid-3" style="margin-bottom:1rem"><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('ASSENZA')"><div class="stat-val text-danger" style="font-size:1.3rem">${s.nAssenze||0}</div><div class="stat-lbl">Assenze</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('RITARDO')"><div class="stat-val text-warning" style="font-size:1.3rem">${s.nRitardi||0}</div><div class="stat-lbl">Ritardi</div></div><div class="stat-card card-sm" style="cursor:pointer" onclick="filtraPresStudente('USCITA')"><div class="stat-val" style="font-size:1.3rem;color:#a78bfa">${s.nUscite||0}</div><div class="stat-lbl">Uscite</div></div></div>${percBlocks}`;
 }
 function _htmlLista(presenze,filtro,conElimina){let lista=presenze.slice();if(filtro)lista=lista.filter(p=>p.TIPO===filtro);const TL={PRESENZA:"P",ASSENZA:"A",RITARDO:"R",USCITA:"U"},TC={PRESENZA:"var(--success)",ASSENZA:"var(--danger)",RITARDO:"var(--warning)",USCITA:"#a78bfa"};if(!lista.length)return'<div class="text-muted" style="text-align:center;padding:1rem">Nessuna registrazione.</div>';let html='<div class="card" style="padding:.3rem .6rem">';lista.slice().reverse().forEach(p=>{const col=TC[p.TIPO]||"var(--muted)";html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .2rem;border-bottom:1px solid var(--border)"><span style="width:24px;height:24px;border-radius:6px;background:${col};color:${p.TIPO==='RITARDO'?'#000':'#fff'};display:inline-flex;align-items:center;justify-content:center;font-family:var(--font-head);font-weight:800;font-size:.75rem;flex-shrink:0">${TL[p.TIPO]||"?"}</span><div style="flex:1"><span style="font-size:.82rem">${esc(p.dataIT||fmtData(p.DATA))}</span></div><div style="font-size:.74rem;font-family:var(--font-head);font-weight:700;color:${col}">${p.ORE}h</div>${conElimina&&["COORDINATORE","TUTOR"].includes(_user.ruolo)?`<button class="btn btn-icon" style="color:var(--muted);font-size:.7rem;width:24px;height:24px" onclick="eliminaPresenzaById('${p.ID}')">&#10005;</button>`:''}</div>`;});html+='</div>';return html;}
 async function eliminaPresenzaById(id){if(!confirm("Eliminare?"))return;await api("eliminaPresenza",{id});await caricaPresenze(_selectedStudentePresenze);}
@@ -1541,7 +1389,31 @@ document.addEventListener("DOMContentLoaded",function(){
   document.querySelectorAll(".modal-overlay").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.classList.add("hide");});});
   if(_token&&_user){api("checkSession",{}).then(function(res){if(res&&res.success)avviaDashboard();}).catch(function(){});}
 });
-if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){console.log("SW:",reg.scope);}).catch(function(e){console.warn("SW err:",e.message);});});}
+if("serviceWorker" in navigator){
+  var SW_VERSION="itsapp-sw-v8";
+  window.addEventListener("load",function(){
+    var alreadyClean=localStorage.getItem("sw_clean_version")===SW_VERSION;
+    if(!alreadyClean){
+      // Prima volta con questa versione: cancella tutti i vecchi SW e cache
+      navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all(regs.map(function(r){return r.unregister();}));
+      }).then(function(){
+        return caches.keys().then(function(keys){
+          return Promise.all(keys.map(function(k){return caches.delete(k);}));
+        });
+      }).then(function(){
+        localStorage.setItem("sw_clean_version",SW_VERSION);
+        return navigator.serviceWorker.register("./sw.js");
+      }).then(function(reg){
+        console.log("SW registrato (pulito):",reg.scope);
+      }).catch(function(e){console.warn("SW err:",e.message);});
+    } else {
+      navigator.serviceWorker.register("./sw.js").then(function(reg){
+        console.log("SW:",reg.scope);
+      }).catch(function(e){console.warn("SW err:",e.message);});
+    }
+  });
+}
 </script>
 
 <!-- MODAL NOTA ORIENTATORE -->
