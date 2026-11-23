@@ -940,7 +940,13 @@ async function buildAppelloList(){
   (_presenzeAll||[]).forEach(p=>{
     if(String(p.DATA||"").trim()===data){
       const em=String(p.EMAIL_STUDENTE||"").trim().toLowerCase();
-      if(em) presMap[em]={tipo:String(p.TIPO||"P").trim().toUpperCase(),ora:String(p.ORA_INIZIO||"").trim()};
+      if(em){
+        // Il DB salva PRESENZA/ASSENZA/RITARDO/USCITA — mappa a P/A/R/U per i pulsanti
+        const _tipoMap={"PRESENZA":"P","ASSENZA":"A","RITARDO":"R","USCITA":"U","USCITA_ANT":"U"};
+        const tipoDb=String(p.TIPO||"").trim().toUpperCase();
+        const tipoBtn=_tipoMap[tipoDb]||tipoDb.charAt(0)||"P";
+        presMap[em]={tipo:tipoBtn,ora:String(p.ORA_INIZIO||"").trim()};
+      }
     }
   });
   _appelloStato={};
