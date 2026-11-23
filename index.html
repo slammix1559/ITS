@@ -913,14 +913,43 @@ async function buildAppelloList(){
   const cont=$("appello-lista");if(!cont)return;const anno=$("app-anno")?$("app-anno").value:"1";
   const data=$("app-data")?$("app-data").value:todayISO();
   const stud=_studenti.filter(s=>String(s.annualita)===anno);if(!stud.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:1rem">Nessuno studente.</div>';return;}
+  // Pre-compila orario inizio/fine dalle lezioni del giorno
+  try{
+    const or=await api("getOrario",{annualita:anno});
+    if(or&&or.success&&or.lezioni){
+      const lez=or.lezioni.filter(l=>l.data===data);
+      if(lez.length){
+        const toMin=hhmm=>{const p=(hhmm||"").split(":");return parseInt(p[0]||0)*60+parseInt(p[1]||0);};
+        const ini=lez.reduce((m,l)=>toMin(l.oraInizio)<toMin(m)?l.oraInizio:m,lez[0].oraInizio);
+        const fin=lez.reduce((m,l)=>toMin(l.oraFine)>toMin(m)?l.oraFine:m,lez[0].oraFine);
+        if($("app-ini"))$("app-ini").value=ini;
+        if($("app-fin"))$("app-fin").value=fin;
+      }
+    }
+  }catch(e){}
   // Carica richieste per la data selezionata (pre-compilazione)
   let richMap={};
   try{const rr=await api("getRichiestePerData",{data});if(rr&&rr.success)richMap=rr.mappa||{};}catch(e){}
+  // Costruisce mappa presenze già registrate per questa data
+  const presMap={};
+  (_presenzeAll||[]).forEach(p=>{
+    if(String(p.DATA||"").trim()===data){
+      const em=String(p.EMAIL_STUDENTE||"").trim().toLowerCase();
+      if(em) presMap[em]={tipo:String(p.TIPO||"P").trim().toUpperCase(),ora:String(p.ORA_INIZIO||"").trim()};
+    }
+  });
   _appelloStato={};
   stud.forEach(s=>{
     const em=s.email.toLowerCase();
     const rich=richMap[em];
-    if(rich){
+    const pres=presMap[em]; // presenza già registrata per questa data
+    if(pres){
+      // Usa lo stato già registrato — appello già fatto
+      _appelloStato[em]={tipo:pres.tipo,ora:pres.ora,
+        richiestaId:rich?rich.id:null,richiestaStato:rich?rich.stato:null,
+        giaRegistrata:true};
+    } else if(rich){
+      // Nessuna presenza ma c'è una richiesta: pre-compila
       const tipoApp=rich.tipo==="RITARDO"?"R":(rich.tipo==="USCITA_ANT"?"U":"P");
       _appelloStato[em]={tipo:tipoApp,ora:rich.ora,richiestaId:rich.id,richiestaStato:rich.stato};
     } else {
@@ -934,7 +963,9 @@ async function buildAppelloList(){
     const st=_appelloStato[em];
     const tipoSel=st.tipo;
     const haRichiesta=!!(st.richiestaId);
-    const badgeStato=haRichiesta?`<span style="font-size:.62rem;padding:.15rem .4rem;border-radius:6px;background:${st.richiestaStato==="ACCETTATA"?"var(--success)":"var(--warning)"};color:${st.richiestaStato==="ACCETTATA"?"#fff":"#000"};font-weight:700;flex-shrink:0">${st.richiestaStato==="ACCETTATA"?"✓ ACC":"● PEND"}</span>`:""
+    const badgeReg=st.giaRegistrata?`<span style="font-size:.62rem;padding:.15rem .4rem;border-radius:6px;background:var(--success);color:#fff;font-weight:700;flex-shrink:0">✓ REG</span>`:"";
+    const badgeRich=haRichiesta?`<span style="font-size:.62rem;padding:.15rem .4rem;border-radius:6px;background:${st.richiestaStato==="ACCETTATA"?"var(--success)":"var(--warning)"};color:${st.richiestaStato==="ACCETTATA"?"#fff":"#000"};font-weight:700;flex-shrink:0">${st.richiestaStato==="ACCETTATA"?"✓ ACC":"● PEND"}</span>`:"";
+    const badgeStato=badgeReg||badgeRich;
     const btnStyle=t=>`width:32px;height:32px;border-radius:8px;border:1px solid ${C[t]};background:${t===tipoSel?C[t]:"transparent"};color:${t===tipoSel?(t==="R"?"#000":"#fff"):C[t]};font-weight:800;cursor:pointer;font-family:var(--font-head)`;
     const extraHtml=()=>{
       if(tipoSel==="R")return `<div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem"><span style="font-size:.72rem;color:var(--warning);font-weight:600">Ora ingresso:</span><input type="time" value="${st.ora}" style="max-width:130px;padding:.3rem .5rem" onchange="_appelloStato['${em}'].ora=this.value">${haRichiesta?`<span style="font-size:.7rem;color:var(--muted)">da richiesta</span>`:""}</div>`;
