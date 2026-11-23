@@ -916,8 +916,13 @@ async function buildAppelloList(){
   // Pre-compila orario inizio/fine dalle lezioni del giorno
   try{
     const or=await api("getOrario",{annualita:anno});
-    if(or&&or.success&&or.lezioni){
-      const lez=or.lezioni.filter(l=>l.data===data);
+    if(or&&or.success&&or.lezioni&&or.lezioni.length){
+      // Calcola giorno settimana dalla data selezionata (LUN/MAR/MER/GIO/VEN)
+      const GG=["DOM","LUN","MAR","MER","GIO","VEN","SAB"];
+      const dowIndex=new Date(data+"T12:00:00").getDay();
+      const ggBreve=GG[dowIndex];
+      // Filtra per giorno settimana (struttura orario settimanale) O per data esatta se presente
+      const lez=or.lezioni.filter(l=>(l.data&&l.data===data)||((!l.data||l.data==="")&&l.giorno===ggBreve));
       if(lez.length){
         const toMin=hhmm=>{const p=(hhmm||"").split(":");return parseInt(p[0]||0)*60+parseInt(p[1]||0);};
         const ini=lez.reduce((m,l)=>toMin(l.oraInizio)<toMin(m)?l.oraInizio:m,lez[0].oraInizio);
