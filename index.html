@@ -905,9 +905,9 @@ async function salvaPregresso(){
   msg.innerHTML=`<div class="alert alert-success">✅ Pregresso salvato per ${res.salvate} student${res.salvate===1?"e":"i"}.</div>`;
 }
 async function renderAppello(){
-  const pane=$("pres-appello-pane");if(!pane)return;
+  const pane=$("pres-appello-pane");if(!pane)return;_presenzeAll=[];
   pane.innerHTML=`<div class="card" style="margin-bottom:1rem;padding:1rem"><div class="grid-2" style="gap:.6rem;margin-bottom:.6rem"><div class="form-group" style="margin-bottom:0"><label>Data</label><input type="date" id="app-data" value="${todayISO()}" onchange="buildAppelloList()"></div><div class="form-group" style="margin-bottom:0"><label>Anno</label><select id="app-anno" onchange="buildAppelloList()"><option value="1">1&deg;</option><option value="2">2&deg;</option></select></div></div><div class="grid-2" style="gap:.6rem"><div class="form-group" style="margin-bottom:0"><label>Inizio</label><input type="time" id="app-ini" value="14:30"></div><div class="form-group" style="margin-bottom:0"><label>Fine</label><input type="time" id="app-fin" value="19:30"></div></div></div><div id="appello-lista"></div><button class="btn btn-primary" style="width:100%;margin-top:1rem" onclick="confermaAppello()" id="btn-conferma-appello">Conferma appello</button><div id="appello-msg" style="margin-top:.5rem"></div>`;
-  const res=await api("getPresenze",{emailStudente:null});_presenzeAll=res.success?(res.presenze||[]):[];buildAppelloList();
+  buildAppelloList();
 }
 async function buildAppelloList(){
   const cont=$("appello-lista");if(!cont)return;const anno=$("app-anno")?$("app-anno").value:"1";
@@ -933,22 +933,23 @@ async function buildAppelloList(){
     }
   }catch(e){}
   // Carica richieste per la data selezionata (pre-compilazione)
-  let richMap={};
-  try{const rr=await api("getRichiestePerData",{data});if(rr&&rr.success)richMap=rr.mappa||{};}catch(e){}
-  // Costruisce mappa presenze già registrate per questa data
-  const presMap={};
-  (_presenzeAll||[]).forEach(p=>{
-    if(String(p.DATA||"").trim()===data){
-      const em=String(p.EMAIL_STUDENTE||"").trim().toLowerCase();
-      if(em){
-        // Il DB salva PRESENZA/ASSENZA/RITARDO/USCITA — mappa a P/A/R/U per i pulsanti
-        const _tipoMap={"PRESENZA":"P","ASSENZA":"A","RITARDO":"R","USCITA":"U","USCITA_ANT":"U"};
-        const tipoDb=String(p.TIPO||"").trim().toUpperCase();
-        const tipoBtn=_tipoMap[tipoDb]||tipoDb.charAt(0)||"P";
-        presMap[em]={tipo:tipoBtn,ora:String(p.ORA_INIZIO||"").trim()};
-      }
-    }
-  });
+  // Carica le presenze di questa data in parallelo alle richieste
+  const _tipoMap={"PRESENZA":"P","ASSENZA":"A","RITARDO":"R","USCITA":"U","USCITA_ANT":"U"};
+  let richMap={}, presMap={};
+  const [rrRes, ppRes]=await Promise.all([
+    api("getRichiestePerData",{data}).catch(()=>({})),
+    api("getPresenzePerData",{data,annualita:anno}).catch(()=>({}))
+  ]);
+  if(rrRes&&rrRes.success) richMap=rrRes.mappa||{};
+  if(ppRes&&ppRes.success){
+    (ppRes.presenze||[]).forEach(p=>{
+      const em=String(p.email||"").trim().toLowerCase();
+      if(!em) return;
+      const tipoDb=String(p.tipo||"").trim().toUpperCase();
+      const tipoBtn=_tipoMap[tipoDb]||tipoDb.charAt(0)||"P";
+      presMap[em]={tipo:tipoBtn,ora:String(p.oraInizio||"").trim()};
+    });
+  }
   _appelloStato={};
   stud.forEach(s=>{
     const em=s.email.toLowerCase();
@@ -1008,7 +1009,7 @@ async function confermaAppello(){
   const res=await api("salvaAppello",{data,oraInizio:ini,oraFine:fin,registrazioni});$("btn-conferma-appello").disabled=false;
   if(!res.success){msg.innerHTML=`<div class="alert alert-danger">${esc(res.message)}</div>`;return;}
   msg.innerHTML=`<div class="alert alert-success">Appello salvato: ${res.salvate} registrazioni.</div>`;
-  const r2=await api("getPresenze",{emailStudente:null});_presenzeAll=r2.success?(r2.presenze||[]):[];setTimeout(()=>buildAppelloList(),1200);
+  setTimeout(()=>buildAppelloList(),800);
 }
 async function cambiaStudentePresenze(email){_selectedStudentePresenze=email||null;if(!email){$("presenze-content").innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}await caricaPresenze(email);}
 async function caricaPresenze(emailStudente){$("presenze-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getPresenze",{emailStudente});if(!res.success){$("presenze-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}$("presenze-content").innerHTML=_htmlStats(res)+_htmlLista(res.presenze||[],null,true);}
