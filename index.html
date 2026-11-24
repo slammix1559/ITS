@@ -910,19 +910,25 @@ async function renderAppello(){
   buildAppelloList();
 }
 async function buildAppelloList(){
-  const cont=$("appello-lista");if(!cont)return;const anno=$("app-anno")?$("app-anno").value:"1";
+  const cont=$("appello-lista");if(!cont)return;
+  cont.innerHTML='<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>';
+  const anno=$("app-anno")?$("app-anno").value:"1";
   const data=$("app-data")?$("app-data").value:todayISO();
   const stud=_studenti.filter(s=>String(s.annualita)===anno);if(!stud.length){cont.innerHTML='<div class="text-muted" style="text-align:center;padding:1rem">Nessuno studente.</div>';return;}
-  // Pre-compila orario inizio/fine dalle lezioni del giorno
+  // Tutte e 3 le chiamate API in parallelo
+  const _tipoMap={"PRESENZA":"P","ASSENZA":"A","RITARDO":"R","USCITA":"U","USCITA_ANT":"U"};
+  let richMap={}, presMap={};
+  const [orRes, rrRes, ppRes]=await Promise.all([
+    api("getOrario",{annualita:anno}).catch(()=>({})),
+    api("getRichiestePerData",{data}).catch(()=>({})),
+    api("getPresenzePerData",{data,annualita:anno}).catch(()=>({}))
+  ]);
+  // Applica orario
   try{
-    const or=await api("getOrario",{annualita:anno});
-    if(or&&or.success&&or.lezioni&&or.lezioni.length){
-      // Calcola giorno settimana dalla data selezionata (LUN/MAR/MER/GIO/VEN)
+    if(orRes&&orRes.success&&orRes.lezioni&&orRes.lezioni.length){
       const GG=["DOM","LUN","MAR","MER","GIO","VEN","SAB"];
-      const dowIndex=new Date(data+"T12:00:00").getDay();
-      const ggBreve=GG[dowIndex];
-      // Filtra per giorno settimana (struttura orario settimanale) O per data esatta se presente
-      const lez=or.lezioni.filter(l=>(l.data&&l.data===data)||((!l.data||l.data==="")&&l.giorno===ggBreve));
+      const ggBreve=GG[new Date(data+"T12:00:00").getDay()];
+      const lez=orRes.lezioni.filter(l=>(l.data&&l.data===data)||((!l.data||l.data==="")&&l.giorno===ggBreve));
       if(lez.length){
         const toMin=hhmm=>{const p=(hhmm||"").split(":");return parseInt(p[0]||0)*60+parseInt(p[1]||0);};
         const ini=lez.reduce((m,l)=>toMin(l.oraInizio)<toMin(m)?l.oraInizio:m,lez[0].oraInizio);
@@ -932,14 +938,6 @@ async function buildAppelloList(){
       }
     }
   }catch(e){}
-  // Carica richieste per la data selezionata (pre-compilazione)
-  // Carica le presenze di questa data in parallelo alle richieste
-  const _tipoMap={"PRESENZA":"P","ASSENZA":"A","RITARDO":"R","USCITA":"U","USCITA_ANT":"U"};
-  let richMap={}, presMap={};
-  const [rrRes, ppRes]=await Promise.all([
-    api("getRichiestePerData",{data}).catch(()=>({})),
-    api("getPresenzePerData",{data,annualita:anno}).catch(()=>({}))
-  ]);
   if(rrRes&&rrRes.success) richMap=rrRes.mappa||{};
   if(ppRes&&ppRes.success){
     (ppRes.presenze||[]).forEach(p=>{
