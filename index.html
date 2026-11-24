@@ -945,7 +945,9 @@ async function buildAppelloList(){
       if(!em) return;
       const tipoDb=String(p.tipo||"").trim().toUpperCase();
       const tipoBtn=_tipoMap[tipoDb]||tipoDb.charAt(0)||"P";
-      presMap[em]={tipo:tipoBtn,ora:String(p.oraInizio||"").trim()};
+      // Per USCITA l'ora evento è oraFine; per RITARDO è oraInizio
+      const oraEvento=(tipoBtn==="U")?String(p.oraFine||"").trim():String(p.oraInizio||"").trim();
+      presMap[em]={tipo:tipoBtn,ora:oraEvento};
     });
   }
   _appelloStato={};
