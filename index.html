@@ -502,37 +502,45 @@ async function apriResocontoPresenze(){
   const pane=$("pane-home");
   if(!pane)return;
   const isDocente=_user&&_user.ruolo==="DOCENTE";
-  // Per DOCENTE: anno preselezionato in base ai suoi anni
-  const annoDefault=(isDocente&&_user.anni&&_user.anni.length===1)?_user.anni[0]:"2";
-  // Riga filtro docente visibile solo a coordinatori/tutor
-  const rigaDocente=isDocente?"":`<div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
-      <div class="form-group" style="margin:0"><label>Filtra Docente</label><input type="text" id="res-docente" placeholder="Cognome docente..."></div>
-      <div class="form-group" style="margin:0"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>
-    </div>`;
-  const rigaUFDocente=isDocente?`<div class="form-group" style="margin:0;margin-bottom:.6rem"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>`:"";
+
+  // Anno: se docente con un solo anno → preselezionato; se due anni → mostra entrambi senza default fisso
+  const anniDoc=(isDocente&&_user.anni&&_user.anni.length)?_user.anni:["1","2"];
+  const annoDefault=anniDoc[0]; // primo anno del docente come default
+  const opzioniAnno=anniDoc.map(a=>`<option value="${a}"${a===annoDefault?" selected":""}>${a}° Anno</option>`).join("");
+
+  // UF: per DOCENTE → select con le sue materie da _user.materie; altrimenti campo libero
+  const materieDoc=(isDocente&&_user.materie&&_user.materie.length)?_user.materie:[];
+  let ufControl="";
+  if(isDocente&&materieDoc.length){
+    const opts=`<option value="">Tutte le mie UF</option>`+materieDoc.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join("");
+    ufControl=`<div class="form-group" style="margin:0"><label>UF</label><select id="res-uf">${opts}</select></div>`;
+  } else {
+    ufControl=`<div class="form-group" style="margin:0"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>`;
+  }
+
   pane.innerHTML=`<div class="page-header" style="display:flex;align-items:center;gap:.75rem">
     <button class="btn btn-icon btn-outline" onclick="renderHome()" style="flex-shrink:0">&#8592;</button>
     <h2>&#128101; Resoconto presenze${isDocente?" (tue lezioni)":""}</h2>
   </div>
   <div class="card" style="margin-bottom:.75rem;padding:.85rem 1rem">
     <div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
-      <div class="form-group" style="margin:0"><label>Anno</label><select id="res-anno"><option value="1"${annoDefault==="1"?" selected":""}>1° Anno</option><option value="2"${annoDefault==="2"?" selected":""}>2° Anno</option></select></div>
-      ${isDocente?`<div class="form-group" style="margin:0"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>`:"<div></div>"}
+      <div class="form-group" style="margin:0"><label>Anno</label><select id="res-anno">${opzioniAnno}</select></div>
+      ${ufControl}
     </div>
     ${!isDocente?`<div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
       <div class="form-group" style="margin:0"><label>Filtra Docente</label><input type="text" id="res-docente" placeholder="Cognome docente..."></div>
-      <div class="form-group" style="margin:0"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>
+      <div class="form-group" style="margin:0"></div>
     </div>`:""}
     <div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
       <div class="form-group" style="margin:0"><label>Dal</label><input type="date" id="res-dal"></div>
       <div class="form-group" style="margin:0"><label>Al</label><input type="date" id="res-al"></div>
     </div>
-    <button class="btn btn-primary" style="width:100%" onclick="cercaResocontoPresenze()">🔍 Cerca</button>
+    <button class="btn btn-primary" style="width:100%" onclick="cercaResocontoPresenze()">&#128269; Cerca</button>
   </div>
   <div id="res-result"></div>`;
-  // Date default: anno scolastico corrente
+  // Date default: inizio anno scolastico → oggi
   const oggi=new Date();
-  const setA=new Date(oggi.getFullYear(),8,1); // 1 settembre
+  const setA=new Date(oggi.getFullYear(),8,1);
   const ini=oggi>=setA?setA:new Date(oggi.getFullYear()-1,8,1);
   if($("res-dal"))$("res-dal").value=ini.toISOString().split("T")[0];
   if($("res-al"))$("res-al").value=oggi.toISOString().split("T")[0];
@@ -855,7 +863,7 @@ async function apriDettaglioStudenteVoti(email,nome){
   }
   const res=await api("getVoti",{emailStudente:email});
   const pm=res.perMateria||[];
-  let html=`<div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Voti di</div><div style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin-bottom:1rem">${esc(nome)}</div>`;
+  let html=`<div style="font-size:.78rem;color:var(--muted);margin-bottom:.25rem">Voti di</div><div data-nome="${esc(nome)}" style="font-family:var(--font-head);font-weight:800;font-size:1.1rem;margin-bottom:1rem">${esc(nome)}</div>`;
   if(!pm.length){html+='<div class="text-muted" style="text-align:center;padding:1rem">Nessun voto.</div>';}
   else{
     function _colV(v){return v>=28?"var(--success)":v>=24?"var(--accent2)":v>=18?"var(--warning)":"var(--danger)";}
@@ -877,11 +885,19 @@ async function apriDettaglioStudenteVoti(email,nome){
         html+=`<div style="padding:.5rem .85rem .6rem;background:var(--surface)">`;
         m.voti.forEach((v,i)=>{
           const vc=_colV(v.voto);
+          const ruolo=_user&&_user.ruolo;
+          const emailUtente=_user&&_user.email?_user.email.toLowerCase():"";
+          const docenteVoto=String(v.docente||"").toLowerCase();
+          const puoModifica=ruolo==="COORDINATORE"||ruolo==="TUTOR"||(ruolo==="DOCENTE"&&emailUtente===docenteVoto);
           html+=`<div style="display:flex;align-items:center;gap:.6rem;padding:.35rem 0${i<m.voti.length-1?";border-bottom:1px solid rgba(255,255,255,.06)":""}">`;
           html+=`<span style="font-family:var(--font-head);font-weight:800;font-size:1.15rem;color:${vc};min-width:32px">${v.voto}</span>`;
           html+=`<span style="font-size:.72rem;color:var(--muted);flex:1">${v.data||"—"}`;
           if(v.note)html+=` · <em>${esc(v.note)}</em>`;
           html+=`</span>`;
+          if(puoModifica){
+            html+=`<button onclick="apriModificaVoto('${esc(v.id)}',${v.voto},'${esc(v.note||"")}','${esc(email)}')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--accent2);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;line-height:1" title="Modifica voto">&#9998;</button>`;
+            html+=`<button onclick="eliminaVotoDettaglio('${esc(v.id)}','${esc(email)}')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--danger);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;line-height:1" title="Elimina voto">&#128465;</button>`;
+          }
           html+=`</div>`;
         });
         html+=`</div>`;
@@ -936,6 +952,52 @@ async function salvaRegistro(materia){
 async function caricaVotiStudente(){$("voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{});if(!res.success){$("voti-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}const pm=res.perMateria||[];if(!pm.length){$("voti-content").innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});$("voti-content").innerHTML=html;}
 async function cambiaStudenteVoti(email){_selectedStudenteVoti=email||null;const cont=$("voti-content");if(!email){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}if(cont)cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{emailStudente:email});const pm=res.perMateria||[];if(!pm.length){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});if(cont)cont.innerHTML=html;}
 async function eliminaVotoById(id){if(!confirm("Eliminare voto?"))return;await api("eliminaVoto",{id});if(_currentPane==="voti")renderVoti();}
+async function eliminaVotoDettaglio(id,emailStudente){
+  if(!confirm("Eliminare questo voto?"))return;
+  const res=await api("eliminaVoto",{id});
+  if(res&&res.success){
+    // ricarica il modale con i dati aggiornati
+    const nomeEl=document.querySelector("#modal-voti-content [data-nome]");
+    const nome=nomeEl?nomeEl.getAttribute("data-nome"):"";
+    await apriDettaglioStudenteVoti(emailStudente,nome);
+    // se il tabellone è visibile, aggiornalo
+    if($("tabellone-content"))renderTabellone();
+  }else{alert(res&&res.message?"Errore: "+res.message:"Errore durante l'eliminazione.");}
+}
+function apriModificaVoto(id,votoAttuale,noteAttuali,emailStudente){
+  // Mostra un piccolo pannello di modifica inline nel modale
+  let form=$("form-modifica-voto-"+id);
+  if(form){form.style.display=form.style.display==="none"?"block":"none";return;}
+  form=document.createElement("div");
+  form.id="form-modifica-voto-"+id;
+  form.style.cssText="margin:.4rem 0 0;padding:.6rem .75rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)";
+  form.innerHTML=`<div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:.2rem"><label style="font-size:.68rem;color:var(--muted)">Voto (0-30)</label><input id="inp-mod-voto-${id}" type="number" min="0" max="30" step="0.5" value="${votoAttuale}" style="width:70px;padding:.3rem .4rem;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;text-align:center"></div>
+    <div style="display:flex;flex-direction:column;gap:.2rem;flex:1;min-width:120px"><label style="font-size:.68rem;color:var(--muted)">Note</label><input id="inp-mod-note-${id}" type="text" value="${noteAttuali.replace(/'/g,"&#39;")}" placeholder="Opzionale" style="padding:.3rem .5rem;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem"></div>
+    <button onclick="salvaModificaVoto('${id}','${emailStudente}')" style="padding:.35rem .8rem;border-radius:7px;background:var(--accent2);color:#fff;border:none;cursor:pointer;font-size:.82rem;font-weight:600">Salva</button>
+    <button onclick="document.getElementById('form-modifica-voto-${id}').remove()" style="padding:.35rem .6rem;border-radius:7px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.82rem">✕</button>
+  </div><div id="msg-mod-voto-${id}" style="margin-top:.4rem;font-size:.75rem"></div>`;
+  // Inserisce il form sotto il div del voto
+  const btn=document.querySelector(`button[onclick*="apriModificaVoto('${id}'"]`);
+  if(btn&&btn.parentNode)btn.parentNode.after(form);
+}
+async function salvaModificaVoto(id,emailStudente){
+  const votoInp=$("inp-mod-voto-"+id);const noteInp=$("inp-mod-note-"+id);const msg=$("msg-mod-voto-"+id);
+  if(!votoInp)return;
+  const v=parseFloat(votoInp.value);if(isNaN(v)||v<0||v>30){if(msg)msg.innerHTML='<span style="color:var(--danger)">Voto non valido (0–30).</span>';return;}
+  const note=noteInp?noteInp.value.trim():"";
+  if(msg)msg.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px"></div>';
+  const res=await api("modificaVoto",{id,voto:v,note});
+  if(res&&res.success){
+    if(msg)msg.innerHTML='<span style="color:var(--success)">✓ Salvato</span>';
+    setTimeout(async()=>{
+      const nomeEl=document.querySelector("#modal-voti-content [data-nome]");
+      const nome=nomeEl?nomeEl.getAttribute("data-nome"):"";
+      await apriDettaglioStudenteVoti(emailStudente,nome);
+      if($("tabellone-content"))renderTabellone();
+    },800);
+  }else{if(msg)msg.innerHTML=`<span style="color:var(--danger)">${res&&res.message?esc(res.message):"Errore"}</span>`;}
+}
 let _selectedStudentePresenze=null,_presenzeAll=[],_appelloStato={},_filtroPresTipo=null;
 const ORE_TOTALI_JS={"1":700,"2":1100}; // ore totali biennio (non usato per %)
 // Le ore erogate vengono ora calcolate dinamicamente dal backend (getPresenze/getDashboard restituisce ore1Erogate, ore2Erogate)
