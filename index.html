@@ -551,25 +551,25 @@ async function cercaResocontoPresenze(){
   if(filtroDocente)payload.filtroDocente=filtroDocente;
   const r=await api("getResocontoPresenze",payload);
   if(!r.success){el.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`;return;}
-  const sess=r.sessioni||[];
-  if(!sess.length){el.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata nel periodo/filtro.</div>`;return;}
-  const fmtD=s=>{if(!s)return"";const p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];};
-  const fmtOra=o=>String(o||"").substring(0,5);
+  const alunni=r.alunni||[];
+  if(!alunni.length){el.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessun alunno trovato per il periodo/filtro selezionato.</div>`;return;}
   const colPerc=p=>p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";
-  let html=`<div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">${sess.length} lezioni · ${r.totStudenti} studenti iscritti</div>`;
-  html+=sess.map(s=>`<div class="card" style="margin-bottom:.6rem;padding:.6rem .85rem">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
+  let html=`<div style="font-size:.8rem;color:var(--muted);margin-bottom:.75rem;display:flex;justify-content:space-between;align-items:center">
+    <span>${alunni.length} alunni</span>
+    <span style="font-weight:600">Ore erogate: ${r.oreErogate}h</span>
+  </div>`;
+  html+=alunni.map(a=>`<div class="card" style="margin-bottom:.5rem;padding:.6rem .85rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem">
       <div style="flex:1;min-width:0">
-        <div style="font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.uf)}</div>
-        <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">${fmtD(s.data)} · ${fmtOra(s.dalle)}–${fmtOra(s.alle)} · ${s.ore}h</div>
-        <div style="font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👤 ${esc(s.docente)}</div>
+        <div style="font-size:.85rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(a.cognome)} ${esc(a.nome)}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.1rem">${a.orePres}h su ${a.oreErogate}h erogate</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:1.2rem;font-weight:800;color:${colPerc(s.percPresenza)}">${s.percPresenza}%</div>
-        <div style="font-size:.72rem;color:var(--muted)">${s.presenti}/${s.totStudenti}</div>
+        <div style="font-size:1.15rem;font-weight:800;color:${colPerc(a.perc)}">${a.perc}%</div>
+        <div style="font-size:.7rem;color:var(--muted)">${a.orePres}/${a.oreErogate}h</div>
       </div>
     </div>
-    <div class="progress-bar-wrap" style="margin-top:.4rem"><div class="progress-bar-fill" style="width:${s.percPresenza}%;background:${colPerc(s.percPresenza)}"></div></div>
+    <div class="progress-bar-wrap" style="margin-top:.4rem"><div class="progress-bar-fill" style="width:${a.perc}%;background:${colPerc(a.perc)}"></div></div>
   </div>`).join("");
   el.innerHTML=html;
 }
