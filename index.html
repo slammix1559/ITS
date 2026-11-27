@@ -950,7 +950,77 @@ async function salvaRegistro(materia){
   if(ok>0)inputs.forEach(inp=>{if(inp.value.trim())inp.value="";});setTimeout(()=>apriRegistro(),1500);
 }
 async function caricaVotiStudente(){$("voti-content").innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{});if(!res.success){$("voti-content").innerHTML='<div class="alert alert-danger">Errore</div>';return;}const pm=res.perMateria||[];if(!pm.length){$("voti-content").innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});$("voti-content").innerHTML=html;}
-async function cambiaStudenteVoti(email){_selectedStudenteVoti=email||null;const cont=$("voti-content");if(!email){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}if(cont)cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;const res=await api("getVoti",{emailStudente:email});const pm=res.perMateria||[];if(!pm.length){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}let html="";pm.forEach(m=>{html+=`<div class="materia-block"><div class="materia-header"><div class="materia-name">${esc(m.materia)}</div><div class="media-chip ${votoClass(m.media)}">Media: ${m.media}/30</div></div><div class="voti-list">${m.voti.map(v=>`<div class="voto-pill"><span class="v-num ${votoClass(v.voto)}">${v.voto}</span><span class="v-date">${v.data}</span></div>`).join("")}</div><div class="divider"></div></div>`;});if(cont)cont.innerHTML=html;}
+async function cambiaStudenteVoti(email){
+  _selectedStudenteVoti=email||null;
+  const cont=$("voti-content");
+  if(!email){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Seleziona.</div>';return;}
+  if(cont)cont.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const res=await api("getVoti",{emailStudente:email});
+  const pm=res.perMateria||[];
+  if(!pm.length){if(cont)cont.innerHTML='<div class="text-muted" style="text-align:center;padding:2rem">Nessun voto.</div>';return;}
+  const ruolo=_user&&_user.ruolo;
+  const emailUtente=_user&&_user.email?_user.email.toLowerCase():"";
+  function _colV(v){return v>=28?"var(--success)":v>=24?"var(--accent2)":v>=18?"var(--warning)":"var(--danger)";}
+  let html="";
+  pm.forEach(m=>{
+    html+=`<div style="margin-bottom:1rem;border-radius:10px;border:1px solid var(--border);overflow:hidden">`;
+    html+=`<div style="background:var(--surface2);padding:.6rem .85rem;display:flex;align-items:center;justify-content:space-between">`;
+    html+=`<div style="font-weight:700;font-size:.85rem;flex:1">${esc(m.materia)}</div>`;
+    html+=`<div style="font-family:var(--font-head);font-weight:800;color:${_colV(m.media)};font-size:1rem">${m.media}/30</div>`;
+    html+=`</div>`;
+    if(m.voti&&m.voti.length){
+      html+=`<div style="padding:.5rem .85rem .6rem;background:var(--surface)">`;
+      m.voti.forEach((v,i)=>{
+        const vc=_colV(v.voto);
+        const docenteVoto=String(v.docente||"").toLowerCase();
+        const puoModifica=ruolo==="COORDINATORE"||ruolo==="TUTOR"||(ruolo==="DOCENTE"&&emailUtente===docenteVoto);
+        html+=`<div id="voto-row-${esc(v.id)}" style="display:flex;align-items:center;gap:.6rem;padding:.35rem 0${i<m.voti.length-1?";border-bottom:1px solid rgba(255,255,255,.06)":""}">`;
+        html+=`<span style="font-family:var(--font-head);font-weight:800;font-size:1.15rem;color:${vc};min-width:32px">${v.voto}</span>`;
+        html+=`<span style="font-size:.72rem;color:var(--muted);flex:1">${v.data||"—"}`;
+        if(v.note)html+=` · <em>${esc(v.note)}</em>`;
+        html+=`</span>`;
+        if(puoModifica){
+          html+=`<button onclick="apriModificaVotoConsulta('${esc(v.id)}',${v.voto},'${esc(v.note||"")}','${esc(email)}')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--accent2);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;line-height:1" title="Modifica">&#9998;</button>`;
+          html+=`<button onclick="eliminaVotoConsulta('${esc(v.id)}','${esc(email)}')" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--danger);padding:.2rem .45rem;font-size:.7rem;cursor:pointer;line-height:1" title="Elimina">&#128465;</button>`;
+        }
+        html+=`</div>`;
+      });
+      html+=`</div>`;
+    }
+    html+=`</div>`;
+  });
+  if(cont)cont.innerHTML=html;
+}
+async function eliminaVotoConsulta(id,emailStudente){
+  if(!confirm("Eliminare questo voto?"))return;
+  const res=await api("eliminaVoto",{id});
+  if(res&&res.success){await cambiaStudenteVoti(emailStudente);if($("tabellone-content"))renderTabellone();}
+  else{alert(res&&res.message?"Errore: "+res.message:"Errore durante l'eliminazione.");}
+}
+function apriModificaVotoConsulta(id,votoAttuale,noteAttuali,emailStudente){
+  let form=$("form-mod-consulta-"+id);
+  if(form){form.style.display=form.style.display==="none"?"block":"none";return;}
+  form=document.createElement("div");
+  form.id="form-mod-consulta-"+id;
+  form.style.cssText="margin:.4rem 0 0;padding:.6rem .75rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)";
+  form.innerHTML=`<div style="display:flex;gap:.5rem;align-items:flex-end;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:.2rem"><label style="font-size:.68rem;color:var(--muted)">Voto (0-30)</label><input id="inp-mc-${id}" type="number" min="0" max="30" step="0.5" value="${votoAttuale}" style="width:70px;padding:.3rem .4rem;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;text-align:center"></div>
+    <div style="display:flex;flex-direction:column;gap:.2rem;flex:1;min-width:120px"><label style="font-size:.68rem;color:var(--muted)">Note</label><input id="inp-mn-${id}" type="text" value="${noteAttuali.replace(/'/g,"&#39;")}" placeholder="Opzionale" style="padding:.3rem .5rem;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem"></div>
+    <button onclick="salvaModificaVotoConsulta('${id}','${emailStudente}')" style="padding:.35rem .8rem;border-radius:7px;background:var(--accent2);color:#fff;border:none;cursor:pointer;font-size:.82rem;font-weight:600">Salva</button>
+    <button onclick="document.getElementById('form-mod-consulta-${id}').remove()" style="padding:.35rem .6rem;border-radius:7px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.82rem">✕</button>
+  </div><div id="msg-mc-${id}" style="margin-top:.4rem;font-size:.75rem"></div>`;
+  const row=$("voto-row-"+id);if(row)row.after(form);
+}
+async function salvaModificaVotoConsulta(id,emailStudente){
+  const votoInp=$("inp-mc-"+id);const noteInp=$("inp-mn-"+id);const msg=$("msg-mc-"+id);
+  if(!votoInp)return;
+  const v=parseFloat(votoInp.value);if(isNaN(v)||v<0||v>30){if(msg)msg.innerHTML='<span style="color:var(--danger)">Voto non valido (0–30).</span>';return;}
+  const note=noteInp?noteInp.value.trim():"";
+  if(msg)msg.innerHTML='<div class="spinner" style="width:14px;height:14px;border-width:2px"></div>';
+  const res=await api("modificaVoto",{id,voto:v,note});
+  if(res&&res.success){if(msg)msg.innerHTML='<span style="color:var(--success)">✓ Salvato</span>';setTimeout(async()=>{await cambiaStudenteVoti(emailStudente);if($("tabellone-content"))renderTabellone();},800);}
+  else{if(msg)msg.innerHTML=`<span style="color:var(--danger)">${res&&res.message?esc(res.message):"Errore"}</span>`;}
+}
 async function eliminaVotoById(id){if(!confirm("Eliminare voto?"))return;await api("eliminaVoto",{id});if(_currentPane==="voti")renderVoti();}
 async function eliminaVotoDettaglio(id,emailStudente){
   if(!confirm("Eliminare questo voto?"))return;
