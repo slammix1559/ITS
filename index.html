@@ -439,13 +439,126 @@ else{const p2=s.percAnn2!=null?s.percAnn2:(s.percPresenza||0);const pt=s.percTot
 html+=`<div class="section-title">Le tue statistiche</div><div class="grid-2" style="margin-bottom:1.25rem">${percHtml}<div class="stat-card"><div class="stat-val text-danger">${s.oreAssenza||0}</div><div class="stat-lbl">Ore assenza</div></div></div><div class="grid-2"><div class="stat-card" style="cursor:pointer" onclick="switchPane('voti')"><div class="stat-val text-accent">${res.votiCount||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${res.comunicazioniNonLette>0?"var(--warning)":"var(--text)"}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div>`;}
     else if(r==="COORDINATORE"){const s=res.stats||{};const nlC=res.comunicazioniNonLette||0;html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1.25rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.voti||0}</div><div class="stat-lbl">Voti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('comunicazioni')"><div class="stat-val" style="color:${nlC>0?'var(--danger)':'var(--text)'}">${nlC}</div><div class="stat-lbl">Comunicaz. non lette</div></div><div class="stat-card"><div class="stat-val" style="color:var(--gold)">${s.disponibilita||0}</div><div class="stat-lbl">Disponibilit&agrave;</div></div></div><div class="section-title">Accesso rapido</div><div class="grid-2"><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('eventi')">&#128198; Eventi</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="apriNuovaComunicazione()">&#128226; Comunicazione</button><button class="btn btn-outline" style="justify-content:flex-start;gap:.5rem" onclick="switchPane('note')">&#128214; Note orientatori</button></div>`;}
     else if(r==="TUTOR"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card"><div class="stat-val text-success">${s.mieDisponibilita||0}</div><div class="stat-lbl">Disponib.</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('presenze')">&#9989; Presenze</button><button class="btn btn-outline" onclick="switchPane('disponibilita')">&#128198; Disponibilit&agrave;</button><button class="btn btn-outline" onclick="switchPane('voti')">&#128202; Voti</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
-    else if(r==="DOCENTE"){const materie=res.materie||[];if(res.anni)_user.anni=res.anni;html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):"<div class=\"text-muted\">Nessuna materia.</div>"}</div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div>`;}
+    else if(r==="DOCENTE"){const materie=res.materie||[];if(res.anni)_user.anni=res.anni;html+=`<div class="section-title">Le tue materie</div><div style="margin-bottom:1rem">${materie.length?materie.map(m=>`<div class="list-item" style="margin-bottom:.5rem;font-weight:600">${esc(m)}</div>`).join(""):"<div class=\"text-muted\">Nessuna materia.</div>"}</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card" id="card-ore-docente" onclick="apriOreDocente()" style="cursor:pointer"><div class="stat-val text-accent" id="ore-doc-val"><div class="spinner" style="width:20px;height:20px;margin:0 auto"></div></div><div class="stat-lbl">Ore erogate</div></div><div class="stat-card" onclick="switchPane('comunicazioni')" style="cursor:pointer"><div class="stat-val" id="ore-doc-nonlette" style="color:${res.comunicazioniNonLette>0?'var(--warning)':'var(--text)'}">${res.comunicazioniNonLette||0}</div><div class="stat-lbl">Comunicazioni</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('voti')">&#10133; Voti</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Bacheca</button><button class="btn btn-outline" onclick="switchPane('disponibilita-docente')">&#128198; Disponib.</button><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Eventi</button></div><div style="margin-top:.75rem"><button class="btn btn-outline" style="width:100%" onclick="apriResocontoPresenze()">&#128101; Resoconto presenze</button></div>`;}
     else if(r==="ORIENTATRICE"||r==="ORIENTATORE"){const s=res.stats||{};html+=`<div class="section-title">Panoramica</div><div class="grid-2" style="margin-bottom:1rem"><div class="stat-card"><div class="stat-val text-accent">${s.studenti||0}</div><div class="stat-lbl">Studenti</div></div><div class="stat-card" style="cursor:pointer" onclick="switchPane('eventi')"><div class="stat-val" style="color:var(--gold)">${s.eventiFuturi||0}</div><div class="stat-lbl">Eventi futuri</div></div></div><div class="grid-2"><button class="btn btn-outline" onclick="switchPane('eventi')">&#128198; Calendario eventi</button><button class="btn btn-outline" onclick="switchPane('contatti')">&#128222; Contatti</button><button class="btn btn-outline" onclick="switchPane('note')">&#128214; Note</button><button class="btn btn-outline" onclick="switchPane('comunicazioni')">&#128226; Comunicazioni</button></div>`;}
     pane.innerHTML=html;
+    if(r==="DOCENTE") _caricaOreDocente();
   }catch(e){pane.innerHTML=`<div class="alert alert-danger">${esc(e.message)}</div>`;}
 }
 
 function _filtraLezioniDocente(lezioni){if(_user.ruolo!=="DOCENTE")return lezioni;const cognome=(_user.cognome||"").toLowerCase().trim();return lezioni.filter(l=>{const doc=(l.docente||"").toLowerCase();return cognome&&doc.includes(cognome);});}
+
+// Carica ore docente in background dopo renderHome
+let _oreDocenteCache=null;
+async function _caricaOreDocente(){
+  const r=await api("getOreDocente",{});
+  _oreDocenteCache=r;
+  const el=$("ore-doc-val");
+  if(el){
+    if(r.success){el.textContent=r.oreTotali||0;}
+    else{el.textContent="—";}
+  }
+}
+function apriOreDocente(){
+  if(!_oreDocenteCache||!_oreDocenteCache.success){_caricaOreDocente().then(apriOreDocente);return;}
+  const d=_oreDocenteCache;
+  const fmtD=s=>{if(!s)return"";const p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];};
+  let html=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <h4>📊 Ore erogate</h4>
+    <button class="btn btn-icon btn-outline" onclick="chiudiModal('modal-ore-doc')">✕</button>
+  </div>
+  <div class="grid-2" style="margin-bottom:1rem">
+    <div class="stat-card"><div class="stat-val text-accent">${d.oreTotali||0}</div><div class="stat-lbl">Ore totali</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--gold)">${(d.riepilogoUF||[]).length}</div><div class="stat-lbl">UF insegnate</div></div>
+  </div>`;
+  if((d.riepilogoUF||[]).length){
+    html+=`<div class="section-title" style="margin-bottom:.5rem">Per UF</div>`;
+    html+=(d.riepilogoUF||[]).map(u=>`<div class="list-item" style="display:flex;justify-content:space-between;margin-bottom:.35rem"><span style="font-weight:600;font-size:.85rem">${esc(u.uf)}</span><span class="stat-val" style="font-size:.9rem;color:var(--accent)">${u.ore}h</span></div>`).join("");
+  }
+  if((d.dettaglio||[]).length){
+    html+=`<div class="section-title" style="margin:.85rem 0 .5rem">Dettaglio per giornata</div><div style="max-height:40vh;overflow-y:auto">`;
+    html+=(d.dettaglio||[]).map(g=>{
+      const ls=g.lezioni||[];
+      const fmtOra=o=>String(o||"").substring(0,5);
+      return `<div style="margin-bottom:.6rem"><div style="font-size:.75rem;font-weight:700;color:var(--muted);margin-bottom:.2rem">${fmtD(g.data)}</div>`+
+        ls.map(l=>`<div style="display:flex;gap:.5rem;padding:.25rem .4rem;background:var(--surface2);border-radius:6px;margin-bottom:.2rem;font-size:.8rem"><span style="color:var(--accent)">${fmtOra(l.dalle)}–${fmtOra(l.alle)}</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.uf)}</span><span style="color:${l.confermato?'#34d399':'#f87171'};font-size:.7rem">●</span></div>`).join("")+`</div>`;
+    }).join("");
+    html+=`</div>`;
+  }
+  let modal=$("modal-ore-doc");
+  if(!modal){
+    modal=document.createElement("div");
+    modal.id="modal-ore-doc";
+    modal.className="modal-overlay";
+    modal.innerHTML=`<div class="modal-box" style="max-width:520px;max-height:80vh;overflow-y:auto"><div id="modal-ore-doc-body"></div></div>`;
+    modal.addEventListener("click",function(e){if(e.target===modal)chiudiModal("modal-ore-doc");});
+    document.body.appendChild(modal);
+  }
+  $("modal-ore-doc-body").innerHTML=html;
+  openModal("modal-ore-doc");
+}
+
+async function apriResocontoPresenze(){
+  const pane=$("pane-home");
+  if(!pane)return;
+  // Mostra pannello resoconto sopra la home
+  pane.innerHTML=`<div class="page-header" style="display:flex;align-items:center;gap:.75rem">
+    <button class="btn btn-icon btn-outline" onclick="renderHome()" style="flex-shrink:0">&#8592;</button>
+    <h2>&#128101; Resoconto presenze</h2>
+  </div>
+  <div class="card" style="margin-bottom:.75rem;padding:.85rem 1rem">
+    <div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
+      <div class="form-group" style="margin:0"><label>Anno</label><select id="res-anno"><option value="1">1° Anno</option><option value="2" selected>2° Anno</option></select></div>
+      <div class="form-group" style="margin:0"><label>Filtra UF</label><input type="text" id="res-uf" placeholder="es. UF24..."></div>
+    </div>
+    <div class="grid-2" style="gap:.6rem;margin-bottom:.6rem">
+      <div class="form-group" style="margin:0"><label>Dal</label><input type="date" id="res-dal"></div>
+      <div class="form-group" style="margin:0"><label>Al</label><input type="date" id="res-al"></div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="cercaResocontoPresenze()">🔍 Cerca</button>
+  </div>
+  <div id="res-result"></div>`;
+  // Date default: anno scolastico corrente
+  const oggi=new Date();
+  const setA=new Date(oggi.getFullYear(),8,1); // 1 settembre
+  const ini=oggi>=setA?setA:new Date(oggi.getFullYear()-1,8,1);
+  if($("res-dal"))$("res-dal").value=ini.toISOString().split("T")[0];
+  if($("res-al"))$("res-al").value=oggi.toISOString().split("T")[0];
+  await cercaResocontoPresenze();
+}
+
+async function cercaResocontoPresenze(){
+  const el=$("res-result");if(!el)return;
+  el.innerHTML=`<div style="text-align:center;padding:2rem"><div class="spinner"></div></div>`;
+  const ann=$("res-anno")?$("res-anno").value:"2";
+  const filtroUF=$("res-uf")?$("res-uf").value.trim():"";
+  const dataDa=$("res-dal")?$("res-dal").value:"";
+  const dataA=$("res-al")?$("res-al").value:"";
+  const r=await api("getResocontoPresenze",{annualita:ann,filtroUF,dataDa,dataA});
+  if(!r.success){el.innerHTML=`<div class="alert alert-danger">${esc(r.message)}</div>`;return;}
+  const sess=r.sessioni||[];
+  if(!sess.length){el.innerHTML=`<div class="text-muted" style="text-align:center;padding:2rem">Nessuna lezione trovata nel periodo/filtro.</div>`;return;}
+  const fmtD=s=>{if(!s)return"";const p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];};
+  const fmtOra=o=>String(o||"").substring(0,5);
+  const colPerc=p=>p>=75?"var(--success)":p>=50?"var(--warning)":"var(--danger)";
+  let html=`<div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">${sess.length} lezioni · ${r.totStudenti} studenti iscritti</div>`;
+  html+=sess.map(s=>`<div class="card" style="margin-bottom:.6rem;padding:.6rem .85rem">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.82rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.uf)}</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:.15rem">${fmtD(s.data)} · ${fmtOra(s.dalle)}–${fmtOra(s.alle)} · ${s.ore}h</div>
+        <div style="font-size:.72rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">👤 ${esc(s.docente)}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:1.2rem;font-weight:800;color:${colPerc(s.percPresenza)}">${s.percPresenza}%</div>
+        <div style="font-size:.72rem;color:var(--muted)">${s.presenti}/${s.totStudenti}</div>
+      </div>
+    </div>
+    <div class="progress-bar-wrap" style="margin-top:.4rem"><div class="progress-bar-fill" style="width:${s.percPresenza}%;background:${colPerc(s.percPresenza)}"></div></div>
+  </div>`).join("");
+  el.innerHTML=html;
+}
+
 // ============================================================
 // SEZIONE ORARIO — Coordinatore imposta periodo; tutti lo vedono
 // ============================================================
