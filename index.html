@@ -620,7 +620,8 @@ async function renderOrario(){
             <option value="2" ${annoDef==="2"?"selected":""}>2° Anno</option>
           </select>
         </div>
-        <button class="btn btn-primary" style="width:100%" onclick="salvaPeriodoOrario()">💾 Salva e pubblica periodo</button>
+        <button class="btn btn-primary" style="width:100%" onclick="salvaPeriodoOrario()">📢 Salva e pubblica periodo</button>
+        <button class="btn" style="width:100%;margin-top:.5rem;background:rgba(99,102,241,.15);color:var(--accent);border:1px solid var(--accent)" onclick="inviaEmailOrario()">📧 Invia email orario ai docenti</button>
         <div id="or-set-msg" style="margin-top:.5rem"></div>
       </div>`;
   }
@@ -696,9 +697,22 @@ async function salvaPeriodoOrario(){
   if(!r.success){msg.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`;return;}
   const er=r.emailResult||{};
   const emailInfo=er.inviata?`<br><small style="opacity:.8">📧 Email inviata a ${er.destinatari} docenti</small>`:er.message?`<br><small style="opacity:.7">ℹ️ ${esc(er.message)}</small>`:"";
-  msg.innerHTML=`<div class="alert" style="background:rgba(52,211,153,.1);border-color:#34d399;color:#34d399">✓ Periodo salvato!${emailInfo}</div>`;
-  // Ricarica la vista
+  msg.innerHTML=`<div class="alert" style="background:rgba(52,211,153,.1);border-color:#34d399;color:#34d399">✓ Periodo salvato! Notifica push inviata.${emailInfo}</div>`;
   setTimeout(()=>renderOrario(),1200);
+}
+
+async function inviaEmailOrario(){
+  const msg=$("or-set-msg");
+  if(!msg)return;
+  if(!confirm("Inviare l'email con il PDF dell'orario a tutti i docenti e alla dirigenza?"))return;
+  msg.innerHTML=`<div style="text-align:center"><div class="spinner" style="width:20px;height:20px"></div><small style="display:block;margin-top:.5rem;opacity:.7">Generazione PDF e invio in corso…</small></div>`;
+  const r=await api("inviaEmailOrario",{});
+  if(!r.success){msg.innerHTML=`<div class="alert alert-danger">${esc(r.message||"Errore")}</div>`;return;}
+  const er=r.emailResult||{};
+  const info=er.inviata
+    ?`📧 Email inviata a ${er.destinatari} docenti`
+    :`ℹ️ ${esc(er.message||"Nessun destinatario trovato")}`;
+  msg.innerHTML=`<div class="alert" style="background:rgba(52,211,153,.1);border-color:#34d399;color:#34d399">${info}</div>`;
 }
 
 async function _caricaOrarioVisibile(dal, al, anno, isDocente, annoExtra){
