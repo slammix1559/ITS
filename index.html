@@ -660,8 +660,23 @@ async function renderOrario(){
       }
     } else {
       // Anno specifico impostato dal coordinatore
-      const annoVis=periodoR.anno||(_user&&_user.annualita?String(_user.annualita):"1");
-      await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annoVis, isDocente);
+      if(isTeam){
+        // Team/coord: vede l'anno pubblicato
+        await _caricaOrarioVisibile(periodoR.dal, periodoR.al, periodoR.anno, isDocente);
+      } else {
+        // Studente: vede solo il suo anno, indipendentemente da quale anno ha pubblicato il coord
+        const annStudente=_user&&_user.annualita?String(_user.annualita):"";
+        if(annStudente && annStudente===periodoR.anno){
+          // L'orario pubblicato è il suo anno → lo vede
+          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, annStudente, false);
+        } else if(annStudente && annStudente!==periodoR.anno){
+          // L'orario pubblicato è dell'altra classe → messaggio
+          $("or-result").innerHTML=`<div class="text-muted" style="text-align:center;padding:2.5rem;font-size:.9rem">L'orario pubblicato non è ancora disponibile per la tua classe.</div>`;
+        } else {
+          // annualita non nota: mostra quello pubblicato
+          await _caricaOrarioVisibile(periodoR.dal, periodoR.al, periodoR.anno, false);
+        }
+      }
     }
   } else {
     $("or-result").innerHTML=`<div class="text-muted" style="text-align:center;padding:2.5rem;font-size:.9rem">
